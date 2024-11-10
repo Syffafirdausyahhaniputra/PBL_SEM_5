@@ -28,74 +28,92 @@ class ProfileController extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    // Validasi input termasuk field NIP dan avatar
-    $request->validate([
-        'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id',
-        'nama'     => 'required|string|max:100',
-        'nip'      => 'required|string|max:50',  // Tambahkan validasi untuk NIP
-        'old_password' => 'nullable|string',
-        'password' => 'nullable|min:5',
-        'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif' // Validasi file gambar untuk avatar
-    ]);
+    {
+        try {
+            // Validasi input
+            $request->validate([
+                'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id',
+                'nama'     => 'required|string|max:100',
+                'nip'      => 'required|string|max:50',
+                'old_password' => 'nullable|string',
+                'password' => 'nullable|min:5',
+                'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            ]);
 
-    $user = UserModel::find($id);
+            $user = UserModel::find($id);
 
-    // Cek apakah ada perubahan pada data
-    $isChanged = false;
+            // Cek perubahan data
+            $isChanged = false;
 
-    // Periksa perubahan pada username, nama, atau nip
-    if ($user->username != $request->username || $user->nama != $request->nama || $user->nip != $request->nip) {
-        $isChanged = true;
-    }
+            if ($user->username != $request->username || 
+                $user->nama != $request->nama || 
+                $user->nip != $request->nip || 
+                $request->hasFile('avatar') ||
+                $request->filled('old_password')) {
+                $isChanged = true;
+            }
 
-    // Periksa jika ada password lama dan cocok, maka ganti dengan password baru
-    if ($request->filled('old_password') && Hash::check($request->old_password, $user->password)) {
-        $isChanged = true;
-    }
+            if (!$isChanged) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada perubahan pada profil Anda.'
+                ]);
+            }
 
-    // Jika ada file avatar yang diupload, anggap ada perubahan
-    if ($request->hasFile('avatar')) {
-        $isChanged = true;
-    }
+            // Update data user
+            $user->username = $request->username;
+            $user->nama = $request->nama;
+            $user->nip = $request->nip;
 
-    // Jika tidak ada perubahan
-    if (!$isChanged) {
-        return redirect()->back()->with('info', 'Tidak ada perubahan pada profil Anda.');
-    }
+            // Handle password update
+            if ($request->filled('old_password')) {
+                if (!Hash::check($request->old_password, $user->password)) {
+                    return response()->json([
+                        'success' => false,
+                        'errors' => ['old_password' => ['Password lama salah']]
+                    ]);
+                }
+                $user->password = Hash::make($request->password);
+            }
 
-    // Update data pengguna
-    $user->username = $request->username;
-    $user->nama = $request->nama;
-    $user->nip = $request->nip;  // Update NIP
+            // Handle avatar upload
+            if ($request->hasFile('avatar')) {
+                if (!Storage::exists('public/avatar')) {
+                    Storage::makeDirectory('public/avatar');
+                }
 
-    // Jika password lama benar dan password baru diisi, lakukan perubahan password
-    if ($request->filled('old_password') && Hash::check($request->old_password, $user->password)) {
-        $user->password = Hash::make($request->password);
-    } elseif ($request->filled('old_password')) {
-        return back()
-            ->withErrors(['old_password' => 'Password lama salah'])
-            ->withInput();
-    }
+                // Delete old avatar
+                if ($user->avatar) {
+                    $oldAvatarPath = storage_path('app/public/avatar/' . $user->avatar);
+                    if (file_exists($oldAvatarPath)) {
+                        unlink($oldAvatarPath);
+                    }
+                }
 
-    // Handle avatar update
-    if ($request->hasFile('avatar')) {
-        // Hapus avatar lama
-        if ($user->avatar && Storage::exists('public/avatar/' . $user->avatar)) {
-            Storage::delete('public/avatar/' . $user->avatar);
+                // Store new avatar
+                $file = $request->file('avatar');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/avatar', $fileName);
+                $user->avatar = $fileName;
+            }
+
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile berhasil diperbarui!',
+                'user' => [
+                    'nama' => $user->nama,
+                    'username' => $user->username,
+                    'avatar' => $user->avatar ? asset('storage/avatar/' . $user->avatar) : null
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Simpan avatar baru
-        $file = $request->file('avatar');
-        $fileName = $file->hashName();
-        $file->storeAs('public/avatar', $fileName);
-        $user->avatar = $fileName;
     }
-
-    // Simpan perubahan pada user
-    $user->save();
-
-    // Redirect dengan pesan sukses
-    return redirect()->back()->with('success', 'Profile berhasil diperbarui!');
-}
 }

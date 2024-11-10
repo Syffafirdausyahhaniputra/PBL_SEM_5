@@ -11,14 +11,17 @@
                         <!-- Kolom untuk Gambar Profil dan Informasi Nama -->
                         <div class="d-flex align-items-center">
                             <div class="text-center me-3">
-                                <label for="avatar" style="cursor: pointer;">
-                                    <img id="profile-pic" src="{{ $user->avatar ? asset('storage/avatar/' . $user->avatar) : asset('img/user.png') }}" class="rounded-circle" width="100" height="100" alt="Profile Picture">
-                                </label>
-                                <input type="file" id="avatar" name="avatar" class="d-none" onchange="previewImage(event)" disabled>
+                                <form id="avatar-form" enctype="multipart/form-data">
+                                    <label for="avatar" style="cursor: pointer;">
+                                        <img id="profile-pic" src="{{ $user->avatar ? asset('storage/avatar/' . $user->avatar) . '?v=' . time() : asset('img/user.png') }}" 
+                                             class="rounded-circle" width="100" height="100" alt="Profile Picture">
+                                    </label>
+                                    <input type="file" id="avatar" name="avatar" class="d-none" onchange="previewAndUploadImage(event)" disabled accept="image/*">
+                                </form>
                             </div>
                             <div>
-                                <h4 class="mb-0">{{ $user->nama }}</h4>
-                                <p class="text-muted">{{ '@' . $user->username }}</p>
+                                <h4 class="mb-0" id="display-nama">{{ $user->nama }}</h4>
+                                <p class="text-muted" id="display-username">{{'@' . $user->username }}</p>
                             </div>
                         </div>
 
@@ -49,7 +52,6 @@
                                 <input id="nip" name="nip" type="text" class="form-control" value="{{ $user->nip }}" readonly>
                             </div>
 
-                            <!-- Form Password Lama dan Baru (tersembunyi kecuali dalam edit mode) -->
                             <div class="mb-3 d-none" id="old-password-group">
                                 <label for="old_password" class="form-label">Password Lama</label>
                                 <input id="old_password" name="old_password" type="password" class="form-control">
@@ -61,7 +63,6 @@
                             </div>
                         </div>
 
-                        <!-- Tombol Simpan -->
                         <div class="mt-4 d-none" id="save-cancel-group">
                             <button type="submit" class="btn btn-success">Simpan</button>
                             <button type="button" class="btn btn-secondary" onclick="toggleEdit()">Batal</button>
@@ -73,31 +74,152 @@
     </div>
 </div>
 
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+@if(session('info'))
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+    {{ session('info') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 <script>
+    let originalImageSrc = "{{ $user->avatar ? asset('storage/avatar/' . $user->avatar) : asset('img/user.png') }}";
+    let hasNewImage = false;
+
     function toggleEdit() {
         const isReadOnly = document.getElementById('username').readOnly;
+        const editBtn = document.getElementById('edit-btn');
+        const saveCancelGroup = document.getElementById('save-cancel-group');
+        const oldPasswordGroup = document.getElementById('old-password-group');
+        const newPasswordGroup = document.getElementById('new-password-group');
+        const avatarInput = document.getElementById('avatar');
 
         // Toggle read-only state for all fields
         document.getElementById('username').readOnly = !isReadOnly;
         document.getElementById('nama').readOnly = !isReadOnly;
         document.getElementById('nip').readOnly = !isReadOnly;
-        document.getElementById('avatar').disabled = !isReadOnly;
+        avatarInput.disabled = !isReadOnly;
 
-        // Toggle visibility for password fields and save-cancel group
-        document.getElementById('old-password-group').classList.toggle('d-none');
-        document.getElementById('new-password-group').classList.toggle('d-none');
-        document.getElementById('save-cancel-group').classList.toggle('d-none');
+        // Toggle visibility of password fields and buttons
+        oldPasswordGroup.classList.toggle('d-none');
+        newPasswordGroup.classList.toggle('d-none');
+        saveCancelGroup.classList.toggle('d-none');
 
-        // Change Edit button to Cancel and vice versa
-        document.getElementById('edit-btn').innerText = isReadOnly ? 'Batal' : 'Edit';
-    }
+        // Update button text
+        editBtn.innerText = isReadOnly ? 'Batal' : 'Edit';
 
-    function previewImage(event) {
-        const output = document.getElementById('profile-pic');
-        output.src = URL.createObjectURL(event.target.files[0]);
-        output.onload = function() {
-            URL.revokeObjectURL(output.src) // Free up memory
+        // If cancelling, reset form and preview
+        if (!isReadOnly) {
+            document.getElementById('profile-form').reset();
+            if (!hasNewImage) {
+                document.getElementById('profile-pic').src = originalImageSrc;
+            }
         }
     }
+
+    // Handle form submission with AJAX
+    document.getElementById('profile-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const avatarFile = document.getElementById('avatar').files[0];
+        if (avatarFile) {
+            formData.append('avatar', avatarFile);
+        }
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update displayed information
+                document.getElementById('display-nama').textContent = formData.get('nama');
+                document.getElementById('display-username').textContent = '@' + formData.get('username');
+                
+                // Update avatar if a new one was uploaded
+                if (data.user.avatar) {
+                    const profilePic = document.getElementById('profile-pic');
+                    profilePic.src = ${data.user.avatar}?v=${new Date().getTime()}; // Add timestamp to force refresh
+                    originalImageSrc = data.user.avatar;
+                    hasNewImage = true;
+                }
+
+                // Show success message
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-success alert-dismissible fade show';
+                alert.innerHTML = `
+                    ${data.message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                document.querySelector('.card').insertAdjacentElement('beforebegin', alert);
+
+                // Reset form state
+                toggleEdit();
+
+                // Remove alert after 3 seconds
+                setTimeout(() => {
+                    alert.remove();
+                }, 3000);
+            } else {
+                // Handle validation errors
+                Object.keys(data.errors || {}).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        const feedback = document.createElement('div');
+                        feedback.className = 'invalid-feedback';
+                        feedback.textContent = data.errors[key][0];
+                        input.parentNode.appendChild(feedback);
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show';
+            alert.innerHTML = `
+                Terjadi kesalahan saat memperbarui profil.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.querySelector('.card').insertAdjacentElement('beforebegin', alert);
+        });
+    });
+
+    function previewAndUploadImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profile-pic').src = e.target.result;
+                hasNewImage = true;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Clear validation errors when input changes
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            const feedback = this.parentNode.querySelector('.invalid-feedback');
+            if (feedback) {
+                feedback.remove();
+            }
+        });
+    });
 </script>
 @endsection

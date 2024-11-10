@@ -152,7 +152,7 @@
                 // Update avatar if a new one was uploaded
                 if (data.user.avatar) {
                     const profilePic = document.getElementById('profile-pic');
-                    profilePic.src = ${data.user.avatar}?v=${new Date().getTime()}; // Add timestamp to force refresh
+                    profilePic.src = `${data.user.avatar}?v=${new Date().getTime()}`; // Add timestamp to force refresh
                     originalImageSrc = data.user.avatar;
                     hasNewImage = true;
                 }

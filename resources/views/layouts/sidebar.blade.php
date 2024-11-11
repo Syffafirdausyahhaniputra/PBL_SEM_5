@@ -15,12 +15,6 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/notifikasi') }}" class="nav-link {{ $activeMenu == 'notifikasi' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-layer-group"></i>
-                    <p>Notifikasi</p>
-                </a>
-            </li>
-            <li class="nav-item">
                 <a href="{{ url('/profile') }}" class="nav-link {{ $activeMenu == 'profile' ? 'active' : '' }} ">
                     <i class="nav-icon far fa-user"></i>
                     <p>Profile</p>

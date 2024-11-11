@@ -9,7 +9,7 @@ class LevelPelatihanModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'm_level';
+    protected $table = 'm_level_pelatihan';
     protected $primaryKey = 'level_id';
     protected $fillable = ['level_kode', 'level_nama', 'created_at', 'updated_at'];
 }

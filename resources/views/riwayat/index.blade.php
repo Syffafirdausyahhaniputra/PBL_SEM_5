@@ -66,42 +66,55 @@
 @endpush
 
 @push('js')
-    <script>
-        $(document).ready(function() {
-            // Fetch data dari server dan render sebagai card
-            $.ajax({
-                url: "{{ url('riwayat/list') }}",
-                type: "POST",
-                dataType: "json",
-                success: function(data) {
-                    var container = $('#card-container');
-                    container.empty(); // Kosongkan container
-                    
-                    data.data.forEach(function(item) {
-                        // Tentukan kelas warna berdasarkan status
-                        var statusClass = '';
-                        if (item.status === 'Selesai') {
-                            statusClass = 'badge-selesai';
-                        } else if (item.status === 'Proses') {
-                            statusClass = 'badge-proses';
-                        }
-                        
-                        // Buat template card
-                        var card = `
-                            <div class="data-card">
-                                <div class="card-content">
-                                    <div class="card-title">${item.nama}</div>
-                                    <div class="card-subtitle">${item.keterangan}</div>
-                                </div>
-                                <span class="badge-status ${statusClass}">${item.status}</span>
+<script>
+    $(document).ready(function() {
+        // Fetch data dari server dan render sebagai card
+        $.ajax({
+            url: "{{ url('riwayat/list') }}",
+            type: "POST",
+            dataType: "json",
+            success: function(data) {
+                var container = $('#card-container');
+                container.empty();
+
+                data.data.forEach(function(item) {
+                    var statusClass = item.status === 'Selesai' ? 'badge-selesai' : 'badge-proses';
+
+                    // Buat template card dengan event click pada status
+                    var card = `
+                        <div class="data-card">
+                            <div class="card-content">
+                                <div class="card-title">${item.nama}</div>
+                                <div class="card-subtitle">${item.keterangan}</div>
                             </div>
-                        `;
-                        
-                        // Tambahkan card ke container
-                        container.append(card);
-                    });
+                            <span class="badge-status ${statusClass}" data-id="${item.id}" data-type="${item.type}">${item.status}</span>
+                        </div>
+                    `;
+
+                    container.append(card);
+                });
+            }
+        });
+
+        // Event click untuk badge status dengan event delegation
+        $(document).on('click', '.badge-status', function() {
+            var id = $(this).data('id');
+            var type = $(this).data('type'); // Ambil type dari data-type
+
+            // Tentukan URL berdasarkan type
+            var url = type === 'sertifikasi' 
+                ? "{{ url('riwayat/sertifikasi') }}/" + id + "/show_ajax"
+                : "{{ url('riwayat/pelatihan') }}/" + id + "/show_ajax";
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function(response) {
+                    // Tampilkan data di modal atau cara lain
+                    $('#card-container').html(response);
                 }
             });
         });
-    </script>
+    });
+</script>
 @endpush

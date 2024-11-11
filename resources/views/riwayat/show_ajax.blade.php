@@ -26,21 +26,11 @@
             <p><strong>Level:</strong> {{ $level }}</p>
         @endif
         
-        <p><strong>Tanggal Acara:</strong> {{ $tanggal_acara ?? 'Tidak Tersedia' }}</p>
-
+        <p><strong>Tanggal Acara:</strong> {{ $tanggal_acara }}</p>
         @if (isset($berlaku_hingga))
-            <p><strong>Masa Berlaku:</strong> {{ $berlaku_hingga }}</p>
+            <p><strong>Level:</strong> {{ $berlaku_hingga }}</p>
         @endif
-
-        @if (isset($kuota))
-            <p><strong>Kuota:</strong> {{ $kuota }}</p>
-        @endif
-
-        @if (isset($lokasi))
-            <p><strong>Lokasi:</strong> {{ $lokasi }}</p>
-        @endif
-
-        <p><strong>Periode:</strong> {{ $periode ?? 'Tidak Tersedia' }}</p>
+        <p><strong>Periode:</strong> {{ $periode }}</p>
     </div>
     <div class="card-footer">
         <a href="{{ url('riwayat') }}" class="btn btn-secondary">Back</a>

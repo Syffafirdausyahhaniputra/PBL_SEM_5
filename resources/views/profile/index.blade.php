@@ -65,7 +65,6 @@
 
                         <div class="mt-4 d-none" id="save-cancel-group">
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            <button type="button" class="btn btn-secondary" onclick="toggleEdit()">Batal</button>
                         </div>
                     </form>
                 </div>

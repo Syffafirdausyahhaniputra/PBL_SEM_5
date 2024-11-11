@@ -59,6 +59,7 @@
             border-radius: 5px;
             color: #fff;
             font-weight: bold;
+            cursor: pointer;
         }
         .badge-selesai { background-color: #28a745; } /* Hijau untuk Selesai */
         .badge-proses { background-color: #ffc107; color: #000; } /* Kuning untuk Proses */

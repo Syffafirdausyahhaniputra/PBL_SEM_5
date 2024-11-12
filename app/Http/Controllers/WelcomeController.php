@@ -61,13 +61,14 @@ class WelcomeController extends Controller
             $pelatihanData[] = $pelatihanPerBulan[$month] ?? 0;
         }
 
-        // Menghitung rata-rata periode
-        $rataRataSertifikasiPerPeriode = SertifikasiModel::selectRaw('AVG(periode) as rata_rata')
-            ->value('rata_rata');
+        // Menghitung jumlah sertifikasi dan pelatihan keseluruhan
+        $jumlahSertifikasiPelatihan = array_sum($sertifikasiData) + array_sum($pelatihanData);
 
-        $rataRataPelatihanPerPeriode = PelatihanModel::selectRaw('AVG(periode) as rata_rata')
-            ->value('rata_rata');
+        // Menghitung rata-rata sertifikasi dan pelatihan per periode
+        $totalPeriode = count($allMonths);
+        $rataRataSertifikasiPelatihanPerPeriode = $totalPeriode > 0 ? round($jumlahSertifikasiPelatihan / $totalPeriode, 2) : 0;
 
+        // Mendapatkan data bidang
         $bidang = BidangModel::all();
 
         return view('welcome', [
@@ -76,8 +77,8 @@ class WelcomeController extends Controller
             'labels' => $allMonths,
             'sertifikasiData' => $sertifikasiData,
             'pelatihanData' => $pelatihanData,
-            'rataRataSertifikasiPerPeriode' => round($rataRataSertifikasiPerPeriode, 2),
-            'rataRataPelatihanPerPeriode' => round($rataRataPelatihanPerPeriode, 2),
+            'jumlahSertifikasiPelatihan' => $jumlahSertifikasiPelatihan,
+            'rataRataSertifikasiPelatihanPerPeriode' => $rataRataSertifikasiPelatihanPerPeriode,
             'bidang' => $bidang
         ]);
     }

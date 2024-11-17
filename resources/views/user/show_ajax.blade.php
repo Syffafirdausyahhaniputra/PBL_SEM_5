@@ -29,9 +29,11 @@
                     Berikut adalah detail data user:
                 </div> 
                 <table class="table table-sm table-bordered table-striped"> 
-                    <tr><th class="text-right col-3">Level Pengguna :</th><td class="col-9">{{ $user->level->level_nama }}</td></tr> 
+                    <tr><th class="text-right col-3">Jabatan :</th><td class="col-9">{{ $user->role->role_nama }}</td></tr> 
                     <tr><th class="text-right col-3">Username :</th><td class="col-9">{{ $user->username }}</td></tr> 
                     <tr><th class="text-right col-3">Nama :</th><td class="col-9">{{ $user->nama }}</td></tr> 
+                    <tr><th class="text-right col-3">NIP :</th><td class="col-9">{{ $user->nip }}</td></tr> 
+                    <tr><th class="text-right col-3">Password :</th><td class="col-9">{{ $user->password }}</td></tr> 
                 </table> 
             </div> 
             <div class="modal-footer"> 

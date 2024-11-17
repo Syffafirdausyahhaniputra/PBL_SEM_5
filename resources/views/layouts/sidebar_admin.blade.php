@@ -25,43 +25,43 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{ url('/manage/user') }}" class="nav-link {{ $activeMenu == 'manage_user' ? 'active' : '' }}">
+                        <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Manage User</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/manage/jenis_pengguna') }}" class="nav-link {{ $activeMenu == 'manage_jenis_pengguna' ? 'active' : '' }}">
+                        <a href="{{ url('/jenis_pengguna') }}" class="nav-link {{ $activeMenu == 'jenis_pengguna' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Manage Jenis Pengguna</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/manage/vendor') }}" class="nav-link {{ $activeMenu == 'manage_vendor' ? 'active' : '' }}">
+                        <a href="{{ url('/vendor') }}" class="nav-link {{ $activeMenu == 'vendor' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Manage Vendor</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/manage/bidang') }}" class="nav-link {{ $activeMenu == 'manage_bidang' ? 'active' : '' }}">
+                        <a href="{{ url('/bidang') }}" class="nav-link {{ $activeMenu == 'bidang' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Manage Bidang</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/manage/mata_kuliah') }}" class="nav-link {{ $activeMenu == 'manage_mata_kuliah' ? 'active' : '' }}">
+                        <a href="{{ url('/mata_kuliah') }}" class="nav-link {{ $activeMenu == 'mata_kuliah' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Manage Mata Kuliah</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/manage/jenis_sertifikasi') }}" class="nav-link {{ $activeMenu == 'manage_jenis_sertifikasi' ? 'active' : '' }}">
+                        <a href="{{ url('/jenis_sertifikasi') }}" class="nav-link {{ $activeMenu == 'jenis_sertifikasi' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Manage Jenis Sertifikasi dan Pelatihan</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/manage/sertifikasi') }}" class="nav-link {{ $activeMenu == 'manage_sertifikasi' ? 'active' : '' }}">
+                        <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Manage Sertifikasi dan Pelatihan</p>
                         </a>

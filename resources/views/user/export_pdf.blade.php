@@ -108,7 +108,8 @@
                 <th class="text-center">No</th>
                 <th>Username</th>
                 <th>Nama</th>
-                <th>Level</th>
+                <th>NIP</th>
+                <th>Jabatan</th>
             </tr>
         </thead>
         <tbody>
@@ -117,7 +118,8 @@
                     <td class="text-center">{{ $loop->iteration }}</td>
                     <td>{{ $b->username }}</td>
                     <td>{{ $b->nama }}</td>
-                    <td>{{ $b->level->level_nama }}</td>
+                    <td>{{ $b->nip }}</td>
+                    <td>{{ $b->role->role_nama }}</td>
                 </tr>
             @endforeach
         </tbody>

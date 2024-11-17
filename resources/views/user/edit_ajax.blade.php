@@ -28,15 +28,15 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Level Pengguna</label>
-                        <select name="level_id" id="level_id" class="form-control" required>
-                            <option value="">- Pilih Level -</option>
-                            @foreach ($level as $l)
-                                <option {{ $l->level_id == $user->level_id ? 'selected' : '' }}
-                                    value="{{ $l->level_id }}">{{ $l->level_nama }}</option>
+                        <label>Jabatan Pengguna</label>
+                        <select name="role_id" id="role_id" class="form-control" required>
+                            <option value="">- Pilih Jabatan -</option>
+                            @foreach ($role as $l)
+                                <option {{ $l->role_id == $user->role_id ? 'selected' : '' }}
+                                    value="{{ $l->role_id }}">{{ $l->role_nama }}</option>
                             @endforeach
                         </select>
-                        <small id="error-level_id" class="error-text form-text text-danger"></small>
+                        <small id="error-role_id" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label>Username</label>
@@ -49,6 +49,12 @@
                         <input value="{{ $user->nama }}" type="text" name="nama" id="nama" class="form-control"
                             required>
                         <small id="error-nama" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>NIP</label>
+                        <input value="{{ $user->nip }}" type="text" name="nip" id="nip" class="form-control"
+                            required>
+                        <small id="error-nip" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label>Password</label>
@@ -69,7 +75,7 @@
         $(document).ready(function() {
             $("#form-edit").validate({
                 rules: {
-                    level_id: {
+                    role_id: {
                         required: true,
                         number: true
                     },
@@ -79,6 +85,11 @@
                         maxlength: 20
                     },
                     nama: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 100
+                    },
+                    nip: {
                         required: true,
                         minlength: 3,
                         maxlength: 100

@@ -33,8 +33,8 @@
                     </div>
                     <table class="table table-sm table-bordered table-striped">
                         <tr>
-                            <th class="text-right col-3">Level Pengguna :</th>
-                            <td class="col-9">{{ $user->level->level_nama }}</td>
+                            <th class="text-right col-3">Jabatan Pengguna :</th>
+                            <td class="col-9">{{ $user->role->role_nama }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Username :</th>
@@ -43,6 +43,10 @@
                         <tr>
                             <th class="text-right col-3">Nama :</th>
                             <td class="col-9">{{ $user->nama }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">NIP :</th>
+                            <td class="col-9">{{ $user->nip }}</td>
                         </tr>
                     </table>
                 </div>

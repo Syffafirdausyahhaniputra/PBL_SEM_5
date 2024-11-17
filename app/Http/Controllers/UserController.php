@@ -17,12 +17,8 @@ class UserController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar user',
-            'list' => ['Home', 'User']
-        ];
-
-        $page = (object) [
-            'title' => 'Daftar user yang terdaftar dalam sistem'
+            'title' => 'Manage User',
+            'subtitle'  => 'Daftar user yang terdaftar dalam sistem'
         ];
 
         $activeMenu = 'user'; // set menu yang sedang aktif
@@ -31,7 +27,6 @@ class UserController extends Controller
 
         return view('user.index', [
             'breadcrumb' => $breadcrumb,
-            'page' => $page,
             'role' => $role,
             'activeMenu' => $activeMenu
         ]);
@@ -39,7 +34,7 @@ class UserController extends Controller
     // Ambil data user dalam bentuk json untuk datatables  
     public function list(Request $request)
     {
-        $users = UserModel::select('user_id', 'username', 'nama', 'role_id')
+        $users = UserModel::select('user_id', 'username', 'nama', 'nip', 'role_id')
             ->with('role');
 
         // Filter data user berdasarkan role_id 
@@ -67,132 +62,7 @@ class UserController extends Controller
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
             ->make(true);
     }
-    // Menampilkan halaman form tambah user
-    public function create()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Tambah User',
-            'list' => ['Home', 'User', 'Tambah']
-        ];
 
-        $page = (object) [
-            'title' => 'Tambah user baru'
-        ];
-
-        $role = roleModel::all(); // ambil data role untuk ditampilkan di form
-        $activeMenu = 'user'; // set menu yang sedang aktif
-
-        return view('user.create', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'role' => $role,
-            'activeMenu' => $activeMenu
-        ]);
-    }
-    // Menyimpan data user baru
-    public function store(Request $request)
-    {
-        $request->validate([
-            'username' => 'required|string|min:3|unique:m_user,username', // username harus diisi, berupa string, minimal 3 karakter, dan bernilai unik di tabel m_user kolom username
-            'nama' => 'required|string|max:100', // nama harus diisi, berupa string, dan maksimal 100 karakter
-            'password' => 'required|min:5', // password harus diisi dan minimal 5 karakter
-            'role_id' => 'required|integer' // role_id harus diisi dan berupa angka
-        ]);
-
-        UserModel::create([
-            'username' => $request->username,
-            'nama' => $request->nama,
-            'password' => bcrypt($request->password), // password dienkripsi sebelum disimpan
-            'role_id' => $request->role_id
-        ]);
-
-        return redirect('/user')->with('success', 'Data user berhasil disimpan');
-    }
-    // Menampilkan detail user
-    public function show(string $id)
-    {
-        $user = UserModel::with('role')->find($id);
-
-        $breadcrumb = (object) [
-            'title' => 'Detail User',
-            'list' => ['Home', 'User', 'Detail']
-        ];
-
-        $page = (object) [
-            'title' => 'Detail user'
-        ];
-
-        $activeMenu = 'user'; // set menu yang sedang aktif
-
-        return view('user.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'user' => $user, 'activeMenu' => $activeMenu]);
-    }
-    // Menampilkan halaman form edit user
-    public function edit(string $id)
-    {
-        $user = UserModel::find($id);
-        $role = roleModel::all();
-
-        $breadcrumb = (object) [
-            'title' => 'Edit User',
-            'list' => ['Home', 'User', 'Edit']
-        ];
-
-        $page = (object) [
-            'title' => 'Edit user'
-        ];
-
-        $activeMenu = 'user'; // set menu yang sedang aktif
-
-        return view('user.edit', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'user' => $user,
-            'role' => $role,
-            'activeMenu' => $activeMenu
-        ]);
-    }
-    // Menyimpan perubahan data user
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id', // username harus diisi, berupa string, minimal 3 karakter, dan bernilai unik di tabel m_user kolom username kecuali untuk user dengan id yang sedang diedit
-            'nama' => 'required|string|max:100', // nama harus diisi, berupa string, dan maksimal 100 karakter
-            'password' => 'nullable|min:5', // password bisa diisi (minimal 5 karakter) dan bisa tidak diisi
-            'role_id' => 'required|integer' // role_id harus diisi dan berupa angka
-        ]);
-
-        UserModel::find($id)->update([
-            'username' => $request->username,
-            'nama' => $request->nama,
-            'password' => $request->password ? bcrypt($request->password) : UserModel::find($id)->password,
-            'role_id' => $request->role_id
-        ]);
-
-        return redirect('/user')->with('success', 'Data user berhasil diubah');
-    }
-    // Menghapus data user
-    public function destroy(string $id)
-    {
-        // Cari user berdasarkan ID
-        $user = UserModel::find($id);
-
-        // Jika user tidak ditemukan
-        if (!$user) {
-            return redirect('/user')->with('error', 'Data user tidak ditemukan');
-        }
-
-        try {
-            // Hapus data user
-            UserModel::destroy($id);
-
-            // Jika berhasil dihapus, tampilkan pesan sukses
-            return redirect('/user')->with('success', 'Data user berhasil dihapus');
-        } catch (\Illuminate\Database\QueryException $e) {
-            // Jika terjadi error saat menghapus (misalnya karena ada kendala dengan database atau karena ada relasi dengan tabel lain),
-            // tampilkan pesan error
-            return redirect('/user')->with('error', 'Data user gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
-        }
-    }
     public function create_ajax()
     {
         $role = roleModel::select('role_id', 'role_nama')->get();
@@ -210,6 +80,7 @@ class UserController extends Controller
                 'role_id' => 'required|integer',
                 'username' => 'required|string|min:3|unique:m_user,username',
                 'nama' => 'required|string|max:100',
+                'nip' => 'required|string|max:100',
                 'password' => 'required|min:6'
             ];
 
@@ -253,6 +124,7 @@ class UserController extends Controller
                 'role_id' => 'required|integer',
                 'username' => 'required|max:20|unique:m_user,username,' . $id . ',user_id',
                 'nama'     => 'required|max:100',
+                'nip'     => 'required|max:100',
                 'password' => 'nullable|min:6|max:20'
             ];
             // use Illuminate\Support\Facades\Validator; 
@@ -368,7 +240,8 @@ class UserController extends Controller
                             'role_id' => $value['A'],
                             'username' => $value['B'],
                             'nama' => $value['C'],
-                            'password' => Hash::make($value['D']),
+                            'nip' => $value['D'],
+                            'password' => Hash::make($value['E']),
                             'created_at' => now(),
                         ];
                     }
@@ -395,7 +268,7 @@ class UserController extends Controller
     public function export_excel()
     {
         // ambil data user yang akan di export
-        $user = UserModel::select('role_id', 'username', 'nama', 'password')
+        $user = UserModel::select('role_id', 'username', 'nama', 'nip', 'password')
             ->orderBy('role_id')
             ->with('role')
             ->get();
@@ -407,10 +280,11 @@ class UserController extends Controller
         $sheet->setCellValue('A1', 'No');
         $sheet->setCellValue('B1', 'Username');
         $sheet->setCellValue('C1', 'Nama');
-        $sheet->setCellValue('D1', 'Password');
-        $sheet->setCellValue('E1', 'role');
+        $sheet->setCellValue('D1', 'NIP');
+        $sheet->setCellValue('E1', 'Password');
+        $sheet->setCellValue('F1', 'Jabatan');
 
-        $sheet->getStyle('A1:E1')->getFont()->setBold(true); // bold header
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true); // bold header
         $no = 1;  // nomor data dimulai dari 1
         $baris = 2; // baris data dimulai dari baris ke 2
 
@@ -418,13 +292,14 @@ class UserController extends Controller
             $sheet->setCellValue('A' . $baris, $no);
             $sheet->setCellValue('B' . $baris, $value->username);
             $sheet->setCellValue('C' . $baris, $value->nama);
-            $sheet->setCellValue('D' . $baris, $value->password);
-            $sheet->setCellValue('E' . $baris, $value->role->role_nama); // ambil nama kategori
+            $sheet->setCellValue('D' . $baris, $value->nip);
+            $sheet->setCellValue('E' . $baris, $value->password);
+            $sheet->setCellValue('F' . $baris, $value->role->role_nama); // ambil nama kategori
             $baris++;
             $no++;
         }
 
-        foreach (range('A', 'E') as $columnID) {
+        foreach (range('A', 'F') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true); // set auto size untuk kolom
         }
 
@@ -450,7 +325,7 @@ class UserController extends Controller
     } // end function export excel
     public function export_pdf()
     {
-        $user = userModel::select('role_id', 'username', 'nama')
+        $user = userModel::select('role_id', 'username', 'nama', 'nip')
             ->orderBy('role_id')
             ->orderBy('username')
             ->with('role')

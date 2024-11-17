@@ -3,20 +3,20 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document"> 
         <div class="modal-content"> 
             <div class="modal-header"> 
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data User</h5> 
+                <h5 class="modal-title" id="exampleModalLabel">Tambah User</h5> 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span 
                 aria-hidden="true">&times;</span></button> 
             </div> 
             <div class="modal-body"> 
                 <div class="form-group"> 
-                    <label>Level Pengguna</label> 
-                    <select name="level_id" id="level_id" class="form-control" required> 
-                        <option value="">- Pilih Level -</option> 
-                        @foreach($level as $l) 
-                            <option value="{{ $l->level_id }}">{{ $l->level_nama }}</option> 
+                    <label>Jabatan Pengguna</label> 
+                    <select name="role_id" id="role_id" class="form-control" required> 
+                        <option value="">- Pilih Jabatan -</option> 
+                        @foreach($role as $l) 
+                            <option value="{{ $l->role_id }}">{{ $l->role_nama }}</option> 
                         @endforeach 
                     </select> 
-                    <small id="error-level_id" class="error-text form-text text-danger"></small> 
+                    <small id="error-role_id" class="error-text form-text text-danger"></small> 
                 </div> 
                 <div class="form-group"> 
                     <label>Username</label> 
@@ -29,6 +29,12 @@
                     <input value="" type="text" name="nama" id="nama" class="form-control" 
                     required> 
                     <small id="error-nama" class="error-text form-text text-danger"></small> 
+                </div> 
+                <div class="form-group"> 
+                    <label>NIP</label> 
+                    <input value="" type="text" name="nip" id="nip" class="form-control" 
+                    required> 
+                    <small id="error-nip" class="error-text form-text text-danger"></small> 
                 </div> 
                 <div class="form-group"> 
                     <label>Password</label> 
@@ -47,9 +53,10 @@
     $(document).ready(function() { 
         $("#form-tambah").validate({ 
             rules: { 
-                level_id: {required: true, number: true}, 
+                role_id: {required: true, number: true}, 
                 username: {required: true, minlength: 3, maxlength: 20}, 
                 nama: {required: true, minlength: 3, maxlength: 100}, 
+                nip: {required: true, minlength: 3, maxlength: 100}, 
                 password: {required: true, minlength: 6, maxlength: 20} 
             }, 
             submitHandler: function(form) { 

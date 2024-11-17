@@ -3,7 +3,6 @@
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
                 <a class="btn btn-sm btn-primary mt-1" h href="{{ url('/user/export_excel') }}" class="btn btn-primary"><i
                         class="fa fa-file-excel"></i> Export User</a>
@@ -11,8 +10,7 @@
                         class="fa fa-file-pdf"></i> Export User</a>
                 <button onclick="modalAction('{{ url('/user/import') }}')" class="btn btn-sm btn-info mt-1">Import
                     User</button>
-                <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah
-                    Ajax</button>
+                <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
         <div class="card-body">
@@ -28,13 +26,13 @@
                     <div class="form-group row">
                         <label class="col-1 control-label col-form-label">Filter:</label>
                         <div class="col-3">
-                            <select class="form-control" id="level_id" name="level_id" required>
+                            <select class="form-control" id="role_id" name="role_id" required>
                                 <option value="">- Semua -</option>
-                                @foreach ($level as $item)
-                                    <option value="{{ $item->level_id }}">{{ $item->level_nama }}</option>
+                                @foreach ($role as $item)
+                                    <option value="{{ $item->role_id }}">{{ $item->role_nama }}</option>
                                 @endforeach
                             </select>
-                            <small class="form-text text-muted">Level Pengguna</small>
+                            <small class="form-text text-muted">Jabatan</small>
                         </div>
                     </div>
                 </div>
@@ -44,10 +42,11 @@
                 <table class="table table-bordered table-striped table-hover table-sm" id="table_user">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No</th>
                             <th>Username</th>
                             <th>Nama</th>
-                            <th>Level Pengguna</th>
+                            <th>NIP</th>
+                            <th>Jabatan</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -79,7 +78,7 @@
                     "dataType": "json",
                     "type": "POST",
                     "data": function(d) {
-                        d.level_id = $('#level_id').val();
+                        d.role_id = $('#role_id').val();
                     }
                 },
                 columns: [{
@@ -101,8 +100,13 @@
                     orderable: true,
                     searchable: true
                 }, {
-                    // mengambil data level hasil dari ORM berelasi 
-                    data: "level.level_nama",
+                    data: "nip",
+                    className: "",
+                    orderable: true,
+                    searchable: true
+                }, {
+                    // mengambil data role hasil dari ORM berelasi 
+                    data: "role.role_nama",
                     className: "",
                     orderable: false,
                     searchable: false
@@ -113,7 +117,7 @@
                     searchable: false
                 }]
             });
-            $('#level_id').on('change', function() {
+            $('#role_id').on('change', function() {
                 dataUser.ajax.reload();
             });
         });

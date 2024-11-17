@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
@@ -9,7 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
-use Monolog\Level;
+use Monolog\role;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,24 +48,26 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}/update_ajax', [UserController::class, 'update_ajax']); // Menyimpan perubahan data user Ajax
         Route::get('/{id}/delete_ajax', [UserController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete user Ajax
         Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']); // Untuk menghapus data user Ajax
-        Route::delete('/{id}', [UserController::class, 'destroy']); // menghapus data user
         Route::get('/import', [UserController::class, 'import']);
         Route::post('/import_ajax', [UserController::class, 'import_ajax']);
         Route::get('/export_excel', [UserController::class, 'export_excel']);
         Route::get('/export_pdf', [UserController::class, 'export_pdf']);
     });
 
-    Route::group(['prefix' => 'notifikasi'], function () {
-        Route::get('/', [NotifikasiController::class, 'index']);         // menampilkan halaman awal level
-        Route::post('/list', [NotifikasiController::class, 'list']);     // menampilkan data level dalam bentuk json untuk datatables
-        Route::get('/create_ajax', [NotifikasiController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
-        Route::post('/ajax', [NotifikasiController::class, 'store_ajax']);     // Menyimpan data user baru Ajax
-        Route::get('/{id}/show_ajax', [NotifikasiController::class, 'show_ajax']);
-        Route::get('/{id}/edit_ajax', [NotifikasiController::class, 'edit_ajax']); // Menampilkan halaman form edit level Ajax
-        Route::put('/{id}/update_ajax', [NotifikasiController::class, 'update_ajax']); // Menyimpan perubahan data level Ajax
-        Route::get('/{id}/delete_ajax', [NotifikasiController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete level Ajax
-        Route::delete('/{id}/delete_ajax', [NotifikasiController::class, 'delete_ajax']); // Untuk menghapus data level Ajax
-        Route::delete('/{id}', [NotifikasiController::class, 'destroy']); // menghapus data level
+    Route::group(['prefix' => 'role'], function () {
+        Route::get('/', [RoleController::class, 'index']);         // menampilkan halaman awal role
+        Route::post('/list', [RoleController::class, 'list']);     // menampilkan data role dalam bentuk json untuk datatables
+        Route::get('/create_ajax', [RoleController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
+        Route::post('/ajax', [RoleController::class, 'store_ajax']);     // Menyimpan data user baru Ajax
+        Route::get('/{id}/show_ajax', [RoleController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [RoleController::class, 'edit_ajax']); // Menampilkan halaman form edit role Ajax
+        Route::put('/{id}/update_ajax', [RoleController::class, 'update_ajax']); // Menyimpan perubahan data role Ajax
+        Route::get('/{id}/delete_ajax', [RoleController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete role Ajax
+        Route::delete('/{id}/delete_ajax', [RoleController::class, 'delete_ajax']); // Untuk menghapus data role Ajax
+        Route::get('/import', [RoleController::class, 'import']);
+        Route::post('/import_ajax', [RoleController::class, 'import_ajax']);
+        Route::get('/export_excel', [RoleController::class, 'export_excel']);
+        Route::get('/export_pdf', [RoleController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'riwayat'], function () {

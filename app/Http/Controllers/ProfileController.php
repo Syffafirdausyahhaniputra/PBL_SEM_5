@@ -22,7 +22,7 @@ class ProfileController extends Controller
         $activeMenu = 'profile';
 
         return view('profile.index', compact('user'), [
-            'breadcrumb' => $breadcrumb, 
+            'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu
         ]);
     }
@@ -30,7 +30,6 @@ class ProfileController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // Validasi input
             $request->validate([
                 'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id',
                 'nama'     => 'required|string|max:100',
@@ -42,57 +41,44 @@ class ProfileController extends Controller
 
             $user = UserModel::find($id);
 
-            // Cek perubahan data
-            $isChanged = false;
-
-            if ($user->username != $request->username || 
-                $user->nama != $request->nama || 
-                $user->nip != $request->nip || 
-                $request->hasFile('avatar') ||
-                $request->filled('old_password')) {
-                $isChanged = true;
-            }
-
-            if (!$isChanged) {
+            if (
+                $user->username === $request->username &&
+                $user->nama === $request->nama &&
+                $user->nip === $request->nip &&
+                !$request->hasFile('avatar') &&
+                !$request->filled('old_password')
+            ) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Tidak ada perubahan pada profil Anda.'
-                ]);
+                ], 400);
             }
 
-            // Update data user
             $user->username = $request->username;
             $user->nama = $request->nama;
             $user->nip = $request->nip;
 
-            // Handle password update
             if ($request->filled('old_password')) {
                 if (!Hash::check($request->old_password, $user->password)) {
                     return response()->json([
                         'success' => false,
-                        'errors' => ['old_password' => ['Password lama salah']]
-                    ]);
+                        'errors' => [
+                            'old_password' => 'Password lama salah'
+                        ]
+                    ], 422);
                 }
                 $user->password = Hash::make($request->password);
             }
 
-            // Handle avatar upload
             if ($request->hasFile('avatar')) {
-                if (!Storage::exists('public/avatar')) {
-                    Storage::makeDirectory('public/avatar');
+                Storage::ensureDirectoryExists('public/avatar');
+
+                if ($user->avatar && Storage::exists('public/avatar/' . $user->avatar)) {
+                    Storage::delete('public/avatar/' . $user->avatar);
                 }
 
-                // Delete old avatar
-                if ($user->avatar) {
-                    $oldAvatarPath = storage_path('app/public/avatar/' . $user->avatar);
-                    if (file_exists($oldAvatarPath)) {
-                        unlink($oldAvatarPath);
-                    }
-                }
-
-                // Store new avatar
                 $file = $request->file('avatar');
-                $fileName = time() . '_' . $file->getClientOriginalName();
+                $fileName = time() . '_' . $file->hashName();
                 $file->storeAs('public/avatar', $fileName);
                 $user->avatar = $fileName;
             }
@@ -107,12 +93,16 @@ class ProfileController extends Controller
                     'username' => $user->username,
                     'avatar' => $user->avatar ? asset('storage/avatar/' . $user->avatar) : null
                 ]
-            ]);
-
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan pada server.'
             ], 500);
         }
     }

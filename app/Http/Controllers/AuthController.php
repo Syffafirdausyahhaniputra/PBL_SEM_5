@@ -26,6 +26,12 @@ class AuthController extends Controller
             $credentials = $request->only('username', 'password');
 
             if (Auth::attempt($credentials)) {
+                // Ambil data user yang sudah login
+                $user = Auth::user();
+
+                // Simpan role_id ke dalam session
+                session(['role_id' => $user->role_id]);
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Login Berhasil',
@@ -45,13 +51,12 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
+        $request->session()->forget('role_id'); // Hapus role_id dari session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect('login');
     }
-
 
     public function register()
     {

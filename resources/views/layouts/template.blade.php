@@ -91,15 +91,21 @@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="{{ url('/welcome') }}" class="brand-link">
-                <img src="{{ asset('img/logo.png') }}" alt="logo"
-                    class="brand-image" style="opacity: .8">
+                <img src="{{ asset('img/logo.png') }}" alt="logo" class="brand-image" style="opacity: .8">
                 <span class="brand-text font-weight-bold">JTI CERTIFY</span>
             </a>
 
             <!-- Sidebar -->
-            @include('layouts.sidebar')
+            @if (session('role_id') == 1)
+                @include('layouts.sidebar_admin')
+            @elseif (session('role_id') == 2)
+                @include('layouts.sidebar_pimpinan')
+            @elseif (session('role_id') == 3)
+                @include('layouts.sidebar_dosen')
+            @endif
             <!-- /.sidebar -->
         </aside>
+
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LevelModel;
+use App\Models\RoleModel;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -27,24 +27,24 @@ class UserController extends Controller
 
         $activeMenu = 'user'; // set menu yang sedang aktif
 
-        $level = LevelModel::all(); // ambil data level untuk filter level
+        $role = RoleModel::all(); // ambil data role untuk filter role
 
         return view('user.index', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
-            'level' => $level,
+            'role' => $role,
             'activeMenu' => $activeMenu
         ]);
     }
     // Ambil data user dalam bentuk json untuk datatables  
     public function list(Request $request)
     {
-        $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
-            ->with('level');
+        $users = UserModel::select('user_id', 'username', 'nama', 'role_id')
+            ->with('role');
 
-        // Filter data user berdasarkan level_id 
-        if ($request->level_id) {
-            $users->where('level_id', $request->level_id);
+        // Filter data user berdasarkan role_id 
+        if ($request->role_id) {
+            $users->where('role_id', $request->role_id);
         }
 
         return DataTables::of($users)
@@ -79,13 +79,13 @@ class UserController extends Controller
             'title' => 'Tambah user baru'
         ];
 
-        $level = LevelModel::all(); // ambil data level untuk ditampilkan di form
+        $role = roleModel::all(); // ambil data role untuk ditampilkan di form
         $activeMenu = 'user'; // set menu yang sedang aktif
 
         return view('user.create', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
-            'level' => $level,
+            'role' => $role,
             'activeMenu' => $activeMenu
         ]);
     }
@@ -96,14 +96,14 @@ class UserController extends Controller
             'username' => 'required|string|min:3|unique:m_user,username', // username harus diisi, berupa string, minimal 3 karakter, dan bernilai unik di tabel m_user kolom username
             'nama' => 'required|string|max:100', // nama harus diisi, berupa string, dan maksimal 100 karakter
             'password' => 'required|min:5', // password harus diisi dan minimal 5 karakter
-            'level_id' => 'required|integer' // level_id harus diisi dan berupa angka
+            'role_id' => 'required|integer' // role_id harus diisi dan berupa angka
         ]);
 
         UserModel::create([
             'username' => $request->username,
             'nama' => $request->nama,
             'password' => bcrypt($request->password), // password dienkripsi sebelum disimpan
-            'level_id' => $request->level_id
+            'role_id' => $request->role_id
         ]);
 
         return redirect('/user')->with('success', 'Data user berhasil disimpan');
@@ -111,7 +111,7 @@ class UserController extends Controller
     // Menampilkan detail user
     public function show(string $id)
     {
-        $user = UserModel::with('level')->find($id);
+        $user = UserModel::with('role')->find($id);
 
         $breadcrumb = (object) [
             'title' => 'Detail User',
@@ -130,7 +130,7 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = UserModel::find($id);
-        $level = LevelModel::all();
+        $role = roleModel::all();
 
         $breadcrumb = (object) [
             'title' => 'Edit User',
@@ -147,7 +147,7 @@ class UserController extends Controller
             'breadcrumb' => $breadcrumb,
             'page' => $page,
             'user' => $user,
-            'level' => $level,
+            'role' => $role,
             'activeMenu' => $activeMenu
         ]);
     }
@@ -158,14 +158,14 @@ class UserController extends Controller
             'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id', // username harus diisi, berupa string, minimal 3 karakter, dan bernilai unik di tabel m_user kolom username kecuali untuk user dengan id yang sedang diedit
             'nama' => 'required|string|max:100', // nama harus diisi, berupa string, dan maksimal 100 karakter
             'password' => 'nullable|min:5', // password bisa diisi (minimal 5 karakter) dan bisa tidak diisi
-            'level_id' => 'required|integer' // level_id harus diisi dan berupa angka
+            'role_id' => 'required|integer' // role_id harus diisi dan berupa angka
         ]);
 
         UserModel::find($id)->update([
             'username' => $request->username,
             'nama' => $request->nama,
             'password' => $request->password ? bcrypt($request->password) : UserModel::find($id)->password,
-            'level_id' => $request->level_id
+            'role_id' => $request->role_id
         ]);
 
         return redirect('/user')->with('success', 'Data user berhasil diubah');
@@ -195,10 +195,10 @@ class UserController extends Controller
     }
     public function create_ajax()
     {
-        $level = LevelModel::select('level_id', 'level_nama')->get();
+        $role = roleModel::select('role_id', 'role_nama')->get();
 
         return view('user.create_ajax')
-            ->with('level', $level);
+            ->with('role', $role);
     }
 
     public function store_ajax(Request $request)
@@ -207,7 +207,7 @@ class UserController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             // Aturan validasi
             $rules = [
-                'level_id' => 'required|integer',
+                'role_id' => 'required|integer',
                 'username' => 'required|string|min:3|unique:m_user,username',
                 'nama' => 'required|string|max:100',
                 'password' => 'required|min:6'
@@ -241,16 +241,16 @@ class UserController extends Controller
     public function edit_ajax(string $id)
     {
         $user = UserModel::find($id);
-        $level = LevelModel::select('level_id', 'level_nama')->get();
+        $role = roleModel::select('role_id', 'role_nama')->get();
 
-        return view('user.edit_ajax', ['user' => $user, 'level' => $level]);
+        return view('user.edit_ajax', ['user' => $user, 'role' => $role]);
     }
     public function update_ajax(Request $request, $id)
     {
         // cek apakah request dari ajax 
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'level_id' => 'required|integer',
+                'role_id' => 'required|integer',
                 'username' => 'required|max:20|unique:m_user,username,' . $id . ',user_id',
                 'nama'     => 'required|max:100',
                 'password' => 'nullable|min:6|max:20'
@@ -365,7 +365,7 @@ class UserController extends Controller
                 foreach ($data as $baris => $value) {
                     if ($baris > 1) { // baris ke 1 adalah header, maka lewati 
                         $insert[] = [
-                            'level_id' => $value['A'],
+                            'role_id' => $value['A'],
                             'username' => $value['B'],
                             'nama' => $value['C'],
                             'password' => Hash::make($value['D']),
@@ -395,9 +395,9 @@ class UserController extends Controller
     public function export_excel()
     {
         // ambil data user yang akan di export
-        $user = UserModel::select('level_id', 'username', 'nama', 'password')
-            ->orderBy('level_id')
-            ->with('level')
+        $user = UserModel::select('role_id', 'username', 'nama', 'password')
+            ->orderBy('role_id')
+            ->with('role')
             ->get();
         // load library excel
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -408,7 +408,7 @@ class UserController extends Controller
         $sheet->setCellValue('B1', 'Username');
         $sheet->setCellValue('C1', 'Nama');
         $sheet->setCellValue('D1', 'Password');
-        $sheet->setCellValue('E1', 'Level');
+        $sheet->setCellValue('E1', 'role');
 
         $sheet->getStyle('A1:E1')->getFont()->setBold(true); // bold header
         $no = 1;  // nomor data dimulai dari 1
@@ -419,7 +419,7 @@ class UserController extends Controller
             $sheet->setCellValue('B' . $baris, $value->username);
             $sheet->setCellValue('C' . $baris, $value->nama);
             $sheet->setCellValue('D' . $baris, $value->password);
-            $sheet->setCellValue('E' . $baris, $value->level->level_nama); // ambil nama kategori
+            $sheet->setCellValue('E' . $baris, $value->role->role_nama); // ambil nama kategori
             $baris++;
             $no++;
         }
@@ -450,10 +450,10 @@ class UserController extends Controller
     } // end function export excel
     public function export_pdf()
     {
-        $user = userModel::select('level_id', 'username', 'nama')
-            ->orderBy('level_id')
+        $user = userModel::select('role_id', 'username', 'nama')
+            ->orderBy('role_id')
             ->orderBy('username')
-            ->with('level')
+            ->with('role')
             ->get();
 
         // use Barryvdh\DomPDF\Facade\Pdf;

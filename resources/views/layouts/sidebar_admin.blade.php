@@ -67,7 +67,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/level_pelatihan') }}" class="nav-link {{ $activeMenu == 'level_pelatihan' ? 'active' : '' }}">
+                        <a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
                             <i class="fas fa-layer-group nav-icon"></i>
                             <p>Manage Level Pelatihan</p>
                         </a>

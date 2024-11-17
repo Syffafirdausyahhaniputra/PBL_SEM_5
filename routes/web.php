@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\VendorController;
@@ -84,6 +85,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/import_ajax', [VendorController::class, 'import_ajax']);
         Route::get('/export_excel', [VendorController::class, 'export_excel']);
         Route::get('/export_pdf', [VendorController::class, 'export_pdf']);
+    });
+
+    Route::group(['prefix' => 'matkul', 'middleware' => 'authorize:ADMN'], function () {
+        Route::get('/', [MatkulController::class, 'index']);         // menampilkan halaman awal matkul
+        Route::post('/list', [MatkulController::class, 'list']);     // menampilkan data matkul dalam bentuk json untuk datatables
+        Route::get('/create_ajax', [MatkulController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
+        Route::post('/ajax', [MatkulController::class, 'store_ajax']);     // Menyimpan data user baru Ajax
+        Route::get('/{id}/show_ajax', [MatkulController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [MatkulController::class, 'edit_ajax']); // Menampilkan halaman form edit matkul Ajax
+        Route::put('/{id}/update_ajax', [MatkulController::class, 'update_ajax']); // Menyimpan perubahan data matkul Ajax
+        Route::get('/{id}/delete_ajax', [MatkulController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete matkul Ajax
+        Route::delete('/{id}/delete_ajax', [MatkulController::class, 'delete_ajax']); // Untuk menghapus data matkul Ajax
+        Route::get('/import', [MatkulController::class, 'import']);
+        Route::post('/import_ajax', [MatkulController::class, 'import_ajax']);
+        Route::get('/export_excel', [MatkulController::class, 'export_excel']);
+        Route::get('/export_pdf', [MatkulController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'riwayat'], function () {

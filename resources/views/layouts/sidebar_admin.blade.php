@@ -49,7 +49,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/mata_kuliah') }}" class="nav-link {{ $activeMenu == 'mata_kuliah' ? 'active' : '' }}">
+                        <a href="{{ url('/matkul') }}" class="nav-link {{ $activeMenu == 'matkul' ? 'active' : '' }}">
                             <i class="fas fa-book nav-icon"></i>
                             <p>Manage Mata Kuliah</p>
                         </a>

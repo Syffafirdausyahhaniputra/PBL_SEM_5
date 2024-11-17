@@ -55,11 +55,23 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/jenis_sertifikasi') }}" class="nav-link {{ $activeMenu == 'jenis_sertifikasi' ? 'active' : '' }}">
-                            <i class="fas fa-certificate nav-icon"></i>
-                            <p>Manage Jenis Sertifikasi dan Pelatihan</p>
+                        <a href="{{ url('/kompetensi_prodi') }}" class="nav-link {{ $activeMenu == 'kompetensi_prodi' ? 'active' : '' }}">
+                            <i class="fas fa-graduation-cap nav-icon"></i>
+                            <p>Manage Kompetensi Prodi</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/jenis') }}" class="nav-link {{ $activeMenu == 'jenis' ? 'active' : '' }}">
+                            <i class="fas fa-medal nav-icon"></i>
+                            <p>Manage Jenis Sertifikasi</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/level_pelatihan') }}" class="nav-link {{ $activeMenu == 'level_pelatihan' ? 'active' : '' }}">
+                            <i class="fas fa-layer-group nav-icon"></i>
+                            <p>Manage Level Pelatihan</p>
+                        </a>
+                    </li>                    
                     <li class="nav-item">
                         <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
                             <i class="fas fa-award nav-icon"></i>

@@ -2,49 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MatkulModel;
+use App\Models\JenisModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class MatkulController extends Controller
+class JenissertifController extends Controller
 {
-    // Menampilkan halaman awal matkul
+    // Menampilkan halaman awal jenis
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Manage Mata Kuliah',
-            'subtitle'  => 'Daftar matak kuliah yang terdaftar dalam sistem'
+            'title' => 'Manage Jenis Sertifikasi',
+            'subtitle'  => 'Daftar jenis sertifikasi yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'matkul'; // set menu yang sedang aktif
+        $activeMenu = 'jenis'; // set menu yang sedang aktif
 
-        return view('matkul.index', [
+        return view('jenis.index', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu
         ]);
     }
 
-    // Ambil data matkul dalam bentuk json untuk datatables 
+    // Ambil data jenis dalam bentuk json untuk datatables 
     public function list(Request $request)
     {
-        $matkuls = MatkulModel::select('mk_id', 'mk_nama');
+        $jeniss = JenisModel::select('jenis_id', 'jenis_nama');
 
-        return DataTables::of($matkuls)
+        return DataTables::of($jeniss)
             ->addIndexColumn()
-            ->addColumn('aksi', function ($matkul) {
-                /*$btn = '<a href="' . url('/matkul/' . $matkul->mk_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                $btn .= '<a href="' . url('/matkul/' . $matkul->mk_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a> ';
-                $btn .= '<form class="d-inline-block" method="POST" action="' . url('/matkul/' . $matkul->mk_id) . '">'
+            ->addColumn('aksi', function ($jenis) {
+                /*$btn = '<a href="' . url('/jenis/' . $jenis->jenis_id) . '" class="btn btn-info btn-sm">Detail</a> ';
+                $btn .= '<a href="' . url('/jenis/' . $jenis->jenis_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a> ';
+                $btn .= '<form class="d-inline-block" method="POST" action="' . url('/jenis/' . $jenis->jenis_id) . '">'
                     . csrf_field() . method_field('DELETE') .
                     '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';*/
-                $btn  = '<button onclick="modalAction(\'' . url('/matkul/' . $matkul->mk_id .
+                $btn  = '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->jenis_id .
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/matkul/' . $matkul->mk_id .
+                $btn .= '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->jenis_id .
                     '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/matkul/' . $matkul->mk_id .
+                $btn .= '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->jenis_id .
                     '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
@@ -54,7 +54,7 @@ class MatkulController extends Controller
 
     public function create_ajax()
     {
-        return view('matkul.create_ajax');
+        return view('jenis.create_ajax');
     }
 
     public function store_ajax(Request $request)
@@ -62,8 +62,8 @@ class MatkulController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             // Aturan validasi
             $rules = [
-                'mk_kode' => 'required|string|min:2|unique:m_matkul,mk_kode',
-                'mk_nama' => 'required|string|max:100',
+                'jenis_kode' => 'required|string|min:3|unique:m_jenis,jenis_kode',
+                'jenis_nama' => 'required|string|max:100',
             ];
 
             // Validasi data inputan
@@ -78,11 +78,11 @@ class MatkulController extends Controller
             }
 
             // Simpan data ke database
-            MatkulModel::create($request->all());
+            JenisModel::create($request->all());
 
             return response()->json([
                 'status' => true,
-                'message' => 'Mata kuliah berhasil disimpan'
+                'message' => 'Jenis Sertifikasi berhasil disimpan'
             ]);
         }
 
@@ -90,24 +90,24 @@ class MatkulController extends Controller
     }
     public function edit_ajax(string $id)
     {
-        $matkul = MatkulModel::find($id);
+        $jenis = JenisModel::find($id);
 
-        // Jika matkul tidak ditemukan
-        if (!$matkul) {
+        // Jika jenis tidak ditemukan
+        if (!$jenis) {
             return response()->json([
                 'status' => false,
-                'message' => 'Mata kuliah tidak ditemukan'
+                'message' => 'Jenis Sertifikasi tidak ditemukan'
             ]);
         }
 
-        return view('matkul.edit_ajax', ['matkul' => $matkul]);
+        return view('jenis.edit_ajax', ['jenis' => $jenis]);
     }
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'mk_kode' => 'required|string|max:20|unique:m_matkul,mk_kode,' . $id . ',mk_id',
-                'mk_nama' => 'required|string|max:100',
+                'jenis_kode' => 'required|string|max:20|unique:m_jenis,jenis_kode,' . $id . ',jenis_id',
+                'jenis_nama' => 'required|string|max:100',
             ];
 
             // Validasi data input
@@ -121,17 +121,17 @@ class MatkulController extends Controller
                 ]);
             }
 
-            $matkul = MatkulModel::find($id);
-            if ($matkul) {
-                $matkul->update($request->all());
+            $jenis = JenisModel::find($id);
+            if ($jenis) {
+                $jenis->update($request->all());
                 return response()->json([
                     'status' => true,
-                    'message' => 'Mata kuliah berhasil diupdate'
+                    'message' => 'Jenis Sertifikasi berhasil diupdate'
                 ]);
             } else {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Mata kuliah tidak ditemukan'
+                    'message' => 'Jenis Sertifikasi tidak ditemukan'
                 ]);
             }
         }
@@ -140,17 +140,17 @@ class MatkulController extends Controller
     }
     public function confirm_ajax(string $id)
     {
-        $matkul = MatkulModel::find($id);
-        return view('matkul.confirm_ajax', ['matkul' => $matkul]);
+        $jenis = JenisModel::find($id);
+        return view('jenis.confirm_ajax', ['jenis' => $jenis]);
     }
 
     public function delete_ajax(Request $request, $id)
     {
         // cek apakah request dari ajax
         if ($request->ajax() || $request->wantsJson()) {
-            $matkul = MatkulModel::find($id);
-            if ($matkul) {
-                $matkul->delete();
+            $jenis = JenisModel::find($id);
+            if ($jenis) {
+                $jenis->delete();
                 return response()->json([
                     'status' => true,
                     'message' => 'Data berhasil dihapus'
@@ -167,15 +167,15 @@ class MatkulController extends Controller
     }
     public function show_ajax(string $id)
     {
-        // Cari matkul berdasarkan id
-        $matkul = MatkulModel::find($id);
+        // Cari jenis berdasarkan id
+        $jenis = JenisModel::find($id);
 
-        // Periksa apakah matkul ditemukan
-        if ($matkul) {
-            // Tampilkan halaman show_ajax dengan data matkul
-            return view('matkul.show_ajax', ['matkul' => $matkul]);
+        // Periksa apakah jenis ditemukan
+        if ($jenis) {
+            // Tampilkan halaman show_ajax dengan data jenis
+            return view('jenis.show_ajax', ['jenis' => $jenis]);
         } else {
-            // Tampilkan pesan kesalahan jika matkul tidak ditemukan
+            // Tampilkan pesan kesalahan jika jenis tidak ditemukan
             return response()->json([
                 'status' => false,
                 'message' => 'Data tidak ditemukan'
@@ -184,7 +184,7 @@ class MatkulController extends Controller
     }
     public function import()
     {
-        return view('matkul.import');
+        return view('jenis.import');
     }
 
     public function import_ajax(Request $request)
@@ -192,7 +192,7 @@ class MatkulController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
                 // validasi file harus xls atau xlsx, max 1MB 
-                'file_matkul' => ['required', 'mimes:xlsx', 'max:1024']
+                'file_jenis' => ['required', 'mimes:xlsx', 'max:1024']
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -204,7 +204,7 @@ class MatkulController extends Controller
                 ]);
             }
 
-            $file = $request->file('file_matkul');  // ambil file dari request 
+            $file = $request->file('file_jenis');  // ambil file dari request 
 
             $reader = IOFactory::createReader('Xlsx');  // load reader file excel 
             $reader->setReadDataOnly(true);             // hanya membaca data 
@@ -218,8 +218,8 @@ class MatkulController extends Controller
                 foreach ($data as $baris => $value) {
                     if ($baris > 1) { // baris ke 1 adalah header, maka lewati 
                         $insert[] = [
-                            'mk_kode' => $value['A'],
-                            'mk_nama' => $value['B'],
+                            'jenis_kode' => $value['A'],
+                            'jenis_nama' => $value['B'],
                             'created_at' => now(),
                         ];
                     }
@@ -227,7 +227,7 @@ class MatkulController extends Controller
 
                 if (count($insert) > 0) {
                     // insert data ke database, jika data sudah ada, maka diabaikan 
-                    MatkulModel::insertOrIgnore($insert);
+                    JenisModel::insertOrIgnore($insert);
                 }
 
                 return response()->json([
@@ -246,8 +246,8 @@ class MatkulController extends Controller
 
     public function export_excel()
     {
-        // ambil data matkul yang akan di export
-        $matkul = MatkulModel::select('mk_kode', 'mk_nama')
+        // ambil data jenis yang akan di export
+        $jenis = JenisModel::select('jenis_kode', 'jenis_nama')
             ->get();
         // load library excel
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -255,17 +255,17 @@ class MatkulController extends Controller
         $sheet = $spreadsheet->getActiveSheet(); // ambil sheet yang aktif
 
         $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Kode Mata kuliah');
-        $sheet->setCellValue('C1', 'Nama Mata kuliah');
+        $sheet->setCellValue('B1', 'Kode Jenis Sertifikasi');
+        $sheet->setCellValue('C1', 'Nama Jenis Sertifikasi');
 
         $sheet->getStyle('A1:C1')->getFont()->setBold(true); // bold header
         $no = 1;  // nomor data dimulai dari 1
         $baris = 2; // baris data dimulai dari baris ke 2
 
-        foreach ($matkul as $key => $value) {
+        foreach ($jenis as $key => $value) {
             $sheet->setCellValue('A' . $baris, $no);
-            $sheet->setCellValue('B' . $baris, $value->mk_kode);
-            $sheet->setCellValue('C' . $baris, $value->mk_nama);
+            $sheet->setCellValue('B' . $baris, $value->jenis_kode);
+            $sheet->setCellValue('C' . $baris, $value->jenis_nama);
             $baris++;
             $no++;
         }
@@ -274,10 +274,10 @@ class MatkulController extends Controller
             $sheet->getColumnDimension($columnID)->setAutoSize(true); // set auto size untuk kolom
         }
 
-        $sheet->setTitle('Data matkul'); // set title sheet
+        $sheet->setTitle('Data jenis'); // set title sheet
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $filename = 'Data matkul ' . date('Y-m-d H:i:s') . '.xlsx';
+        $filename = 'Data jenis ' . date('Y-m-d H:i:s') . '.xlsx';
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -296,16 +296,16 @@ class MatkulController extends Controller
     } // end function export excel
     public function export_pdf()
     {
-        $matkul = MatkulModel::select('mk_kode', 'mk_nama')
+        $jenis = JenisModel::select('jenis_kode', 'jenis_nama')
             ->get();
 
         // use Barryvdh\DomPDF\Facade\Pdf;
-        $pdf = Pdf::loadView('matkul.export_pdf', ['matkul' => $matkul]);
+        $pdf = Pdf::loadView('jenis.export_pdf', ['jenis' => $jenis]);
 
         $pdf->setPaper('a4', 'portrait'); // set ukuran kertas dan orientasi
         $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
         $pdf->render();
 
-        return $pdf->stream('Data mata kuliah ' . date('Y-m-d H:i:s') . '.pdf');
+        return $pdf->stream('Data jenis ' . date('Y-m-d H:i:s') . '.pdf');
     }
 }

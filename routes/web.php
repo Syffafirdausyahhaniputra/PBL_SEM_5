@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JenissertifController;
 use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
@@ -101,6 +102,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/import_ajax', [MatkulController::class, 'import_ajax']);
         Route::get('/export_excel', [MatkulController::class, 'export_excel']);
         Route::get('/export_pdf', [MatkulController::class, 'export_pdf']);
+    });
+
+    Route::group(['prefix' => 'jenis', 'middleware' => 'authorize:ADMN'], function () {
+        Route::get('/', [JenissertifController::class, 'index']);         // menampilkan halaman awal jenis
+        Route::post('/list', [JenissertifController::class, 'list']);     // menampilkan data jenis dalam bentuk json untuk datatables
+        Route::get('/create_ajax', [JenissertifController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
+        Route::post('/ajax', [JenissertifController::class, 'store_ajax']);     // Menyimpan data user baru Ajax
+        Route::get('/{id}/show_ajax', [JenissertifController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [JenissertifController::class, 'edit_ajax']); // Menampilkan halaman form edit jenis Ajax
+        Route::put('/{id}/update_ajax', [JenissertifController::class, 'update_ajax']); // Menyimpan perubahan data jenis Ajax
+        Route::get('/{id}/delete_ajax', [JenissertifController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete jenis Ajax
+        Route::delete('/{id}/delete_ajax', [JenissertifController::class, 'delete_ajax']); // Untuk menghapus data jenis Ajax
+        Route::get('/import', [JenissertifController::class, 'import']);
+        Route::post('/import_ajax', [JenissertifController::class, 'import_ajax']);
+        Route::get('/export_excel', [JenissertifController::class, 'export_excel']);
+        Route::get('/export_pdf', [JenissertifController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'riwayat'], function () {

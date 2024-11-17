@@ -1,5 +1,5 @@
-@empty($level)
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+@empty($vendor)
+    <div id="modal-master" class="modal-dialog modal-lg" vendor="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
@@ -10,33 +10,51 @@
                 <div class="alert alert-danger">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan</div>
-                <a href="{{ url('/level') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/vendor') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-<form action="{{ url('/level/' . $level->level_id.'/update_ajax') }}" method="POST" id="form-edit-level">
+<form action="{{ url('/vendor/' . $vendor->vendor_id.'/update_ajax') }}" method="POST" id="form-edit-vendor">
     @csrf
     @method('PUT')
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div id="modal-master" class="modal-dialog modal-lg" vendor="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Edit Data Level</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Edit Vendor</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Kode Level</label>
-                    <input value="{{ $level->level_kode }}" type="text" name="level_kode" id="level_kode"
+                    <label>Nama Vendor</label>
+                    <input value="{{ $vendor->vendor_nama }}" type="text" name="vendor_nama" id="vendor_nama"
                         class="form-control" required>
-                    <small id="error-level_kode" class="error-text form-text text-danger"></small>
+                    <small id="error-vendor_nama" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Nama Level</label>
-                    <input value="{{ $level->level_nama }}" type="text" name="level_nama" id="level_nama"
+                    <label>Alamat Vendor</label>
+                    <input value="{{ $vendor->vendor_alamat }}" type="text" name="vendor_alamat" id="vendor_alamat"
                         class="form-control" required>
-                    <small id="error-level_nama" class="error-text form-text text-danger"></small>
+                    <small id="error-vendor_alamat" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Kota Vendor</label>
+                    <input value="{{ $vendor->vendor_kota }}" type="text" name="vendor_kota" id="vendor_kota"
+                        class="form-control" required>
+                    <small id="error-vendor_kota" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>No Telfon Vendor</label>
+                    <input value="{{ $vendor->vendor_no_telf }}" type="text" name="vendor_no_telf" id="vendor_no_telf"
+                        class="form-control" required>
+                    <small id="error-vendor_no_telf" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Alamat Web Vendor</label>
+                    <input value="{{ $vendor->vendor_alamat_web }}" type="text" name="vendor_alamat_web" id="vendor_alamat_web"
+                        class="form-control" required>
+                    <small id="error-vendor_alamat_web" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -48,10 +66,13 @@
 </form>
 <script>
     $(document).ready(function () {
-        $("#form-edit-level").validate({
+        $("#form-edit-vendor").validate({
             rules: {
-                level_kode: { required: true, minlength: 3, maxlength: 20 },
-                level_nama: { required: true, minlength: 3, maxlength: 100 }
+                vendor_nama: {required: true, minlength: 3, maxlength: 100},
+                vendor_alamat: {required: true, minlength: 3, maxlength: 100},
+                vendor_kota: {required: true, minlength: 3, maxlength: 100},
+                vendor_no_telf: {required: true, minlength: 3, maxlength: 100},
+                vendor_alamat_web: {required: true, minlength: 3, maxlength: 200}
             },
             submitHandler: function (form) {
                 $.ajax({
@@ -66,7 +87,7 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            dataLevel.ajax.reload();
+                            datavendor.ajax.reload();
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function (prefix, val) {

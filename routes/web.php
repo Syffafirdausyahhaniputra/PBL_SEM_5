@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
@@ -8,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\VendorController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;
@@ -38,7 +38,7 @@ Route::post('register', [AuthController::class, 'postRegister']);
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
 
-    Route::group(['prefix' => 'user'], function () {
+    Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {
         Route::get('/', [UserController::class, 'index']);         // menampilkan halaman awal user
         Route::post('/list', [UserController::class, 'list']);     // menampilkan data user dalam bentuk json untuk datables
         Route::get('/create_ajax', [UserController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
@@ -54,7 +54,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/export_pdf', [UserController::class, 'export_pdf']);
     });
 
-    Route::group(['prefix' => 'role'], function () {
+    Route::group(['prefix' => 'role', 'middleware' => 'authorize:ADMN'], function () {
         Route::get('/', [RoleController::class, 'index']);         // menampilkan halaman awal role
         Route::post('/list', [RoleController::class, 'list']);     // menampilkan data role dalam bentuk json untuk datatables
         Route::get('/create_ajax', [RoleController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
@@ -68,6 +68,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/import_ajax', [RoleController::class, 'import_ajax']);
         Route::get('/export_excel', [RoleController::class, 'export_excel']);
         Route::get('/export_pdf', [RoleController::class, 'export_pdf']);
+    });
+
+    Route::group(['prefix' => 'vendor', 'middleware' => 'authorize:ADMN'], function () {
+        Route::get('/', [VendorController::class, 'index']);         // menampilkan halaman awal vendor
+        Route::post('/list', [VendorController::class, 'list']);     // menampilkan data vendor dalam bentuk json untuk datatables
+        Route::get('/create_ajax', [VendorController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
+        Route::post('/ajax', [VendorController::class, 'store_ajax']);     // Menyimpan data user baru Ajax
+        Route::get('/{id}/show_ajax', [VendorController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [VendorController::class, 'edit_ajax']); // Menampilkan halaman form edit vendor Ajax
+        Route::put('/{id}/update_ajax', [VendorController::class, 'update_ajax']); // Menyimpan perubahan data vendor Ajax
+        Route::get('/{id}/delete_ajax', [VendorController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete vendor Ajax
+        Route::delete('/{id}/delete_ajax', [VendorController::class, 'delete_ajax']); // Untuk menghapus data vendor Ajax
+        Route::get('/import', [VendorController::class, 'import']);
+        Route::post('/import_ajax', [VendorController::class, 'import_ajax']);
+        Route::get('/export_excel', [VendorController::class, 'export_excel']);
+        Route::get('/export_pdf', [VendorController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'riwayat'], function () {

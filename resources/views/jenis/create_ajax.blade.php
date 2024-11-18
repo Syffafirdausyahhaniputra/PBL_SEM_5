@@ -1,22 +1,22 @@
-<form action="{{ url('/level/ajax') }}" method="POST" id="form-tambah-level"> 
+<form action="{{ url('/jenis/ajax') }}" method="POST" id="form-tambah-jenis"> 
     @csrf 
-    <div id="modal-master" class="modal-dialog modal-lg" role="document"> 
+    <div id="modal-master" class="modal-dialog modal-lg" jenis="document"> 
         <div class="modal-content"> 
             <div class="modal-header"> 
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Level Pelatihan</h5> 
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Jenis Sertifikasi</h5> 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span 
                 aria-hidden="true">&times;</span></button> 
             </div> 
             <div class="modal-body"> 
                 <div class="form-group"> 
-                    <label>Kode Level Pelatihan</label> 
-                    <input value="" type="text" name="level_kode" id="level_kode" class="form-control" required> 
-                    <small id="error-level_kode" class="error-text form-text text-danger"></small> 
+                    <label>Kode Jenis Sertifikasi</label> 
+                    <input value="" type="text" name="jenis_kode" id="jenis_kode" class="form-control" required> 
+                    <small id="error-jenis_kode" class="error-text form-text text-danger"></small> 
                 </div> 
                 <div class="form-group"> 
-                    <label>Nama Level Pelatihan</label> 
-                    <input value="" type="text" name="level_nama" id="level_nama" class="form-control" required> 
-                    <small id="error-level_nama" class="error-text form-text text-danger"></small> 
+                    <label>Nama Jenis Sertifikasi</label> 
+                    <input value="" type="text" name="jenis_nama" id="jenis_nama" class="form-control" required> 
+                    <small id="error-jenis_nama" class="error-text form-text text-danger"></small> 
                 </div> 
             </div> 
             <div class="modal-footer"> 
@@ -28,10 +28,10 @@
 </form> 
 <script> 
     $(document).ready(function() { 
-        $("#form-tambah-level").validate({ 
+        $("#form-tambah-jenis").validate({ 
             rules: { 
-                level_kode: {required: true, minlength: 2, maxlength: 20}, 
-                level_nama: {required: true, minlength: 3, maxlength: 100} 
+                jenis_kode: {required: true, minlength: 2, maxlength: 20}, 
+                jenis_nama: {required: true, minlength: 3, maxlength: 100} 
             }, 
             submitHandler: function(form) { 
                 $.ajax({ 
@@ -46,7 +46,7 @@
                                 title: 'Berhasil', 
                                 text: response.message 
                             }); 
-                            dataLevel.ajax.reload(); 
+                            datajenis.ajax.reload(); 
                         } else { 
                             $('.error-text').text(''); 
                             $.each(response.msgField, function(prefix, val) { 

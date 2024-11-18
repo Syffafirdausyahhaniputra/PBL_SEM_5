@@ -49,17 +49,29 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/mata_kuliah') }}" class="nav-link {{ $activeMenu == 'mata_kuliah' ? 'active' : '' }}">
+                        <a href="{{ url('/matkul') }}" class="nav-link {{ $activeMenu == 'matkul' ? 'active' : '' }}">
                             <i class="fas fa-book nav-icon"></i>
                             <p>Manage Mata Kuliah</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/jenis_sertifikasi') }}" class="nav-link {{ $activeMenu == 'jenis_sertifikasi' ? 'active' : '' }}">
-                            <i class="fas fa-certificate nav-icon"></i>
-                            <p>Manage Jenis Sertifikasi dan Pelatihan</p>
+                        <a href="{{ url('/kompetensi_prodi') }}" class="nav-link {{ $activeMenu == 'kompetensi_prodi' ? 'active' : '' }}">
+                            <i class="fas fa-graduation-cap nav-icon"></i>
+                            <p>Manage Kompetensi Prodi</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/jenis') }}" class="nav-link {{ $activeMenu == 'jenis' ? 'active' : '' }}">
+                            <i class="fas fa-medal nav-icon"></i>
+                            <p>Manage Jenis Sertifikasi</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
+                            <i class="fas fa-layer-group nav-icon"></i>
+                            <p>Manage Level Pelatihan</p>
+                        </a>
+                    </li>                    
                     <li class="nav-item">
                         <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
                             <i class="fas fa-award nav-icon"></i>
@@ -80,7 +92,8 @@
             <li class="nav-item">
                 <a href="{{ url('/logout') }}" class="nav-link">
                     <button class="btn btn-danger btn-block">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-sign-out-alt"></i>
+                        <p>Logout</p>
                     </button>
                 </a>
             </li>

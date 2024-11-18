@@ -1,22 +1,37 @@
-<form action="{{ url('/level/ajax') }}" method="POST" id="form-tambah-level"> 
+<form action="{{ url('/vendor/ajax') }}" method="POST" id="form-tambah-vendor"> 
     @csrf 
-    <div id="modal-master" class="modal-dialog modal-lg" role="document"> 
+    <div id="modal-master" class="modal-dialog modal-lg" vendor="document"> 
         <div class="modal-content"> 
             <div class="modal-header"> 
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Level Pelatihan</h5> 
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Vendor</h5> 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span 
                 aria-hidden="true">&times;</span></button> 
             </div> 
             <div class="modal-body"> 
                 <div class="form-group"> 
-                    <label>Kode Level Pelatihan</label> 
-                    <input value="" type="text" name="level_kode" id="level_kode" class="form-control" required> 
-                    <small id="error-level_kode" class="error-text form-text text-danger"></small> 
+                    <label>Nama Vendor</label> 
+                    <input value="" type="text" name="vendor_nama" id="vendor_nama" class="form-control" required> 
+                    <small id="error-vendor_nama" class="error-text form-text text-danger"></small> 
                 </div> 
                 <div class="form-group"> 
-                    <label>Nama Level Pelatihan</label> 
-                    <input value="" type="text" name="level_nama" id="level_nama" class="form-control" required> 
-                    <small id="error-level_nama" class="error-text form-text text-danger"></small> 
+                    <label>Alamat Vendor</label> 
+                    <input value="" type="text" name="vendor_alamat" id="vendor_alamat" class="form-control" required> 
+                    <small id="error-vendor_alamat" class="error-text form-text text-danger"></small> 
+                </div> 
+                <div class="form-group"> 
+                    <label>Kota Vendor</label> 
+                    <input value="" type="text" name="vendor_alamat" id="vendor_alamat" class="form-control" required> 
+                    <small id="error-vendor_alamat" class="error-text form-text text-danger"></small> 
+                </div> 
+                <div class="form-group"> 
+                    <label>No Telfon Vendor</label> 
+                    <input value="" type="text" name="vendor_no_telf" id="vendor_no_telf" class="form-control" required> 
+                    <small id="error-vendor_no_telf" class="error-text form-text text-danger"></small> 
+                </div> 
+                <div class="form-group"> 
+                    <label>Alamat Web Vendor</label> 
+                    <input value="" type="text" name="vendor_alamat_web" id="vendor_alamat_web" class="form-control" required> 
+                    <small id="error-vendor_alamat_web" class="error-text form-text text-danger"></small> 
                 </div> 
             </div> 
             <div class="modal-footer"> 
@@ -28,10 +43,13 @@
 </form> 
 <script> 
     $(document).ready(function() { 
-        $("#form-tambah-level").validate({ 
+        $("#form-tambah-vendor").validate({ 
             rules: { 
-                level_kode: {required: true, minlength: 2, maxlength: 20}, 
-                level_nama: {required: true, minlength: 3, maxlength: 100} 
+                vendor_nama: {required: true, minlength: 3, maxlength: 100},
+                vendor_alamat: {required: true, minlength: 3, maxlength: 100},
+                vendor_kota: {required: true, minlength: 3, maxlength: 100},
+                vendor_no_telf: {required: true, minlength: 3, maxlength: 100},
+                vendor_alamat_web: {required: true, minlength: 3, maxlength: 200}
             }, 
             submitHandler: function(form) { 
                 $.ajax({ 
@@ -46,7 +64,7 @@
                                 title: 'Berhasil', 
                                 text: response.message 
                             }); 
-                            dataLevel.ajax.reload(); 
+                            datavendor.ajax.reload(); 
                         } else { 
                             $('.error-text').text(''); 
                             $.each(response.msgField, function(prefix, val) { 

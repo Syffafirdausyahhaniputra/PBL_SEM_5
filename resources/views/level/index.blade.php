@@ -8,9 +8,8 @@
                         class="fa fa-file-excel"></i> Export Level Pelatihan</a>
                 <a class="btn btn-sm btn-warning mt-1" href="{{ url('/level/export_pdf') }}" class="btn btn-warning"><i
                         class="fa fa-file-pdf"></i> Export Level Pelatihan</a>
-                <button onclick="modalAction('{{ url('/level/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Level Pelatihan</button>
-                <button onclick="modalAction('{{ url('/level/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
+                <button onclick="modalAction('{{ url('/level/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Level Pelatihan</i></button>
+                <button onclick="modalAction('{{ url('/level/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Level Pelatihan</i></button>
             </div>
         </div>
         <div class="card-body">

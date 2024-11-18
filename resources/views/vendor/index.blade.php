@@ -8,9 +8,8 @@
                         class="fa fa-file-excel"></i> Export Vendor</a>
                 <a class="btn btn-sm btn-warning mt-1" href="{{ url('/vendor/export_pdf') }}" class="btn btn-warning"><i
                         class="fa fa-file-pdf"></i> Export Vendor</a>
-                <button onclick="modalAction('{{ url('/vendor/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Vendor</button>
-                <button onclick="modalAction('{{ url('/vendor/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
+                <button onclick="modalAction('{{ url('/vendor/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Vendor</i></button>
+                <button onclick="modalAction('{{ url('/vendor/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Vendor</i></button>
             </div>
         </div>
         <div class="card-body">

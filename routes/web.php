@@ -10,12 +10,9 @@ use App\Http\Controllers\LevelpelatihanController;
 use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
-<<<<<<< HEAD
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\PelatihanController;
-=======
 use App\Http\Controllers\BidangController;
->>>>>>> 195de4cd5ae8b969325136337ae96d82c2ebc661
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;

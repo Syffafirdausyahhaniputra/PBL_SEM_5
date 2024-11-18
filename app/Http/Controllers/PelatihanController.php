@@ -8,83 +8,106 @@ use App\Models\LevelPelatihanModel;
 use App\Models\BidangModel;
 use App\Models\MatkulModel;
 use App\Models\VendorModel;
+use App\Models\DataPelatihanModel;
 
 class PelatihanController extends Controller
 {
+    // Method untuk menampilkan daftar pelatihan
     public function index()
     {
-        // Ambil data pelatihan beserta relasinya
-        $pelatihans = PelatihanModel::with(['level', 'bidang', 'matkul', 'vendor'])->get();
-        return view('pelatihan.index', compact('pelatihans'));
+        $breadcrumb = (object) [
+            'title' => 'Pelatihan',
+            'subtitle' => 'Daftar Pelatihan' // Tambahkan jika subtitle diperlukan
+        ];
+
+        $pelatihan = PelatihanModel::all(); // Mengambil data pelatihan dari database
+
+        return view('pelatihan.index', [
+            'activeMenu' => 'pelatihan', // Menandai menu Pelatihan sebagai aktif
+            'pelatihan' => $pelatihan,  // Mengirim data pelatihan ke view
+            'breadcrumb' => $breadcrumb // Menyertakan breadcrumb ke view
+        ]);
     }
 
+
+    // Method untuk menampilkan form tambah pelatihan
     public function create()
     {
-        // Ambil data dari tabel terkait untuk dropdown
-        $levels = LevelPelatihanModel::all();
-        $bidangs = BidangModel::all();
-        $matkuls = MatkulModel::all();
-        $vendors = VendorModel::all();
-
-        return view('pelatihan.create', compact('levels', 'bidangs', 'matkuls', 'vendors'));
+        return view('pelatihan.create', [
+            'activeMenu' => 'pelatihan', // Menandai menu Pelatihan sebagai aktif
+        ]);
     }
 
+    // Method untuk menyimpan data pelatihan baru
     public function store(Request $request)
     {
-        $request->validate([
-            'level_id' => 'required',
-            'bidang_id' => 'required',
-            'mk_id' => 'required',
-            'vendor_id' => 'required',
+        $validatedData = $request->validate([
             'nama_pelatihan' => 'required|string|max:255',
             'tanggal' => 'required|date',
             'kuota' => 'required|integer',
             'lokasi' => 'required|string|max:255',
-            'periode' => 'required|string|max:255',
         ]);
 
-        PelatihanModel::create($request->all());
+        PelatihanModel::create($validatedData); // Menyimpan data ke database
 
-        return redirect()->route('pelatihan.index')->with('success', 'Data pelatihan berhasil ditambahkan.');
+        return redirect()->route('pelatihan.index')->with('success', 'Pelatihan berhasil ditambahkan!');
     }
 
+    // Method untuk menampilkan form edit pelatihan
     public function edit($id)
     {
-        $pelatihan = PelatihanModel::findOrFail($id);
+        $pelatihan = PelatihanModel::findOrFail($id); // Mengambil data pelatihan berdasarkan ID
 
-        $levels = LevelPelatihanModel::all();
-        $bidangs = BidangModel::all();
-        $matkuls = MatkulModel::all();
-        $vendors = VendorModel::all();
-
-        return view('pelatihan.edit', compact('pelatihan', 'levels', 'bidangs', 'matkuls', 'vendors'));
+        return view('pelatihan.edit', [
+            'activeMenu' => 'pelatihan', // Menandai menu Pelatihan sebagai aktif
+            'pelatihan' => $pelatihan, // Mengirim data pelatihan ke view
+        ]);
     }
 
+    // Method untuk memperbarui data pelatihan
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'level_id' => 'required',
-            'bidang_id' => 'required',
-            'mk_id' => 'required',
-            'vendor_id' => 'required',
+        $validatedData = $request->validate([
             'nama_pelatihan' => 'required|string|max:255',
             'tanggal' => 'required|date',
             'kuota' => 'required|integer',
             'lokasi' => 'required|string|max:255',
-            'periode' => 'required|string|max:255',
         ]);
 
-        $pelatihan = PelatihanModel::findOrFail($id);
-        $pelatihan->update($request->all());
+        $pelatihan = PelatihanModel::findOrFail($id); // Mengambil data pelatihan berdasarkan ID
+        $pelatihan->update($validatedData); // Memperbarui data pelatihan di database
 
-        return redirect()->route('pelatihan.index')->with('success', 'Data pelatihan berhasil diperbarui.');
+        return redirect()->route('pelatihan.index')->with('success', 'Pelatihan berhasil diperbarui!');
     }
 
+    // Method untuk menghapus data pelatihan
     public function destroy($id)
     {
-        $pelatihan = PelatihanModel::findOrFail($id);
-        $pelatihan->delete();
+        $pelatihan = PelatihanModel::findOrFail($id); // Mengambil data pelatihan berdasarkan ID
+        $pelatihan->delete(); // Menghapus data pelatihan dari database
 
-        return redirect()->route('pelatihan.index')->with('success', 'Data pelatihan berhasil dihapus.');
+        return redirect()->route('pelatihan.index')->with('success', 'Pelatihan berhasil dihapus!');
     }
+
+    public function list(Request $request)
+    {
+        $dataPelatihan = DataPelatihanModel::with(['pelatihan', 'dosen'])->get();
+
+        $response = [];
+        foreach ($dataPelatihan as $item) {
+            $response[] = [
+                'data_pelatihan_id' => $item->data_pelatihan_id,
+                'nama_pelatihan' => $item->pelatihan->nama_pelatihan ?? '-', // Mengambil nama pelatihan
+                'nama_dosen' => $item->dosen->nama_dosen ?? '-', // Mengambil nama dosen
+                'status' => $item->status,
+                'created_at' => $item->created_at->format('Y-m-d H:i:s'), // Format tanggal
+            ];
+        }
+
+        return response()->json([
+            'data' => $response // Respons JSON untuk DataTables
+        ]);
+    }
+
+
 }

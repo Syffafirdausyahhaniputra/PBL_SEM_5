@@ -43,7 +43,7 @@
                 <h5 class="card-title text-center">{{ $b->bidang_nama }}</h5>
             </div>
         @endforeach
-        <a href="#" class="see-more-btn">See More</a>
+        <a href="{{ route('bidang.index') }}" class="see-more-btn">See More</a>
     </div>
 
     <!-- CSS Styles -->

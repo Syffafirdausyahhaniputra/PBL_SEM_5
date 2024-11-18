@@ -10,6 +10,12 @@ use App\Http\Controllers\LevelpelatihanController;
 use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
+<<<<<<< HEAD
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\PelatihanController;
+=======
+use App\Http\Controllers\BidangController;
+>>>>>>> 195de4cd5ae8b969325136337ae96d82c2ebc661
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;
@@ -39,6 +45,8 @@ Route::post('register', [AuthController::class, 'postRegister']);
 // Group route yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
+    
+    Route::get('/bidang', [BidangController::class, 'index'])->name('bidang.index');
 
     Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {
         Route::get('/', [UserController::class, 'index']);         // menampilkan halaman awal user
@@ -155,7 +163,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::patch('/{id}', [ProfileController::class, 'update'])->name('profile.update');
     });
-
-    Route::get('/pelatihan', [PelatihanController::class, 'index'])->name('pelatihan.index');
-    Route::post('/pelatihan/list', [PelatihanController::class, 'getData'])->name('pelatihan.list');
+    Route::prefix('pelatihan')->group(function () {
+        Route::get('index', [PelatihanController::class, 'index'])->name('pelatihan.index');
+        Route::get('/pelatihan/list', [PelatihanController::class, 'list'])->name('pelatihan.list');
+        Route::get('create', [PelatihanController::class, 'create'])->name('pelatihan.create');
+        Route::post('store', [PelatihanController::class, 'store'])->name('pelatihan.store');
+        Route::get('edit/{id}', [PelatihanController::class, 'edit'])->name('pelatihan.edit');
+        Route::put('update/{id}', [PelatihanController::class, 'update'])->name('pelatihan.update');
+        Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy');
+    });
 });

@@ -36,10 +36,9 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Pelatihan</th>
-                            <th>Jenis</th>
-                            <th>Vendor</th>
-                            <th>Tanggal</th>
-                            <th>Periode</th>
+                            <th>Nama Dosen</th>
+                            <th>Status</th>
+                            <th>Tanggal Dibuat</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -70,71 +69,70 @@
         $(document).ready(function() {
             // Inisialisasi DataTables
             dataPelatihan = $('#table_pelatihan').DataTable({
-                serverSide: true,
                 processing: true,
+                serverSide: true,
                 ajax: {
-                    "url": "{{ url('pelatihan/list') }}",
-                    "type": "POST",
-                    "dataType": "json",
-                    "data": {
-                        "_token": "{{ csrf_token() }}" // Token CSRF untuk keamanan
-                    }
+                    url: "{{ route('pelatihan.list') }}", // Route untuk method list di controller
+                    type: "GET",
                 },
                 columns: [
                     {
-                        // Nomor urut otomatis dari Laravel DataTables
-                        data: "DT_RowIndex",
+                        data: null,
                         className: "text-center",
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        render: function(data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1; // Nomor urut otomatis
+                        }
                     },
+                    { data: "nama_pelatihan", className: "", orderable: true, searchable: true }, // Nama pelatihan
+                    { data: "nama_dosen", className: "", orderable: true, searchable: true },     // Nama dosen
+                    { data: "status", className: "text-center", orderable: true, searchable: true }, // Status
+                    { data: "created_at", className: "text-center", orderable: true, searchable: true }, // Tanggal dibuat
                     {
-                        // Nama pelatihan
-                        data: "nama_pelatihan",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        // Jenis pelatihan
-                        data: "jenis_pelatihan",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        // Vendor pelatihan
-                        data: "vendor",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        // Tanggal pelatihan
-                        data: "tanggal",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        // Periode pelatihan
-                        data: "periode",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        // Tombol aksi
-                        data: "aksi",
+                        data: null,
                         className: "text-center",
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-warning" onclick="editAction(${data.data_pelatihan_id})">
+                                    <i class="fa fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteAction(${data.data_pelatihan_id})">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
+                            `;
+                        }
                     }
                 ],
                 language: {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Indonesian.json"
+                    url: "//cdn.datatables.net/plug-ins/1.10.24/i18n/Indonesian.json"
                 }
             });
         });
+
+        // Fungsi untuk aksi edit
+        function editAction(id) {
+            modalAction(`{{ url('/pelatihan/edit_ajax') }}/${id}`);
+        }
+
+        // Fungsi untuk aksi hapus
+        function deleteAction(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                $.ajax({
+                    url: `{{ url('/pelatihan/delete') }}/${id}`,
+                    type: "DELETE",
+                    data: { _token: "{{ csrf_token() }}" },
+                    success: function(response) {
+                        alert('Data berhasil dihapus!');
+                        dataPelatihan.ajax.reload(); // Reload DataTables
+                    },
+                    error: function() {
+                        alert('Terjadi kesalahan, coba lagi!');
+                    }
+                });
+            }
+        }
     </script>
 @endpush

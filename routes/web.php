@@ -40,6 +40,7 @@ Route::post('register', [AuthController::class, 'postRegister']);
 // Group route yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
+    
     Route::get('/bidang', [BidangController::class, 'index'])->name('bidang.index');
 
     Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {

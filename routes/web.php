@@ -10,6 +10,7 @@ use App\Http\Controllers\LevelpelatihanController;
 use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\BidangController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;
@@ -39,6 +40,7 @@ Route::post('register', [AuthController::class, 'postRegister']);
 // Group route yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
+    Route::get('/bidang', [BidangController::class, 'index'])->name('bidang.index');
 
     Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {
         Route::get('/', [UserController::class, 'index']);         // menampilkan halaman awal user

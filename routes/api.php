@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\PelatihanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +23,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:api')->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
+Route::resource('pelatihan', PelatihanController::class);

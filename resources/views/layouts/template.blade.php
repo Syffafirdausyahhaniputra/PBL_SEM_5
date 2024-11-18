@@ -1,3 +1,4 @@
+<?php $activeMenu = $activeMenu ?? ''; ?>
 <!DOCTYPE html>
 <html lang="en">
 

@@ -97,5 +97,38 @@ public function showPelatihanAjax($id)
     ]);
 }
 
+public function getRiwayatApi()
+{
+    $dataSertifikasi = DataSertifikasiModel::with('sertif')
+        ->select('data_sertif_id as id', 'keterangan', 'status', 'sertif_id', 'dosen_id')
+        ->get()
+        ->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'nama' => $item->sertif->nama_sertif,
+                'keterangan' => $item->keterangan,
+                'status' => $item->status,
+                'type' => 'sertifikasi' // Tambahkan type sertifikasi
+            ];
+        });
+
+    $dataPelatihan = DataPelatihanModel::with('pelatihan')
+        ->select('data_pelatihan_id as id', 'keterangan', 'status', 'pelatihan_id', 'dosen_id')
+        ->get()
+        ->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'nama' => $item->pelatihan->nama_pelatihan,
+                'keterangan' => $item->keterangan,
+                'status' => $item->status,
+                'type' => 'pelatihan' // Tambahkan type pelatihan
+            ];
+        });
+
+    // Gabungkan data sertifikasi dan pelatihan
+    $data = $dataSertifikasi->merge($dataPelatihan);
+
+    return response()->json($data, 200);
+}
 
 }

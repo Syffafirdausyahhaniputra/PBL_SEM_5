@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\PelatihanController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;
@@ -89,4 +90,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::patch('/{id}', [ProfileController::class, 'update'])->name('profile.update');
     });
+
+    Route::get('/pelatihan', [PelatihanController::class, 'index'])->name('pelatihan.index');
+    Route::post('/pelatihan/list', [PelatihanController::class, 'getData'])->name('pelatihan.list');
 });

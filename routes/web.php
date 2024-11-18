@@ -10,6 +10,8 @@ use App\Http\Controllers\LevelpelatihanController;
 use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\PelatihanController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;
@@ -155,7 +157,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::patch('/{id}', [ProfileController::class, 'update'])->name('profile.update');
     });
-
-    Route::get('/pelatihan', [PelatihanController::class, 'index'])->name('pelatihan.index');
-    Route::post('/pelatihan/list', [PelatihanController::class, 'getData'])->name('pelatihan.list');
+    Route::prefix('pelatihan')->group(function () {
+        Route::get('index', [PelatihanController::class, 'index'])->name('pelatihan.index');
+        Route::get('/pelatihan/list', [PelatihanController::class, 'list'])->name('pelatihan.list');
+        Route::get('create', [PelatihanController::class, 'create'])->name('pelatihan.create');
+        Route::post('store', [PelatihanController::class, 'store'])->name('pelatihan.store');
+        Route::get('edit/{id}', [PelatihanController::class, 'edit'])->name('pelatihan.edit');
+        Route::put('update/{id}', [PelatihanController::class, 'update'])->name('pelatihan.update');
+        Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy');
+    });
 });

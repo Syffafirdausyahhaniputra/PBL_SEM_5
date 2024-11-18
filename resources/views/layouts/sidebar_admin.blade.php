@@ -92,7 +92,8 @@
             <li class="nav-item">
                 <a href="{{ url('/logout') }}" class="nav-link">
                     <button class="btn btn-danger btn-block">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-sign-out-alt"></i>
+                        <p>Logout</p>
                     </button>
                 </a>
             </li>

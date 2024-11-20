@@ -8,9 +8,8 @@
                         class="fa fa-file-excel"></i> Export Jenis Sertifikasi</a>
                 <a class="btn btn-sm btn-warning mt-1" href="{{ url('/jenis/export_pdf') }}" class="btn btn-warning"><i
                         class="fa fa-file-pdf"></i> Export Jenis Sertifikasi</a>
-                <button onclick="modalAction('{{ url('/jenis/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Jenis Sertifikasi</button>
-                <button onclick="modalAction('{{ url('/jenis/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
+                <button onclick="modalAction('{{ url('/jenis/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Jenis Sertifikasi</i></button>
+                <button onclick="modalAction('{{ url('/jenis/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Jenis Sertifikasi</i></button>
             </div>
         </div>
         <div class="card-body">

@@ -10,12 +10,27 @@ use App\Http\Controllers\LevelpelatihanController;
 use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
+<<<<<<< HEAD
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\SertifikasiController;
 
 use App\Http\Controllers\BidangController;
 
+=======
+<<<<<<< HEAD
+
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\PelatihanController;
+
+use App\Http\Controllers\BidangController;
+
+=======
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\PelatihanController;
+use App\Http\Controllers\BidangController;
+>>>>>>> fe7a7efc6ec3fb33cd33c080c3a9c27b7846d367
+>>>>>>> cc05c3a3827742744c84cfe1cb12519bb0ae4d75
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;
@@ -45,6 +60,7 @@ Route::post('register', [AuthController::class, 'postRegister']);
 // Group route yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
+    
     Route::get('/bidang', [BidangController::class, 'index'])->name('bidang.index');
 
     Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {

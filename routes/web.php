@@ -10,12 +10,12 @@ use App\Http\Controllers\LevelpelatihanController;
 use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
-<<<<<<< HEAD
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\PelatihanController;
-=======
+use App\Http\Controllers\SertifikasiController;
+
 use App\Http\Controllers\BidangController;
->>>>>>> 195de4cd5ae8b969325136337ae96d82c2ebc661
+
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;
@@ -162,13 +162,24 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::patch('/{id}', [ProfileController::class, 'update'])->name('profile.update');
     });
+
     Route::prefix('pelatihan')->group(function () {
-        Route::get('index', [PelatihanController::class, 'index'])->name('pelatihan.index');
+        Route::get('/index', [PelatihanController::class, 'index'])->name('pelatihan.index');
         Route::get('/pelatihan/list', [PelatihanController::class, 'list'])->name('pelatihan.list');
         Route::get('create', [PelatihanController::class, 'create'])->name('pelatihan.create');
         Route::post('store', [PelatihanController::class, 'store'])->name('pelatihan.store');
         Route::get('edit/{id}', [PelatihanController::class, 'edit'])->name('pelatihan.edit');
         Route::put('update/{id}', [PelatihanController::class, 'update'])->name('pelatihan.update');
         Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy');
+    });
+
+    Route::prefix('sertifikasi')->group(function () {
+        Route::get('/index', [SertifikasiController::class, 'index'])->name('sertifikasi.index');
+        Route::get('/sertifikasi/list', [SertifikasiController::class, 'list'])->name('sertifikasi.list');
+        Route::get('create', [SertifikasiController::class, 'create'])->name('sertifikasi.create');
+        Route::post('store', [SertifikasiController::class, 'store'])->name('sertifikasi.store');
+        Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit');
+        Route::put('update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update');
+        Route::delete('destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
     });
 });

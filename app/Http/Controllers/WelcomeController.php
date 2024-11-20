@@ -71,7 +71,7 @@ class WelcomeController extends Controller
         // Mendapatkan data bidang
         $bidang = BidangModel::all();
 
-        return view('welcome2', [
+        return view('welcome', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu,
             'labels' => $allMonths,
@@ -139,7 +139,7 @@ class WelcomeController extends Controller
         // Mendapatkan data bidang
         $bidang = BidangModel::all();
 
-        return view('welcome', [
+        return view('welcome2', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu,
             'labels' => $allMonths,

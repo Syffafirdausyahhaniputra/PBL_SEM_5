@@ -31,6 +31,7 @@ class AuthController extends Controller
 
                 // Simpan role_id ke dalam session
                 session(['role_id' => $user->role_id]);
+                // session(['role_id' => $user->role_id, 'user_id'=> $user->user_id]);
 
                 return response()->json([
                     'status' => true,

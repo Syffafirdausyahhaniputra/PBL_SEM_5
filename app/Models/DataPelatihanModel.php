@@ -23,12 +23,13 @@ class DataPelatihanModel extends Model implements JWTSubject
     protected $fillable = ['pelatihan_id', 'dosen_id', 'status', 'created_at', 'updated_at'];
 
     public function pelatihan()
-    {
-        return $this->belongsTo(PelatihanModel::class, 'pelatihan_id', 'pelatihan_id');
-    }
+{
+    return $this->belongsTo(PelatihanModel::class, 'pelatihan_id', 'pelatihan_id');
+}
 
-    public function dosen()
-    {
-        return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
-    }
+public function dosen()
+{
+    return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
+}
+
 }

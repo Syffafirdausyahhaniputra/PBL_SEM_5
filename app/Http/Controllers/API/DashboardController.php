@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\BidangModel;
 use App\Models\DataSertifikasiModel;
 use App\Models\DataPelatihanModel;
-use Carbon\Carbon;
-use DB;
+use App\Models\DosenModel;
 
 class DashboardController extends Controller
 {
@@ -26,15 +24,46 @@ class DashboardController extends Controller
         // Mendapatkan informasi user
         $user = Auth::guard('api')->user();
 
-        // Menghitung jumlah sertifikasi dan pelatihan keseluruhan
-        $sertifikasiCount = DataSertifikasiModel::count(); // Jumlah sertifikasi
-        $pelatihanCount =DataPelatihanModel::count(); // Jumlah pelatihan
+        // Mendapatkan dosen_id berdasarkan user_id
+        $dosen = DosenModel::where('user_id', $user->user_id)->first();
 
-        // Menghitung jumlah sertifikasi dan pelatihan keseluruhan
+        if (!$dosen) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dosen tidak ditemukan untuk user ini.'
+            ], 404);
+        }
+
+        $dosenId = $dosen->dosen_id;
+
+        // Menghitung jumlah sertifikasi dan pelatihan berdasarkan dosen_id
+        $sertifikasiCount = DataSertifikasiModel::where('dosen_id', $dosenId)->count();
+        $pelatihanCount = DataPelatihanModel::where('dosen_id', $dosenId)->count();
         $jumlahSertifikasiPelatihan = $sertifikasiCount + $pelatihanCount;
 
-        // Mendapatkan data bidang
-        $bidang = BidangModel::select('bidang_nama')->get(); // Mendapatkan nama bidang dari tabel BidangModel
+        // Mendapatkan detail sertifikasi
+        $sertifikasi = DataSertifikasiModel::where('dosen_id', $dosenId)
+            ->with(['sertif.jenis', 'sertif.bidang'])
+            ->get()
+            ->map(function ($data) {
+                return [
+                    'nama_sertifikasi' => $data->sertif->nama_sertif ?? '-',
+                    'bidang_sertifikasi' => $data->sertif->bidang->bidang_nama ?? '-',
+                    'masa_berlaku' => $data->sertif->masa_berlaku ?? '-',
+                ];
+            });
+
+        // Mendapatkan detail pelatihan
+        $pelatihan = DataPelatihanModel::where('dosen_id', $dosenId)
+            ->with(['pelatihan.bidang'])
+            ->get()
+            ->map(function ($data) {
+                return [
+                    'nama_pelatihan' => $data->pelatihan->nama_pelatihan ?? '-',
+                    'bidang_pelatihan' => $data->pelatihan->bidang->bidang_nama ?? '-',
+                    'masa_berlaku' => $data->pelatihan->tanggal ?? '-', // Asumsi masa berlaku menggunakan 'periode'
+                ];
+            });
 
         // Menyiapkan respons JSON
         return response()->json([
@@ -48,7 +77,8 @@ class DashboardController extends Controller
                 'jumlahSertifikasi' => $sertifikasiCount,
                 'jumlahPelatihan' => $pelatihanCount,
                 'jumlahSertifikasiPelatihan' => $jumlahSertifikasiPelatihan,
-                'bidang' => $bidang, // Data bidang
+                'sertifikasi' => $sertifikasi,
+                'pelatihan' => $pelatihan,
             ]
         ], 200);
     }

@@ -35,12 +35,13 @@ class LoginController extends Controller
         // Ambil data pengguna
         $user = auth()->guard('api')->user();
         $roleId = $user->role_id; // Mengambil role_id dari UserModel
+        $userId = $user->user_id; // Mengambil user_id dari UserModel
 
         // Respons jika login berhasil
         return response()->json([
             'success' => true,
             'user' => [
-                'id' => $user->id,
+                'id' => $userId, // Menampilkan user_id
                 'username' => $user->username,
                 'role_id' => $roleId
             ],

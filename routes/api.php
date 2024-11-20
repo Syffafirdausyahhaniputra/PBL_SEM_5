@@ -22,7 +22,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:api')->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+// Route yang hanya dapat diakses setelah login
+Route::middleware('auth:api')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
 
 Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
 Route::resource('pelatihan', PelatihanController::class);

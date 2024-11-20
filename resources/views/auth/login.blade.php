@@ -123,11 +123,6 @@
                             <button type="submit" class="btn btn-primary btn-block">Login</button>
                         </div>
                     </div>
-                    <div class="row mt-2">
-                        <div class="col-10 text-right">
-                            <p>Don't have an account? <a href="{{ url('register') }}">Register</a></p>
-                        </div>
-                    </div>
                 </form>
             </div>
         

@@ -10,9 +10,27 @@ use App\Http\Controllers\LevelpelatihanController;
 use App\Http\Controllers\MatkulController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
+<<<<<<< HEAD
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\PelatihanController;
+use App\Http\Controllers\SertifikasiController;
+
+use App\Http\Controllers\BidangController;
+
+=======
+<<<<<<< HEAD
+
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\PelatihanController;
+
+use App\Http\Controllers\BidangController;
+
+=======
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\BidangController;
+>>>>>>> fe7a7efc6ec3fb33cd33c080c3a9c27b7846d367
+>>>>>>> cc05c3a3827742744c84cfe1cb12519bb0ae4d75
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;
@@ -162,8 +180,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::patch('/{id}', [ProfileController::class, 'update'])->name('profile.update');
     });
+
     Route::prefix('pelatihan')->group(function () {
-        Route::get('index', [PelatihanController::class, 'index'])->name('pelatihan.index');
+        Route::get('/index', [PelatihanController::class, 'index'])->name('pelatihan.index');
         Route::get('/pelatihan/list', [PelatihanController::class, 'list'])->name('pelatihan.list');
         Route::get('create', [PelatihanController::class, 'create'])->name('pelatihan.create');
         Route::post('store', [PelatihanController::class, 'store'])->name('pelatihan.store');
@@ -172,6 +191,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy');
     });
 
+<<<<<<< HEAD
     Route::prefix('kompetensi')->group(function () {
         Route::get('index', [PelatihanController::class, 'index'])->name('kompetensi.index');
         Route::get('/pelatihan/list', [PelatihanController::class, 'list'])->name('kompetensi.list');
@@ -180,5 +200,15 @@ Route::middleware('auth')->group(function () {
         Route::get('edit/{id}', [PelatihanController::class, 'edit'])->name('kompetensi.edit');
         Route::put('update/{id}', [PelatihanController::class, 'update'])->name('kompetensi.update');
         Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('kompetensi.destroy');
+=======
+    Route::prefix('sertifikasi')->group(function () {
+        Route::get('/index', [SertifikasiController::class, 'index'])->name('sertifikasi.index');
+        Route::get('/sertifikasi/list', [SertifikasiController::class, 'list'])->name('sertifikasi.list');
+        Route::get('create', [SertifikasiController::class, 'create'])->name('sertifikasi.create');
+        Route::post('store', [SertifikasiController::class, 'store'])->name('sertifikasi.store');
+        Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit');
+        Route::put('update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update');
+        Route::delete('destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
+>>>>>>> 7be0a7e1f3f3b93bb1bdbdc0aeeb22e96045cb6c
     });
 });

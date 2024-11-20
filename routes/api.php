@@ -4,14 +4,10 @@ use App\Http\Controllers\Api\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RiwayatController;
-<<<<<<< HEAD
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\SertifikasiController;
 
-=======
-use App\Http\Controllers\API\PelatihanController;
-use App\Http\Controllers\API\SertifikasiController;
->>>>>>> 7be0a7e1f3f3b93bb1bdbdc0aeeb22e96045cb6c
 
 /*
 |--------------------------------------------------------------------------
@@ -42,18 +38,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-<<<<<<< HEAD
 // Route yang hanya dapat diakses setelah login
 Route::middleware('auth:api')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
-=======
-
-Route::middleware('auth:api')->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
->>>>>>> 4af0ffaad0186d070ec1b473b3b8774705ee7585
 
 Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
-<<<<<<< HEAD
 Route::resource('pelatihan', PelatihanController::class);
 
 
@@ -71,7 +61,3 @@ Route::get('/profil/{id}', [App\Http\Controllers\Api\ProfileController::class, '
 
 // // Route untuk mendapatkan profil pengguna berdasarkan ID
 // Route::middleware('auth:api')->get('/profil/{id}', [ProfileController::class, 'show']);
-=======
-Route::get('index', [PelatihanController::class, 'index'])->name('pelatihan.index');
-        
->>>>>>> 7be0a7e1f3f3b93bb1bdbdc0aeeb22e96045cb6c

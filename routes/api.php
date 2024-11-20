@@ -6,7 +6,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
+
 use App\Http\Controllers\API\SertifikasiController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -37,15 +40,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-<<<<<<< HEAD
 // Route yang hanya dapat diakses setelah login
 Route::middleware('auth:api')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
-=======
-
-Route::middleware('auth:api')->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
->>>>>>> 4af0ffaad0186d070ec1b473b3b8774705ee7585
 
 Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
 Route::resource('pelatihan', PelatihanController::class);

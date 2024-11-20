@@ -42,6 +42,8 @@ Route::post('register', [AuthController::class, 'postRegister']);
 // Group route yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
+    Route::get('/welcome2', [WelcomeController::class, 'index']);
+
     
     Route::get('/bidang', [BidangController::class, 'index'])->name('bidang.index');
 
@@ -168,5 +170,15 @@ Route::middleware('auth')->group(function () {
         Route::get('edit/{id}', [PelatihanController::class, 'edit'])->name('pelatihan.edit');
         Route::put('update/{id}', [PelatihanController::class, 'update'])->name('pelatihan.update');
         Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy');
+    });
+
+    Route::prefix('kompetensi')->group(function () {
+        Route::get('index', [PelatihanController::class, 'index'])->name('kompetensi.index');
+        Route::get('/pelatihan/list', [PelatihanController::class, 'list'])->name('kompetensi.list');
+        Route::get('create', [PelatihanController::class, 'create'])->name('kompetensi.create');
+        Route::post('store', [PelatihanController::class, 'store'])->name('kompetensi.store');
+        Route::get('edit/{id}', [PelatihanController::class, 'edit'])->name('kompetensi.edit');
+        Route::put('update/{id}', [PelatihanController::class, 'update'])->name('kompetensi.update');
+        Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('kompetensi.destroy');
     });
 });

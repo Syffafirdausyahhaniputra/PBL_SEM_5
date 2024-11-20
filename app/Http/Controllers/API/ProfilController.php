@@ -13,27 +13,29 @@ class ProfilController extends Controller
     public function index()
     {
         $user = UserModel::findOrFail(Auth::id());
+        return $user;
 
         $breadcrumb = (object) [
             'title' => 'Profile',
             'subtitle'  => 'Bio data diri pengguna'
         ];
 
-        $activeMenu = 'profile';
+        // $activeMenu = 'profile';
 
-        return view('profile.index', compact('user'), [
-            'breadcrumb' => $breadcrumb, 
-            'activeMenu' => $activeMenu
-        ]);
+        // return view('profile.index', compact('user'), [
+        //     'breadcrumb' => $breadcrumb, 
+        //     'activeMenu' => $activeMenu
+        // ]);
     }
 
     public function show(string $id)
     {
         $user = UserModel::with('level')->find($id);
+        return $user;
         $breadcrumb = (object) ['title' => 'Detail User', 'list' => ['Home', 'User', 'Detail']];
         $page = (object) ['title' => 'Detail user'];
         $activeMenu = 'user'; // set menu yang sedang aktif
-        return view('user.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'user' => $user, 'activeMenu' => $activeMenu]);
+        // return view('user.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'user' => $user, 'activeMenu' => $activeMenu]);
     }
 
     public function update(Request $request, $id)

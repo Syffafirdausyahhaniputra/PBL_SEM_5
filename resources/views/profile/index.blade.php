@@ -65,7 +65,6 @@
 
                         <div class="mt-4 d-none" id="save-cancel-group">
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            <button type="button" class="btn btn-secondary" onclick="toggleEdit()">Batal</button>
                         </div>
                     </form>
                 </div>
@@ -145,34 +144,16 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update displayed information
-                document.getElementById('display-nama').textContent = formData.get('nama');
-                document.getElementById('display-username').textContent = '@' + formData.get('username');
-                
-                // Update avatar if a new one was uploaded
-                if (data.user.avatar) {
-                    const profilePic = document.getElementById('profile-pic');
-                    profilePic.src = `${data.user.avatar}?v=${new Date().getTime()}`; // Add timestamp to force refresh
-                    originalImageSrc = data.user.avatar;
-                    hasNewImage = true;
-                }
-
-                // Show success message
-                const alert = document.createElement('div');
-                alert.className = 'alert alert-success alert-dismissible fade show';
-                alert.innerHTML = `
-                    ${data.message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                `;
-                document.querySelector('.card').insertAdjacentElement('beforebegin', alert);
-
-                // Reset form state
-                toggleEdit();
-
-                // Remove alert after 3 seconds
-                setTimeout(() => {
-                    alert.remove();
-                }, 3000);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: data.message,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload(); // Refresh halaman
+                });
             } else {
                 // Handle validation errors
                 Object.keys(data.errors || {}).forEach(key => {
@@ -189,13 +170,12 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-danger alert-dismissible fade show';
-            alert.innerHTML = `
-                Terjadi kesalahan saat memperbarui profil.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            document.querySelector('.card').insertAdjacentElement('beforebegin', alert);
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: 'Terjadi kesalahan saat memperbarui profil.',
+                confirmButtonText: 'Tutup'
+            });
         });
     });
 

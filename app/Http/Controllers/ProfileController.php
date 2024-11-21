@@ -124,4 +124,3 @@ class ProfileController extends Controller
         }
     }
 }
-Log::info('Request data:', $request->all());

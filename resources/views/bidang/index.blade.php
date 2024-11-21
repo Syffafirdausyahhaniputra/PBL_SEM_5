@@ -1,40 +1,80 @@
 @extends('layouts.template')
 
 @section('content')
-    <div class="bidang-container">
-        @foreach ($bidang as $b)
-            <div class="bidang-card">
-                <img src="{{ asset('img/IT.png') }}" alt="{{ $b->bidang_nama }}">
-                <h5 class="card-title text-center">{{ $b->bidang_nama }}</h5>
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <div class="card-tools">
+                <a class="btn btn-sm btn-primary mt-1" href="{{ url('/bidang/export_excel') }}" class="btn btn-primary"><i
+                        class="fa fa-file-excel"></i> Export Bidang</a>
+                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/bidang/export_pdf') }}" class="btn btn-warning"><i
+                        class="fa fa-file-pdf"></i> Export Bidang</a>
+                <button onclick="modalAction('{{ url('/bidang/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Bidang</i></button>
+                <button onclick="modalAction('{{ url('/bidang/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Bidang</i></button>
             </div>
-        @endforeach
+        </div>
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+
+            <div class= "table-responsive">
+                <table class="table table-bordered table-striped table-hover table-sm" id="table_bidang">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
-
-    <style>
-        .bidang-container {
-            background-color: #2C65C8;
-            padding: 20px;
-            border-radius: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .bidang-card {
-            background-color: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 150px;
-            height: 150px;
-        }
-
-        .bidang-card img {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-    </style>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
+
+@push('css')
+@endpush
+
+@push('js')
+    <script>
+        function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
+            });
+        }
+        var databidang;
+        $(document).ready(function() {
+            databidang = $('#table_bidang').DataTable({
+                serverSide: true,
+                ajax: {
+                    "url": "{{ url('bidang/list') }}",
+                    "dataType": "json",
+                    "type": "POST"
+                },
+                columns: [{
+                    // nomor urut dari laravel datatable addIndexColumn() 
+                    data: "DT_RowIndex",
+                    className: "text-center",
+                    orderable: false,
+                    searchable: false
+                }, {
+                    data: "bidang_nama",
+                    className: "",
+                    orderable: true,
+                    searchable: true
+                }, {
+                    data: "aksi",
+                    className: "",
+                    orderable: false,
+                    searchable: false
+                }]
+            });
+        });
+    </script>
+@endpush

@@ -3,134 +3,61 @@
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">Daftar Sertifikasi</h3>
             <div class="card-tools">
-                <a class="btn btn-sm btn-primary mt-1" href="{{ url('/sertifikasi/export_excel') }}" class="btn btn-primary">
-                    <i class="fa fa-file-excel"></i> Export Sertifikasi
-                </a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/sertifikasi/export_pdf') }}" class="btn btn-warning">
-                    <i class="fa fa-file-pdf"></i> Export Sertifikasi
-                </a>
-                <button onclick="modalAction('{{ url('/sertifikasi/import') }}')" class="btn btn-sm btn-info mt-1">
-                    <i class="fa fa-upload"></i> Import Sertifikasi
-                </button>
-                <button onclick="modalAction('{{ url('/sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1">
-                    <i class="fa fa-plus"></i> Tambah Sertifikasi
-                </button>
+                <a class="btn btn-sm btn-primary mt-1" h href="{{ url('/sertifikasi/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Sertifikasi</a>
+                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/pelatihan/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export Sertifikasi</a>
+                <button onclick="modalAction('{{ url('/sertifikasi/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Sertifikasi</i></button>
+                <button onclick="modalAction('{{ url('/sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Sertifikasi</i></button>
             </div>
         </div>
-        <div class="card-body">
-            <!-- Notifikasi sukses -->
-            @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
+    <div class="card-body">
+        <!-- Pesan sukses/gagal -->
+        @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        @if (session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
 
-            <!-- Notifikasi error -->
-            @if (session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm" id="table_sertifikasi">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Sertifikasi</th>
-                            <th>Tanggal</th>
-                            <th>Periode</th>
-                            <th>Tanggal Dibuat</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
+        <!-- Tabel Pelatihan -->
+        <table class="table table-bordered table-striped table-hover" id="table-sertifikasi">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Pelatihan</th>
+                    <th>Tanggal</th>
+                    <th>Bidang</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($sertifikasi as $index => $item)
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $item->nama_sertifikasi }}</td>
+                    <td>{{ $item->tanggal }}</td>
+                    <td>{{ $item->bidang->nama_bidang ?? '-' }}</td>
+                    <td>
+                    <a href="{{ route('sertifikasi.show', $item->sertifikasi_id) }}" class="btn btn-sm btn-primary">Show</a>
+                        <a href="{{ route('sertifikasi.edit', $item->sertifikasi_id) }}" class="btn btn-sm btn-primary">Edit</a>
+                        <form action="{{ route('sertifikasi.destroy', $item->sertifikasi_id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
-
-    <!-- Modal untuk form -->
-    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
-        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+</div>
 @endsection
 
-@push('css')
-<!-- Tambahkan custom CSS jika diperlukan -->
-@endpush
-
 @push('js')
-    <script>
-        // Fungsi untuk memunculkan modal dengan konten dari URL
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
-        }
-
-        var dataSertifikasi;
-        $(document).ready(function() {
-            // Inisialisasi DataTables
-            dataSertifikasi = $('#table_sertifikasi').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('sertifikasi.list') }}", // Route untuk method list di controller
-                    type: "GET",
-                },
-                columns: [
-                    {
-                        data: null,
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row, meta) {
-                            return meta.row + meta.settings._iDisplayStart + 1; // Nomor urut otomatis
-                        }
-                    },
-                    { data: "nama_sertif", className: "", orderable: true, searchable: true }, // Nama sertifikasi
-                    { data: "tanggal", className: "", orderable: true, searchable: true },     // Nama dosen
-                    { data: "periode", className: "", orderable: true, searchable: true }, // Periode
-                    { data: "created_at", className: "text-center", orderable: true, searchable: true }, // Tanggal dibuat
-                    {
-                        data: null,
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row) {
-                            return `
-                                <button class="btn btn-sm btn-warning" onclick="editAction(${data.data_sertifikasi_id})">
-                                    <i class="fa fa-edit"></i> Edit
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteAction(${data.data_sertifikasi_id})">
-                                    <i class="fa fa-trash"></i> Hapus
-                                </button>
-                            `;
-                        }
-                    }
-                ],
-               
-            });
-        });
-
-        // Fungsi untuk aksi edit
-        function editAction(id) {
-            modalAction(`{{ url('/sertifikasi/edit_ajax') }}/${id}`);
-        }
-
-        // Fungsi untuk aksi hapus
-        function deleteAction(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-                $.ajax({
-                    url: `{{ url('/sertifikasi/delete') }}/${id}`,
-                    type: "DELETE",
-                    data: { _token: "{{ csrf_token() }}" },
-                    success: function(response) {
-                        alert('Data berhasil dihapus!');
-                        dataSertifikasi.ajax.reload(); // Reload DataTables
-                    },
-                    error: function() {
-                        alert('Terjadi kesalahan, coba lagi!');
-                    }
-                });
-            }
-        }
-    </script>
+<script>
+    $(document).ready(function() {
+        $('#table-sertifikasi').DataTable(); // Inisialisasi DataTables
+    });
+</script>
 @endpush

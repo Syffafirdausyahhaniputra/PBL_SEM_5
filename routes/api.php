@@ -6,9 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
-
 use App\Http\Controllers\API\SertifikasiController;
-
+use App\Http\Controllers\Api\DosenController;
 
 
 /*

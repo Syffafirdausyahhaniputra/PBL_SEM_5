@@ -4,12 +4,12 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <div class="card-tools">
-                <a class="btn btn-sm btn-primary mt-1" h href="{{ url('/kompetensi_prodi/export_excel') }}" class="btn btn-primary"><i
-                        class="fa fa-file-excel"></i> Export Kompetensi Prodi</a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/kompetensi_prodi/export_pdf') }}" class="btn btn-warning"><i
-                        class="fa fa-file-pdf"></i> Export Kompetensi Prodi</a>
-                <button onclick="modalAction('{{ url('/kompetensi_prodi/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Kompetensi Prodi</i></button>
-                <button onclick="modalAction('{{ url('/kompetensi_prodi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Kompetensi Prodi</i></button>
+                <a class="btn btn-sm btn-primary mt-1" href="{{ url('/prodi/export_excel') }}" class="btn btn-primary"><i
+                        class="fa fa-file-excel"></i> Export Program Studi</a>
+                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/prodi/export_pdf') }}" class="btn btn-warning"><i
+                        class="fa fa-file-pdf"></i> Export Program Studi</a>
+                <button onclick="modalAction('{{ url('/prodi/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Program Studi</i></button>
+                <button onclick="modalAction('{{ url('/prodi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Program Studi</i></button>
             </div>
         </div>
         <div class="card-body">
@@ -22,12 +22,11 @@
             @endif
 
             <div class= "table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm" id="table_kompetensi_prodi">
+                <table class="table table-bordered table-striped table-hover table-sm" id="table_prodi">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Program Studi</th>
-                            <th>Total Bidang</th>
+                            <th>ID</th>
+                            <th>Nama</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -49,13 +48,12 @@
                 $('#myModal').modal('show');
             });
         }
-        var datakompetensi_prodi;
+        var dataprodi;
         $(document).ready(function() {
-            datakompetensi_prodi = $('#table_kompetensi_prodi').DataTable({
-                // serverSide: true, jika ingin menggunakan server side proses 
+            dataprodi = $('#table_prodi').DataTable({
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('kompetensi_prodi/list') }}",
+                    "url": "{{ url('prodi/list') }}",
                     "dataType": "json",
                     "type": "POST"
                 },
@@ -68,16 +66,7 @@
                 }, {
                     data: "prodi_nama",
                     className: "",
-                    // orderable: true, jika ingin kolom ini bisa diurutkan  
                     orderable: true,
-                    // searchable: true, jika ingin kolom ini bisa dicari 
-                    searchable: true
-                }, {
-                    data: "total_bidang",
-                    className: "",
-                    // orderable: true, jika ingin kolom ini bisa diurutkan  
-                    orderable: true,
-                    // searchable: true, jika ingin kolom ini bisa dicari 
                     searchable: true
                 }, {
                     data: "aksi",

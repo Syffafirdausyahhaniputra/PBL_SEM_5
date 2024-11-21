@@ -4,11 +4,6 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <div class="card-tools">
-                <a class="btn btn-sm btn-primary mt-1" href="{{ url('/jenis/export_excel') }}" class="btn btn-primary"><i
-                        class="fa fa-file-excel"></i> Export Jenis Sertifikasi</a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/jenis/export_pdf') }}" class="btn btn-warning"><i
-                        class="fa fa-file-pdf"></i> Export Jenis Sertifikasi</a>
-                <button onclick="modalAction('{{ url('/jenis/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Jenis Sertifikasi</i></button>
                 <button onclick="modalAction('{{ url('/jenis/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Jenis Sertifikasi</i></button>
             </div>
         </div>

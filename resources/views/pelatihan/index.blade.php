@@ -4,9 +4,6 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <div class="card-tools">
-                <a class="btn btn-sm btn-primary mt-1" h href="{{ url('/pelatihan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Pelatihan</a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/pelatihan/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export Pelatihan</a>
-                <button onclick="modalAction('{{ url('/pelatihan/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Pelatihan</i></button>
                 <button onclick="modalAction('{{ url('/pelatihan/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Pelatihan</i></button>
             </div>
         </div>
@@ -38,7 +35,7 @@
                     <td>{{ $item->tanggal }}</td>
                     <td>{{ $item->bidang->nama_bidang ?? '-' }}</td>
                     <td>
-                    <a href="{{ route('pelatihan.show', $item->pelatihan_id) }}" class="btn btn-sm btn-primary">Show</a>
+                    <a href="{{ route('pelatihan.show_ajax', $item->pelatihan_id) }}" class="btn btn-sm btn-warning">Show</a>
                         <a href="{{ route('pelatihan.edit', $item->pelatihan_id) }}" class="btn btn-sm btn-primary">Edit</a>
                         <form action="{{ route('pelatihan.destroy', $item->pelatihan_id) }}" method="POST" style="display:inline;">
                             @csrf

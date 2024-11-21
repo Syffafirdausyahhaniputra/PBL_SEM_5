@@ -10,8 +10,7 @@ use App\Models\MatkulModel;
 use App\Models\VendorModel;
 use App\Models\DataPelatihanModel;
 use Illuminate\Support\Facades\Validator;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Yajra\DataTables\Facades\DataTables;
 
 class PelatihanController extends Controller
 {
@@ -40,31 +39,34 @@ class PelatihanController extends Controller
             'activeMenu' => 'pelatihan', // Menandai menu Pelatihan sebagai aktif
         ]);
     }
-    public function show_ajax($id)
-    {
-        try {
-            // Ambil data pelatihan beserta relasi terkait
-            $pelatihan = PelatihanModel::with([
-                'level',      // Relasi ke LevelPelatihanModel
-                'bidang',     // Relasi ke BidangModel
-                'matkul',     // Relasi ke MatkulModel
-                'vendor',     // Relasi ke VendorModel
-                'dataPelatihan.dosen' // Relasi ke DataPelatihanModel dan DosenModel
-            ])->findOrFail($id);
+    public function show_ajax(string $id)
+{
+    // Ambil data DataPelatihan berdasarkan id
+    $dataPelatihan = DataPelatihanModel::with([
+        'pelatihan.level',
+        'pelatihan.bidang',
+        'pelatihan.matkul',
+        'pelatihan.vendor',
+        'dosen'
+    ])->find($id);
 
-            // Format data untuk dikirimkan
-            return response()->json([
-                'success' => true,
-                'data' => $pelatihan,
-            ]);
-        } catch (\Exception $e) {
-            // Handle error jika pelatihan tidak ditemukan
-            return response()->json([
-                'success' => false,
-                'message' => 'Data tidak ditemukan: ' . $e->getMessage(),
-            ], 404);
-        }
+    // Periksa apakah data ditemukan
+    if ($dataPelatihan) {
+        // Tampilkan halaman show_ajax dengan data pelatihan
+        return view('pelatihan.show_ajax', ['dataPelatihan' => $dataPelatihan]);
+    } else {
+        // Tampilkan pesan kesalahan jika data tidak ditemukan
+        return response()->json([
+            'status' => false,
+            'message' => 'Data tidak ditemukan'
+        ]);
     }
+}
+
+
+
+
+
 
 
     // Method untuk menyimpan data pelatihan baru
@@ -119,24 +121,31 @@ class PelatihanController extends Controller
     }
 
     public function list(Request $request)
-    {
-        $dataPelatihan = DataPelatihanModel::with(['pelatihan', 'dosen'])->get();
+{
+    // Ambil data DataPelatihan beserta relasinya
+    $dataPelatihan = DataPelatihanModel::with(['pelatihan', 'dosen'])->select('data_pelatihan_id', 'pelatihan_id', 'dosen_id', 'status', 'created_at');
 
-        $response = [];
-        foreach ($dataPelatihan as $item) {
-            $response[] = [
-                'data_pelatihan_id' => $item->data_pelatihan_id,
-                'nama_pelatihan' => $item->pelatihan->nama_pelatihan ?? '-', // Mengambil nama pelatihan
-                'nama_dosen' => $item->dosen->nama_dosen ?? '-', // Mengambil nama dosen
-                'status' => $item->status,
-                'created_at' => $item->created_at->format('Y-m-d H:i:s'), // Format tanggal
-            ];
-        }
+    return DataTables::of($dataPelatihan)
+        ->addIndexColumn()
+        ->addColumn('nama_pelatihan', function ($item) {
+            // Tampilkan nama pelatihan, jika ada
+            return $item->pelatihan->nama_pelatihan ?? '-';
+        })
+        ->addColumn('nama_dosen', function ($item) {
+            // Tampilkan nama dosen, jika ada
+            return $item->dosen->dosen_nama ?? '-';
+        })
+        ->addColumn('aksi', function ($item) {
+            // Tambahkan tombol aksi
+            $btn  = '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button> ';
+            return $btn;
+        })
+        ->rawColumns(['aksi']) // Agar HTML pada kolom 'aksi' dirender dengan benar
+        ->make(true);
+}
 
-        return response()->json([
-            'data' => $response // Respons JSON untuk DataTables
-        ]);
-    }
 
     public function create_ajax()
     {
@@ -241,102 +250,6 @@ class PelatihanController extends Controller
         }
 
         return redirect('/');
-    }
-
-    public function import_ajax(Request $request)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'file_pelatihan' => ['required', 'mimes:xlsx', 'max:1024']
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors()
-                ]);
-            }
-
-            $file = $request->file('file_pelatihan');
-            $reader = IOFactory::createReader('Xlsx');
-            $reader->setReadDataOnly(true);
-            $spreadsheet = $reader->load($file->getRealPath());
-            $sheet = $spreadsheet->getActiveSheet();
-            $data = $sheet->toArray(null, false, true, true);
-
-            $insert = [];
-            if (count($data) > 1) {
-                foreach ($data as $index => $row) {
-                    if ($index > 1) {
-                        $insert[] = [
-                            'nama_pelatihan' => $row['A'],
-                            'tanggal' => $row['B'],
-                            'kuota' => $row['C'],
-                            'lokasi' => $row['D'],
-                            'created_at' => now(),
-                        ];
-                    }
-                }
-
-                if (count($insert) > 0) {
-                    PelatihanModel::insertOrIgnore($insert);
-                }
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil diimport'
-                ]);
-            }
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Tidak ada data yang diimport'
-            ]);
-        }
-
-        return redirect('/');
-    }
-
-    public function export_excel()
-    {
-        $pelatihan = PelatihanModel::all();
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Nama Pelatihan');
-        $sheet->setCellValue('C1', 'Tanggal');
-        $sheet->setCellValue('D1', 'Kuota');
-        $sheet->setCellValue('E1', 'Lokasi');
-        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
-
-        $row = 2;
-        foreach ($pelatihan as $index => $item) {
-            $sheet->setCellValue("A{$row}", $index + 1);
-            $sheet->setCellValue("B{$row}", $item->nama_pelatihan);
-            $sheet->setCellValue("C{$row}", $item->tanggal);
-            $sheet->setCellValue("D{$row}", $item->kuota);
-            $sheet->setCellValue("E{$row}", $item->lokasi);
-            $row++;
-        }
-
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $filename = 'Data Pelatihan ' . date('Y-m-d H:i:s') . '.xlsx';
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header("Content-Disposition: attachment; filename=\"{$filename}\"");
-        $writer->save('php://output');
-        exit;
-    }
-
-    public function export_pdf()
-    {
-        $pelatihan = PelatihanModel::all();
-        $pdf = Pdf::loadView('pelatihan.export_pdf', ['pelatihan' => $pelatihan]);
-        return $pdf->stream('Data Pelatihan ' . date('Y-m-d H:i:s') . '.pdf');
     }
 
 }

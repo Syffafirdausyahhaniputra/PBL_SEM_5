@@ -1,4 +1,4 @@
-@empty($pelatihan) 
+@empty($dataPelatihan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document"> 
         <div class="modal-content"> 
             <div class="modal-header"> 
@@ -26,14 +26,16 @@
             <div class="modal-body"> 
                 <div class="alert alert-info"> 
                     <h5><i class="icon fas fa-info-circle"></i> Informasi !!!</h5> 
-                    Berikut adalah detail data user:
+                    Berikut adalah detail data pelatihan:
                 </div> 
                 <table class="table table-sm table-bordered table-striped"> 
-                    <tr><th class="text-right col-3">Jabatan :</th><td class="col-9">{{ $user->role->role_nama }}</td></tr> 
-                    <tr><th class="text-right col-3">Username :</th><td class="col-9">{{ $user->username }}</td></tr> 
-                    <tr><th class="text-right col-3">Nama :</th><td class="col-9">{{ $user->nama }}</td></tr> 
-                    <tr><th class="text-right col-3">NIP :</th><td class="col-9">{{ $user->nip }}</td></tr> 
-                    <tr><th class="text-right col-3">Password :</th><td class="col-9">{{ $user->password }}</td></tr> 
+                    <tr><th class="text-right col-3">Nama Pelatihan :</th><td class="col-9">{{ $dataPelatihan->pelatihan->nama_pelatihan }}</td></tr> 
+                    <tr><th class="text-right col-3">Nama Dosen :</th><td class="col-9">{{ $dataPelatihan->dosen->dosen_nama }}</td></tr> 
+                    <tr><th class="text-right col-3">Nama Bidang :</th><td class="col-9">{{ $dataPelatihan->pelatihan->bidang->bidang_nama }}</td></tr> 
+                    <tr><th class="text-right col-3">Level Pelatihan :</th><td class="col-9">{{ $dataPelatihan->pelatihan->level->level_nama }}</td></tr> 
+                    <tr><th class="text-right col-3">Mata Kuliah :</th><td class="col-9">{{ $dataPelatihan->pelatihan->matkul->mk_nama }}</td></tr> 
+                    <tr><th class="text-right col-3">Vendor :</th><td class="col-9">{{ $dataPelatihan->pelatihan->vendor->vendor_nama }}</td></tr> 
+                    <tr><th class="text-right col-3">Status :</th><td class="col-9">{{ $dataPelatihan->status }}</td></tr> 
                 </table> 
             </div> 
             <div class="modal-footer"> 

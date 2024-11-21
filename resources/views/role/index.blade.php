@@ -4,11 +4,6 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <div class="card-tools">
-                <a class="btn btn-sm btn-primary mt-1" href="{{ url('/role/export_excel') }}" class="btn btn-primary"><i
-                        class="fa fa-file-excel"></i> Export Jabatan</a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/role/export_pdf') }}" class="btn btn-warning"><i
-                        class="fa fa-file-pdf"></i> Export Jabatan</a>
-                <button onclick="modalAction('{{ url('/role/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Jabatan</i></button>
                 <button onclick="modalAction('{{ url('/role/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Jabatan</i></button>
             </div>
         </div>

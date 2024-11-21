@@ -17,6 +17,7 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\BidangController;
 use App\Http\Controllers\KompetensiProdiController;
+use App\Http\Controllers\Welcome2Controller;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Monolog\role;
@@ -46,7 +47,7 @@ Route::post('register', [AuthController::class, 'postRegister']);
 // Group route yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
-    Route::get('/welcome2', [WelcomeController::class, 'index2']);
+    Route::get('/welcome2', [Welcome2Controller::class, 'index2']);
 
     Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {
         Route::get('/', [UserController::class, 'index']);         // menampilkan halaman awal user
@@ -60,8 +61,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']); // Untuk menghapus data user Ajax
         Route::get('/import', [UserController::class, 'import']);
         Route::post('/import_ajax', [UserController::class, 'import_ajax']);
-        Route::get('/export_excel', [UserController::class, 'export_excel']);
-        Route::get('/export_pdf', [UserController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'bidang', 'middleware' => 'authorize:ADMN,LEAD'], function () {
@@ -77,8 +76,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [BidangController::class, 'delete_ajax']); // Untuk menghapus data bidang Ajax
         Route::get('/import', [BidangController::class, 'import']);
         Route::post('/import_ajax', [BidangController::class, 'import_ajax']);
-        Route::get('/export_excel', [BidangController::class, 'export_excel']);
-        Route::get('/export_pdf', [BidangController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'role', 'middleware' => 'authorize:ADMN'], function () {
@@ -91,10 +88,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}/update_ajax', [RoleController::class, 'update_ajax']); // Menyimpan perubahan data role Ajax
         Route::get('/{id}/delete_ajax', [RoleController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete role Ajax
         Route::delete('/{id}/delete_ajax', [RoleController::class, 'delete_ajax']); // Untuk menghapus data role Ajax
-        Route::get('/import', [RoleController::class, 'import']);
-        Route::post('/import_ajax', [RoleController::class, 'import_ajax']);
-        Route::get('/export_excel', [RoleController::class, 'export_excel']);
-        Route::get('/export_pdf', [RoleController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'vendor', 'middleware' => 'authorize:ADMN'], function () {
@@ -109,8 +102,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [VendorController::class, 'delete_ajax']); // Untuk menghapus data vendor Ajax
         Route::get('/import', [VendorController::class, 'import']);
         Route::post('/import_ajax', [VendorController::class, 'import_ajax']);
-        Route::get('/export_excel', [VendorController::class, 'export_excel']);
-        Route::get('/export_pdf', [VendorController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'matkul', 'middleware' => 'authorize:ADMN'], function () {
@@ -125,8 +116,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [MatkulController::class, 'delete_ajax']); // Untuk menghapus data matkul Ajax
         Route::get('/import', [MatkulController::class, 'import']);
         Route::post('/import_ajax', [MatkulController::class, 'import_ajax']);
-        Route::get('/export_excel', [MatkulController::class, 'export_excel']);
-        Route::get('/export_pdf', [MatkulController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'prodi', 'middleware' => 'authorize:ADMN'], function () {
@@ -139,10 +128,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}/update_ajax', [ProdiController::class, 'update_ajax']); // Menyimpan perubahan data matkul Ajax
         Route::get('/{id}/delete_ajax', [ProdiController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete matkul Ajax
         Route::delete('/{id}/delete_ajax', [ProdiController::class, 'delete_ajax']); // Untuk menghapus data matkul Ajax
-        Route::get('/import', [ProdiController::class, 'import']);
-        Route::post('/import_ajax', [ProdiController::class, 'import_ajax']);
-        Route::get('/export_excel', [ProdiController::class, 'export_excel']);
-        Route::get('/export_pdf', [ProdiController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'kompetensi_prodi', 'middleware' => 'authorize:ADMN'], function () {
@@ -150,15 +135,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/list', [KompetensiProdiController::class, 'list']);     // menampilkan data matkul dalam bentuk json untuk datatables
         Route::get('/create_ajax', [KompetensiProdiController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
         Route::post('/ajax', [KompetensiProdiController::class, 'store_ajax']);     // Menyimpan data user baru Ajax
-        Route::get('/{id}/show_ajax', [KompetensiProdiController::class, 'show_ajax']);
+        Route::get('/{prodi_kode}/show_ajax', [KompetensiProdiController::class, 'show_ajax']);
         Route::get('/{id}/edit_ajax', [KompetensiProdiController::class, 'edit_ajax']); // Menampilkan halaman form edit matkul Ajax
         Route::put('/{id}/update_ajax', [KompetensiProdiController::class, 'update_ajax']); // Menyimpan perubahan data matkul Ajax
         Route::get('/{id}/delete_ajax', [KompetensiProdiController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete matkul Ajax
         Route::delete('/{id}/delete_ajax', [KompetensiProdiController::class, 'delete_ajax']); // Untuk menghapus data matkul Ajax
-        Route::get('/import', [KompetensiProdiController::class, 'import']);
-        Route::post('/import_ajax', [KompetensiProdiController::class, 'import_ajax']);
-        Route::get('/export_excel', [KompetensiProdiController::class, 'export_excel']);
-        Route::get('/export_pdf', [KompetensiProdiController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'jenis', 'middleware' => 'authorize:ADMN'], function () {
@@ -171,10 +152,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}/update_ajax', [JenissertifController::class, 'update_ajax']); // Menyimpan perubahan data jenis Ajax
         Route::get('/{id}/delete_ajax', [JenissertifController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete jenis Ajax
         Route::delete('/{id}/delete_ajax', [JenissertifController::class, 'delete_ajax']); // Untuk menghapus data jenis Ajax
-        Route::get('/import', [JenissertifController::class, 'import']);
-        Route::post('/import_ajax', [JenissertifController::class, 'import_ajax']);
-        Route::get('/export_excel', [JenissertifController::class, 'export_excel']);
-        Route::get('/export_pdf', [JenissertifController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'level', 'middleware' => 'authorize:ADMN'], function () {
@@ -187,10 +164,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}/update_ajax', [LevelpelatihanController::class, 'update_ajax']); // Menyimpan perubahan data level Ajax
         Route::get('/{id}/delete_ajax', [LevelpelatihanController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete level Ajax
         Route::delete('/{id}/delete_ajax', [LevelpelatihanController::class, 'delete_ajax']); // Untuk menghapus data level Ajax
-        Route::get('/import', [LevelpelatihanController::class, 'import']);
-        Route::post('/import_ajax', [LevelpelatihanController::class, 'import_ajax']);
-        Route::get('/export_excel', [LevelpelatihanController::class, 'export_excel']);
-        Route::get('/export_pdf', [LevelpelatihanController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'riwayat'], function () {
@@ -208,13 +181,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [RiwayatController::class, 'destroy']);
     });
 
-    Route::group(['prefix' => 'notifikasi', 'middleware' => 'authorize:DOSN'], function () {
-        Route::get('/', [NotifikasiController::class, 'index']);
-        Route::post('/list', [NotifikasiController::class, 'list']);
-        Route::get('/create_ajax', [NotifikasiController::class, 'create_ajax']);
-        Route::post('/ajax', [NotifikasiController::class, 'store_ajax']);
-        Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjax']);
-        Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjax']);
+    Route::group(['prefix' => 'notifikasidosen', 'middleware' => 'authorize:DOSN'], function () {
+        Route::get('/', [NotifikasiController::class, 'index2']);
+        Route::post('/list', [NotifikasiController::class, 'list2']);
+        Route::get('/create_ajax', [NotifikasiController::class, 'create_ajax2']);
+        Route::post('/ajax', [NotifikasiController::class, 'store_ajax2']);
+        Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjax2']);
+        Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjax2']);
 
         Route::get('/{id}/edit_ajax', [NotifikasiController::class, 'edit_ajax']);
         Route::put('/{id}/update_ajax', [NotifikasiController::class, 'update_ajax']);
@@ -236,7 +209,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id}', [PelatihanController::class, 'edit'])->name('pelatihan.edit'); // halaman edit pelatihan
         Route::put('/update/{id}', [PelatihanController::class, 'update'])->name('pelatihan.update'); // update data pelatihan
         Route::delete('/destroy/{id}', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy'); // hapus data pelatihan
+        Route::get('/detail/{id}/show_ajax', [PelatihanController::class, 'show_ajax'])->name('pelatihan.show_ajax'); // detail pelatihan dengan AJAX
     });
     
-
+    
+    Route::prefix('sertifikasi')->group(function () {
+        Route::get('/', [SertifikasiController::class, 'index'])->name('sertifikasi.index'); 
+        Route::get('/create', [SertifikasiController::class, 'create'])->name('sertifikasi.create'); 
+        Route::post('/store', [SertifikasiController::class, 'store'])->name('sertifikasi.store'); 
+        Route::get('/edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit'); 
+        Route::put('/update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update'); 
+        Route::delete('/destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy'); 
+        Route::get('/sertifikasi/{id}', [SertifikasiController::class, 'show'])->name('sertifikasi.show');
+    });
 });

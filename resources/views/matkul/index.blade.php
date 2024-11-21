@@ -4,10 +4,6 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <div class="card-tools">
-                <a class="btn btn-sm btn-primary mt-1" href="{{ url('/matkul/export_excel') }}" class="btn btn-primary"><i
-                        class="fa fa-file-excel"></i> Export Mata Kuliah</a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/matkul/export_pdf') }}" class="btn btn-warning"><i
-                        class="fa fa-file-pdf"></i> Export Mata Kuliah</a>
                 <button onclick="modalAction('{{ url('/matkul/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa fa-upload"> Import Mata Kuliah</i></button>
                 <button onclick="modalAction('{{ url('/matkul/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Mata Kuliah</i></button>
             </div>

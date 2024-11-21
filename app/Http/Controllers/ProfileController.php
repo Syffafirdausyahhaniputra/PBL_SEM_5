@@ -121,41 +121,7 @@ class ProfileController extends Controller
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
-        // Handle password update
-        if ($request->filled('old_password')) {
-            if (!Hash::check($request->old_password, $user->password)) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => ['old_password' => ['Password lama salah']]
-                ]);
-            }
-            $user->password = Hash::make($request->password);
         }
-
-        // Handle avatar update
-        if ($request->filled('avatar')) {
-            $user->avatar = $request->avatar;
-        }
-
-        // Simpan perubahan
-        $user->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Profil berhasil diperbarui!',
-            'user' => [
-                'nama' => $user->nama,
-                'username' => $user->username,
-                'avatar' => $user->avatar,
-            ]
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-        ], 500);
     }
 }
-
-}Log::info('Request data:', $request->all());
+Log::info('Request data:', $request->all());

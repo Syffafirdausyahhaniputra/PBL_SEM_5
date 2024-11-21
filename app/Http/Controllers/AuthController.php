@@ -13,41 +13,57 @@ class AuthController extends Controller
 {
     public function login()
     {
-        if (Auth::check()) { // jika sudah login, maka redirect ke halaman home
-            return redirect('/welcome');
-        }
+        if (Auth::check()) {
+            // Ambil role_id dari pengguna yang sedang login
+            $roleId = Auth::user()->role_id;
 
+            // Redirect berdasarkan role_id
+            if ($roleId == 1 || $roleId == 2) {
+                return redirect('/welcome');
+            } elseif ($roleId == 3) {
+                return redirect('/welcome2');
+            }
+        }
         return view('auth.login');
     }
 
     public function postlogin(Request $request)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $credentials = $request->only('username', 'password');
+{
+    if ($request->ajax() || $request->wantsJson()) {
+        $credentials = $request->only('username', 'password');
 
-            if (Auth::attempt($credentials)) {
-                // Ambil data user yang sudah login
-                $user = Auth::user();
+        if (Auth::attempt($credentials)) {
+            // Ambil data user yang sudah login
+            $user = Auth::user();
 
-                // Simpan role_id ke dalam session
-                session(['role_id' => $user->role_id]);
-                // session(['role_id' => $user->role_id, 'user_id'=> $user->user_id]);
+            // Simpan role_id ke dalam session
+            session(['role_id' => $user->role_id]);
 
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Login Berhasil',
-                    'redirect' => url('/welcome')
-                ]);
+            // Tentukan URL pengalihan berdasarkan role_id
+            if ($user->role_id == 1 || $user->role_id == 2) {
+                $redirectUrl = '/welcome'; // Redirect untuk role_id 1 dan 2
+            } elseif ($user->role_id == 3) {
+                $redirectUrl = '/welcome2'; // Redirect untuk role_id 3
+            } else {
+                // Jika ada role_id lain, Anda bisa mengatur pengalihan default atau menangani sesuai kebutuhan
+                $redirectUrl = '/default'; // Contoh pengalihan default
             }
 
             return response()->json([
-                'status' => false,
-                'message' => 'Login Gagal'
+                'status' => true,
+                'message' => 'Login Berhasil',
+                'redirect' => url($redirectUrl) // Gunakan URL yang ditentukan
             ]);
         }
 
-        return redirect('login');
+        return response()->json([
+            'status' => false,
+            'message' => 'Login Gagal'
+        ]);
     }
+
+    return redirect('login');
+}
 
     public function logout(Request $request)
     {

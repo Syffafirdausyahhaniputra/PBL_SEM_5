@@ -22,72 +22,77 @@
             justify-content: center;
             align-items: center;
             margin: 0;
+            position: relative;
         }
+        body::before {
+            content: '';
+            position: fixed; /* Mengunci overlay ke seluruh layar */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Warna overlay */
+            z-index: -1; /* Letakkan di belakang semua elemen */
+        }
+
 
         /* Styling untuk card login */
         .login-box {
             width: 400px;
-            background-color: rgb(255, 255, 255); /* Efek transparan */
+            background-color: #0D47A1; /* Warna biru */
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.2); /* Efek bayangan */
+            border-radius: 20px; /* Card melengkung */
+            box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.2); /* Bayangan */
+            color: white; /* Warna teks putih */
         }
 
         .login-box .card-header {
             background: none;
             border-bottom: none;
             text-align: center;
-        }
-
-        .login-box .h1 {
-            font-weight: 700;
-            color: #0D47A1;
+            font-size: 24px;
+            font-weight: bold;
         }
 
         /* Styling untuk input fields */
         .form-control {
-            background: #0D47A1; /* Transparansi input */
+            background: #d9d9d9; /* Abu terang */
             border: none;
-            color: #dbdbdb;
+            color: black; /* Warna teks input */
+        }
+
+        .form-control::placeholder {
+            color: #757575; /* Placeholder lebih terang */
         }
 
         .input-group-text {
-            background: #0D47A1;
+            background: #d9d9d9;
             border: none;
-            color: #dbdbdb;
+            color: black;
         }
 
         /* Styling untuk tombol */
         .btn-primary {
-            background-color: #EFB509;
+            background-color: #EFB509; /* Warna kuning */
             border: none;
-            width: 100%;
             font-weight: bold;
-            border-radius: 30px;
+            border-radius: 10px; /* Tombol melengkung */
+            color: black; /* Warna teks tombol */
         }
 
         .btn-primary:hover {
-            background-color: #f6cc50;
-        }
-
-        /* Styling untuk link register dan forgot password */
-        .login-box a {
-            color: #0D47A1;
-        }
-
-        .login-box a:hover {
-            color: #EFB509;
+            background-color: #f6cc50; /* Warna kuning lebih terang */
+            color: black;
         }
 
         /* Rounded input fields */
-        .input-group .form-control {
-            border-radius: 30px;
-        }
-
+        .input-group .form-control,
         .input-group .input-group-text {
-            border-radius: 30px;
+            border-radius: 10px; /* Membuat input lebih melengkung */
         }
     </style>
+
+
 </head>
 
 <body>

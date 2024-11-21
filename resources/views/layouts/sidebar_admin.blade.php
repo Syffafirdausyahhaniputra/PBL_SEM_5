@@ -55,6 +55,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ url('/prodi') }}" class="nav-link {{ $activeMenu == 'prodi' ? 'active' : '' }}">
+                            <i class="fas fa-book nav-icon"></i>
+                            <p>Manage Prodi</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ url('/kompetensi_prodi') }}" class="nav-link {{ $activeMenu == 'kompetensi_prodi' ? 'active' : '' }}">
                             <i class="fas fa-graduation-cap nav-icon"></i>
                             <p>Manage Kompetensi Prodi</p>
@@ -75,7 +81,13 @@
                     <li class="nav-item">
                         <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
                             <i class="fas fa-award nav-icon"></i>
-                            <p>Manage Sertifikasi dan Pelatihan</p>
+                            <p>Manage Sertifikasi</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/pelatihan') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active' : '' }}">
+                            <i class="fas fa-award nav-icon"></i>
+                            <p>Manage Pelatihan</p>
                         </a>
                     </li>
                 </ul>

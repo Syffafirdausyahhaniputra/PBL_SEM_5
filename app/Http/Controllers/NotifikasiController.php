@@ -67,7 +67,7 @@ class NotifikasiController extends Controller
         $sertifikasi = DataSertifikasiModel::with(['sertif', 'sertif.bidang', 'sertif.matkul', 'sertif.vendor', 'sertif.jenis'])
             ->findOrFail($id);
 
-        return view('notifikasi.dosen.show_ajax', [
+        return view('notifikasi.pimpinan.show_ajax', [
             'nama' => $sertifikasi->sertif->nama_sertif,
             'bidang' => $sertifikasi->sertif->bidang->bidang_nama,
             'matkul' => $sertifikasi->sertif->mk_nama,

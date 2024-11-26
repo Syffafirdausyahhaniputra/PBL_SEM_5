@@ -18,8 +18,8 @@ class PelatihanController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Pelatihan',
-            'subtitle' => 'Daftar Pelatihan' // Tambahkan jika subtitle diperlukan
+            'title' => 'Manage Pelatihan',
+            'subtitle' => 'Daftar Pelatihan yang terdaftar dalam sistem' // Tambahkan jika subtitle diperlukan
         ];
 
         $pelatihan = PelatihanModel::all(); // Mengambil data pelatihan dari database
@@ -62,12 +62,6 @@ class PelatihanController extends Controller
         ]);
     }
 }
-
-
-
-
-
-
 
     // Method untuk menyimpan data pelatihan baru
     public function store(Request $request)
@@ -122,24 +116,33 @@ class PelatihanController extends Controller
 
     public function list(Request $request)
 {
-    // Ambil data DataPelatihan beserta relasinya
-    $dataPelatihan = DataPelatihanModel::with(['pelatihan', 'dosen'])->select('data_pelatihan_id', 'pelatihan_id', 'dosen_id', 'status', 'created_at');
-
+    // Ambil data Pelatihan beserta relasinya
+    $dataPelatihan = DataPelatihanModel::with(['pelatihan.bidang', 'dosen'])
+    ->select('data_pelatihan_id', 'pelatihan_id', 'dosen_id', 'status', 'created_at')
+    ->groupBy('pelatihan_id')
+    ->with('pelatihan'); // Memuat relasi prodi untuk mendapatkan nama prodi
     return DataTables::of($dataPelatihan)
         ->addIndexColumn()
         ->addColumn('nama_pelatihan', function ($item) {
             // Tampilkan nama pelatihan, jika ada
             return $item->pelatihan->nama_pelatihan ?? '-';
         })
+        ->addColumn('nama_bidang', function ($item) {
+            // Tampilkan nama bidang, jika ada
+            return $item->pelatihan->bidang->bidang_nama ?? '-';
+        })
         ->addColumn('nama_dosen', function ($item) {
             // Tampilkan nama dosen, jika ada
             return $item->dosen->dosen_nama ?? '-';
         })
+        ->addColumn('tanggal', function ($item) {
+            return $item->pelatihan->tanggal ?? '-'; // Pastikan kolom ini ada
+        })
         ->addColumn('aksi', function ($item) {
             // Tambahkan tombol aksi
-            $btn  = '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
-            $btn .= '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-            $btn .= '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button> ';
+            $btn  = '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button> ';
             return $btn;
         })
         ->rawColumns(['aksi']) // Agar HTML pada kolom 'aksi' dirender dengan benar

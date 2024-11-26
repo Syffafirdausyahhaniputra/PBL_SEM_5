@@ -136,8 +136,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/create_ajax', [KompetensiProdiController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
         Route::post('/ajax', [KompetensiProdiController::class, 'store_ajax']);     // Menyimpan data user baru Ajax
         Route::get('/{prodi_kode}/show_ajax', [KompetensiProdiController::class, 'show_ajax']);
-        Route::get('/{id}/edit_ajax', [KompetensiProdiController::class, 'edit_ajax']); // Menampilkan halaman form edit matkul Ajax
-        Route::put('/{id}/update_ajax', [KompetensiProdiController::class, 'update_ajax']); // Menyimpan perubahan data matkul Ajax
+        Route::get('/edit_ajax/{prodi_id}', [KompetensiProdiController::class, 'edit_ajax']); // Menampilkan halaman form edit matkul Ajax
+        Route::put('/update_ajax/{prodi_id}', [KompetensiProdiController::class, 'update_ajax']); // Menyimpan perubahan data matkul Ajax
         Route::get('/{id}/delete_ajax', [KompetensiProdiController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete matkul Ajax
         Route::delete('/{id}/delete_ajax', [KompetensiProdiController::class, 'delete_ajax']); // Untuk menghapus data matkul Ajax
     });

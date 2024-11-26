@@ -55,8 +55,7 @@ class KompetensiProdiController extends Controller
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">
                     <i class="fas fa-eye"></i> Detail
                 </button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/kompetensi_prodi/' . $kompetensi_prodi->kompetensi_prodi_id .
-                    '/edit_ajax') . '\')" class="btn btn-warning btn-sm">
+                $btn .= '<button onclick="modalAction(\'' . url('/kompetensi_prodi/edit_ajax/' . $kompetensi_prodi->prodi_id) . '\')" class="btn btn-warning btn-sm">
                     <i class="fas fa-edit"></i> Edit
                 </button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/kompetensi_prodi/' . $kompetensi_prodi->kompetensi_prodi_id .
@@ -129,50 +128,78 @@ class KompetensiProdiController extends Controller
         ]);
     }
 
+    public function edit_ajax(string $prodi_id)
+{
+    try {
+        $kompetensi_prodi = KompetensiProdiModel::with('bidang')->where('prodi_id', $prodi_id)->first();
 
-    public function edit_ajax(string $id)
-    {
-        $kompetensi_prodi = KompetensiProdiModel::find($id);
-        $prodi = ProdiModel::select('prodi_id', 'prodi_nama')->get();
-        $bidang = BidangModel::select('prodi_id', 'bidang_nama')->get();
-
-        return view('kompetensi prodi.edit_ajax', ['kompetensi prodi' => $kompetensi_prodi, 'prodi' => $prodi, 'bidang' => $bidang]);
-    }
-    public function update_ajax(Request $request, $id)
-    {
-        // cek apakah request dari ajax 
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'prodi_id' => 'required|integer',
-                'bidang_id' => 'required|integer',
-            ];
-            // use Illuminate\Support\Facades\Validator; 
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status'   => false,    // respon json, true: berhasil, false: gagal 
-                    'message'  => 'Validasi gagal.',
-                    'msgField' => $validator->errors()  // menunjukkan field mana yang error 
-                ]);
-            }
-
-            $check = BidangModel::find($id);
-            if ($check) {
-                $check->update($request->all());
-                return response()->json([
-                    'status'  => true,
-                    'message' => 'Data berhasil diupdate'
-                ]);
-            } else {
-                return response()->json([
-                    'status'  => false,
-                    'message' => 'Data tidak ditemukan'
-                ]);
-            }
+        if (!$kompetensi_prodi) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan.'
+            ], 404);
         }
-        return redirect('/');
+
+        // Ambil data Prodi dan Bidang untuk dropdown
+        $prodi = ProdiModel::select('prodi_id', 'prodi_nama')->get();
+        $bidang = BidangModel::select('bidang_id', 'bidang_nama')->get();
+
+        $bidangList = KompetensiProdiModel::where('prodi_id', $prodi->prodi_id)
+                ->with('bidang')
+                ->get();
+
+        return view('kompetensi.edit_ajax', [
+            'kompetensi_prodi' => $kompetensi_prodi,
+            'prodi' => $prodi,
+            'bidang' => $bidang,
+            'bidangList' => $bidangList,
+        ]);
+    } catch (\Exception $e) {
+        logger()->error("Error di edit_ajax: " . $e->getMessage());
+        return response()->json([
+            'status' => false,
+            'message' => 'Terjadi kesalahan pada server.'
+        ], 500);
     }
+}
+
+public function update_ajax(Request $request, $prodi_id)
+{
+    $kompetensi = KompetensiProdiModel::where('prodi_id', $prodi_id)->first();
+
+    if (!$kompetensi) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Data tidak ditemukan.'
+        ], 404);
+    }
+
+    $validator = Validator::make($request->all(), [
+        'prodi_id' => 'required|exists:prodi,prodi_id',
+        'bidang_id' => 'required|array|min:1',
+        'bidang_id.*' => 'exists:bidang,bidang_id',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => false,
+            'msgField' => $validator->errors()
+        ], 422);
+    }
+
+    // Update Prodi ID
+    $kompetensi->prodi_id = $request->prodi_id;
+    $kompetensi->save();
+
+    // Update relasi bidang
+    $kompetensi->bidang()->sync($request->bidang_id);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Data berhasil diperbarui.'
+    ]);
+}
+
     public function confirm_ajax(string $id)
     {
         $kompetensi_prodi = KompetensiProdiModel::find($id);

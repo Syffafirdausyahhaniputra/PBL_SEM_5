@@ -1,13 +1,29 @@
-<form action="{{ url('/kompetensi_prodi/' . $kompetensi_prodi->kompetensi_prodi_id . '/update_ajax') }}" method="POST" id="form-edit">
+@empty($kompetensi_prodi)
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
+                    Data yang anda cari tidak ditemukan</div>
+                <a href="{{ url('/kompetensi_prodi') }}" class="btn btn-warning">Kembali</a>
+            </div>
+        </div>
+    </div>
+@else
+<form action="{{ url('/kompetensi_prodi/update_ajax/' . $kompetensi_prodi->prodi_id) }}" method="POST" id="form-edit-kompetensi-prodi">
     @csrf
     @method('PUT')
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Edit Kompetensi Prodi</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="exampleModalLabel">Edit Data Kompetensi Prodi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -15,35 +31,31 @@
                     <select name="prodi_id" id="prodi_id" class="form-control" required>
                         <option value="">- Pilih Prodi -</option>
                         @foreach ($prodi as $p)
-                            <option value="{{ $p->prodi_id }}" 
-                                {{ $kompetensi_prodi->prodi_id == $p->prodi_id ? 'selected' : '' }}>
+                            <option value="{{ $p->prodi_id }}" {{ $kompetensi_prodi->prodi_id == $p->prodi_id ? 'selected' : '' }}>
                                 {{ $p->prodi_nama }}
                             </option>
                         @endforeach
-                    </select>
+                    </select>                    
                     <small id="error-prodi_id" class="error-text form-text text-danger"></small>
                 </div>
 
                 <div class="form-group">
                     <label>Bidang</label>
                     <div id="bidang-container">
-                        <!-- Menampilkan bidang yang sudah ada -->
-                        @foreach ($kompetensi_prodi->bidang as $b)
+                        @foreach ($bidangList as $bidangId)
                             <div class="bidang-item" style="display: flex; align-items: center; margin-bottom: 10px;">
                                 <select name="bidang_id[]" class="form-control bidang-select" style="flex: 1; margin-right: 10px;" required>
                                     <option value="">- Pilih Bidang -</option>
-                                    @foreach ($bidang as $bd)
-                                        <option value="{{ $bd->bidang_id }}" 
-                                            {{ $b->bidang_id == $bd->bidang_id ? 'selected' : '' }}>
-                                            {{ $bd->bidang_nama }}
+                                    @foreach ($bidang as $b)
+                                        <option value="{{ $b->bidang_id }}" {{ $b->bidang_id == $bidangId ? 'selected' : '' }}>
+                                            {{ $b->bidang_nama }}
                                         </option>
                                     @endforeach
                                 </select>
                                 <button type="button" class="btn btn-sm btn-danger remove-bidang">Hapus</button>
                             </div>
                         @endforeach
-                    </div>
-                    <!-- Tombol untuk menambah bidang baru -->
+                    </div>                  
                     <button type="button" id="add-bidang" class="btn btn-sm btn-primary mt-2">Tambah Bidang</button>
                     <small id="error-bidang_id" class="error-text form-text text-danger"></small>
                 </div>
@@ -55,7 +67,6 @@
         </div>
     </div>
 </form>
-
 <script>
     $(document).ready(function() {
         // Tambah bidang baru
@@ -80,7 +91,7 @@
         });
 
         // Validasi sebelum submit
-        $("#form-edit").on("submit", function(e) {
+        $("#form-tambah").on("submit", function(e) {
             e.preventDefault(); // Mencegah submit default
 
             let bidangSelected = [];
@@ -163,3 +174,4 @@
         });
     });
 </script>
+@endempty

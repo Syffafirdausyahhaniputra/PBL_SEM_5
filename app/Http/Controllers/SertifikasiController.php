@@ -6,21 +6,22 @@ use Illuminate\Http\Request;
 use App\Models\SertifikasiModel;
 use App\Models\DataSertifikasiModel;
 use App\Models\BidangModel;
+use App\Models\JenisModel;
 use App\Models\MatkulModel;
 use App\Models\VendorModel;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 class SertifikasiController extends Controller
 {
-    // Menampilkan daftar sertifikasi
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Sertifikasi',
-            'subtitle' => 'Daftar Sertifikasi'
+            'title' => 'Manage Sertifikasi',
+            'subtitle' => 'Daftar Sertifikasi yang terdaftar dalam sistem'
         ];
 
-        $sertifikasi = SertifikasiModel::with(['jenis', 'bidang', 'matkul', 'vendor'])->get();
+        $sertifikasi = SertifikasiModel::all();
 
         return view('sertifikasi.index', [
             'activeMenu' => 'sertifikasi',
@@ -29,21 +30,70 @@ class SertifikasiController extends Controller
         ]);
     }
 
-    // Menampilkan form tambah sertifikasi
-    public function create()
+    public function indexForDosen()
     {
         $breadcrumb = (object) [
-            'title' => 'Sertifikasi',
-            'subtitle' => 'Tambah Sertifikasi'
+            'title' => 'Data Sertifikasi Dosen',
+            'subtitle' => ' '
         ];
 
-        return view('sertifikasi.create', [
-            'activeMenu' => 'sertifikasi',
-            'breadcrumb' => $breadcrumb
+        // Mengambil data sertifikasi untuk dosen dengan relasi ke bidang dan jenis
+        $sertifikasi = SertifikasiModel::with(['bidang', 'jenis'])->get();
+
+        return view('sertifikasi.index_dosen', [
+            'activeMenu' => 'sertifikasi_dosen',
+            'sertifikasi' => $sertifikasi,
+            'breadcrumb' => $breadcrumb,
         ]);
     }
 
-    // Menyimpan sertifikasi baru
+
+    public function create()
+    {
+        return view('sertifikasi.create', [
+            'activeMenu' => 'sertifikasi',
+        ]);
+    }
+
+    public function createForDosen()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Sertifikasi Dosen',
+            'subtitle' => 'Tambah Sertifikasi'
+        ];
+
+        $bidangs = BidangModel::all(); // Mengambil semua bidang
+        $jenis = JenisModel::all();   // Mengambil semua jenis
+
+        return view('sertifikasi.tambah_data', [ // Pastikan file view benar
+            'activeMenu' => 'sertifikasi_dosen',
+            'breadcrumb' => $breadcrumb,
+            'bidangs' => $bidangs,
+            'jenis' => $jenis
+        ]);
+    }
+
+
+    public function show_ajax(string $id)
+    {
+        $dataSertifikasi = DataSertifikasiModel::with([
+            'sertif.jenis',
+            'sertif.bidang',
+            'sertif.matkul',
+            'sertif.vendor',
+            'dosen'
+        ])->find($id);
+
+        if ($dataSertifikasi) {
+            return view('sertifikasi.show_ajax', ['dataSertifikasi' => $dataSertifikasi]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -62,24 +112,31 @@ class SertifikasiController extends Controller
         return redirect()->route('sertifikasi.index')->with('success', 'Sertifikasi berhasil ditambahkan!');
     }
 
-    // Menampilkan form edit sertifikasi
+    public function storeForDosen(Request $request)
+    {
+        $validatedData = $request->validate([
+            'nama_sertif' => 'required|string|max:255',
+            'bidang_id' => 'required|integer',
+            'jenis_id' => 'required|integer',
+            'masa_berlaku' => 'nullable|date',
+        ]);
+
+        SertifikasiModel::create($validatedData);
+
+        return redirect()->route('sertifikasi.dosen.index')->with('success', 'Sertifikasi berhasil ditambahkan!');
+    }
+
+
     public function edit($id)
     {
-        $breadcrumb = (object) [
-            'title' => 'Sertifikasi',
-            'subtitle' => 'Edit Sertifikasi'
-        ];
-
         $sertifikasi = SertifikasiModel::findOrFail($id);
 
         return view('sertifikasi.edit', [
             'activeMenu' => 'sertifikasi',
             'sertifikasi' => $sertifikasi,
-            'breadcrumb' => $breadcrumb
         ]);
     }
 
-    // Memperbarui data sertifikasi
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
@@ -99,7 +156,6 @@ class SertifikasiController extends Controller
         return redirect()->route('sertifikasi.index')->with('success', 'Sertifikasi berhasil diperbarui!');
     }
 
-    // Menghapus sertifikasi
     public function destroy($id)
     {
         $sertifikasi = SertifikasiModel::findOrFail($id);
@@ -108,80 +164,41 @@ class SertifikasiController extends Controller
         return redirect()->route('sertifikasi.index')->with('success', 'Sertifikasi berhasil dihapus!');
     }
 
-    // Menampilkan daftar data sertifikasi untuk DataTables
     public function list(Request $request)
     {
-        $query = DataSertifikasiModel::with(['sertif', 'dosen']);
+        $dataSertifikasi = DataSertifikasiModel::select('sertif_id', 'status')
+            ->groupBy('sertif_id', 'status')
+            ->with('sertifikasi');
 
-        // Filter pencarian
-        if ($search = $request->input('search.value')) {
-            $query->whereHas('sertif', function ($q) use ($search) {
-                $q->where('nama_sertif', 'like', "%$search%");
-            });
-        }
-
-        $recordsTotal = $query->count();
-
-        $dataSertifikasi = $query
-            ->offset($request->start)
-            ->limit($request->length)
-            ->get();
-
-        // Format data untuk DataTables
-        $response = $dataSertifikasi->map(function ($item) {
-            return [
-                'data_sertifikasi_id' => $item->data_sertif_id,
-                'nama_sertifikasi' => $item->sertif->nama_sertif ?? '-',
-                'nama_dosen' => $item->dosen->nama ?? '-',
-                'status' => $item->status ?? '-',
-                'created_at' => $item->created_at->format('Y-m-d H:i:s'),
-            ];
-        });
-
-        return response()->json([
-            'draw' => $request->input('draw'),
-            'recordsTotal' => $recordsTotal,
-            'recordsFiltered' => $recordsTotal,
-            'data' => $response
-        ]);
+        return DataTables::of($dataSertifikasi)
+            ->addIndexColumn()
+            ->addColumn('nama_sertifikasi', function ($row) {
+                return $row->sertif->nama_sertif ?? '-';
+            })
+            ->addColumn('nama_bidang', function ($row) {
+                return $row->sertif->bidang->nama_bidang ?? '-';
+            })
+            ->addColumn('tanggal', function ($row) {
+                return $row->sertif->tanggal ?? '-';
+            })
+            ->addColumn('status', function ($row) {
+                return $row->status ?? '-';
+            })
+            ->addColumn('aksi', function ($row) {
+                $btn  = '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button>';
+                return $btn;
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
     }
 
-    public function show_ajax($id)
+    public function create_ajax()
     {
-        $data = DataSertifikasiModel::with([
-            'sertif.jenis',
-            'sertif.bidang',
-            'sertif.matkul',
-            'sertif.vendor',
-            'dosen'
-        ])->find($id);
-
-        if (!$data) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data tidak ditemukan.'
-            ], 404);
-        }
-
-        $response = [
-            'nama_sertifikasi' => $data->sertif->nama_sertif ?? null,
-            'bidang_nama' => $data->sertif->bidang->nama_bidang ?? null,
-            'matkul' => $data->sertif->matkul->nama_matkul ?? null,
-            'tanggal' => $data->sertif->tanggal ?? null,
-            'masa_berlaku' => $data->sertif->masa_berlaku ?? null,
-            'vendor_nama' => $data->sertif->vendor->nama_vendor ?? null,
-            'jenis' => $data->sertif->jenis->nama_jenis ?? null,
-            'periode' => $data->sertif->periode ?? null,
-            'dosen_nama' => $data->dosen->nama ?? null
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $response
-        ]);
+        return view('sertifikasi.create_ajax');
     }
 
-    // Menyimpan data sertifikasi melalui AJAX
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
@@ -217,7 +234,6 @@ class SertifikasiController extends Controller
         return redirect('/');
     }
 
-    // Menampilkan data untuk form edit melalui AJAX
     public function edit_ajax($id)
     {
         $sertifikasi = SertifikasiModel::find($id);
@@ -225,7 +241,6 @@ class SertifikasiController extends Controller
         return view('sertifikasi.edit_ajax', ['sertifikasi' => $sertifikasi]);
     }
 
-    // Memperbarui data sertifikasi melalui AJAX
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
@@ -269,7 +284,6 @@ class SertifikasiController extends Controller
         return redirect('/');
     }
 
-    // Menghapus data sertifikasi melalui AJAX
     public function delete_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {

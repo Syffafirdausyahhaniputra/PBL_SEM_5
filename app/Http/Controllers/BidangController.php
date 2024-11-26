@@ -30,6 +30,20 @@ class BidangController extends Controller
     {
         return view('bidang.index1');
     }
+    public function index2()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Daftar Bidang',
+            'subtitle'  => 'Daftar bidang yang terdaftar dalam sistem'
+        ];
+
+        $activeMenu = 'bidang'; // set menu yang sedang aktif
+
+        return view('bidang.indexDetailBidang', [
+            'breadcrumb' => $breadcrumb,
+            'activeMenu' => $activeMenu,
+        ]);
+    }
 
     // Ambil data bidang dalam bentuk json untuk datatables 
     public function list(Request $request)

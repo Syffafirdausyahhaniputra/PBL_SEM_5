@@ -7,54 +7,48 @@
                 <button onclick="modalAction('{{ url('/sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Sertifikasi</i></button>
             </div>
         </div>
-    <div class="card-body">
-        <!-- Pesan sukses/gagal -->
-        @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+        <div class="card-body">
+            <!-- Pesan sukses/gagal -->
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
 
-        <!-- Tabel Pelatihan -->
-        <table class="table table-bordered table-striped table-hover" id="table-sertifikasi">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Pelatihan</th>
-                    <th>Tanggal</th>
-                    <th>Bidang</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($sertifikasi as $index => $item)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->nama_sertifikasi }}</td>
-                    <td>{{ $item->tanggal }}</td>
-                    <td>{{ $item->bidang->nama_bidang ?? '-' }}</td>
-                    <td>
-                    <a href="{{ route('sertifikasi.show', $item->sertifikasi_id) }}" class="btn btn-sm btn-primary">Show</a>
-                        <a href="{{ route('sertifikasi.edit', $item->sertifikasi_id) }}" class="btn btn-sm btn-primary">Edit</a>
-                        <form action="{{ route('sertifikasi.destroy', $item->sertifikasi_id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+            <!-- Tabel Sertifikasi -->
+            <table class="table table-bordered table-striped table-hover" id="table-sertifikasi">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Sertifikasi</th>
+                        <th>Tanggal</th>
+                        <th>Bidang</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
-</div>
 @endsection
 
 @push('js')
 <script>
     $(document).ready(function() {
-        $('#table-sertifikasi').DataTable(); // Inisialisasi DataTables
+        $('#table-sertifikasi').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('sertifikasi.list') }}", // URL ke method `list()` di controller
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'nama_sertifikasi', name: 'nama_sertifikasi' },
+                { data: 'tanggal', name: 'tanggal' },
+                { data: 'nama_bidanga', name: 'pnama_bidang' },
+                { data: 'status', name: 'status' },
+                { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
+            ]
+        });
     });
 </script>
 @endpush

@@ -21,7 +21,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }} ">
+                <a href="{{ url('/sertifikasi/dosen') }}" class="nav-link {{ $activeMenu == 'sertifikasi_dosen' ? 'active' : '' }} ">
                     <i class="nav-icon far fa-user"></i>
                     <p>Data Sertifikasi</p>
                 </a>
@@ -36,9 +36,8 @@
             <!-- Logout Button -->
             <li class="nav-item">
                 <a href="{{ url('/logout') }}" class="nav-link">
-                    <button class="btn btn-danger btn-block">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
+                    <i class="nav-icon fas fa-sign-out-alt"></i> 
+                    <p>Logout</p>
                 </a>
             </li>
         </ul>

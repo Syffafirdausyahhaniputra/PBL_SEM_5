@@ -54,7 +54,7 @@
 
             /* Warna hover ungu lebih terang untuk menu */
             .nav-sidebar .nav-link:hover {
-                background-color: #a29bfe !important;
+                background-color: rgba(13, 72, 161, 0.692) !important;
                 /* Warna ungu hover */
                 color: #ffffff !important;
                 /* Teks tetap putih saat hover */
@@ -64,12 +64,6 @@
             .nav-header {
                 color: #D1C4E9 !important;
                 /* Warna ungu terang untuk header teks */
-            }
-
-            /* Tombol logout dengan warna merah muda gelap */
-            .btn-danger {
-                background-color: #C2185B !important;
-                /* Warna merah muda gelap */
             }
 
             /* Untuk menghilangkan border biru pada saat fokus */

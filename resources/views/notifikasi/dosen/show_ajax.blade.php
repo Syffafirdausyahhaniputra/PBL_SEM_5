@@ -34,6 +34,5 @@
     </div>
     <div class="card-footer">
         <a href="{{ url('notifikasidosen') }}" class="btn btn-secondary">Back</a>
-        <a href="{{ url('download/surat-tugas', ['id' => $id]) }}" class="btn btn-primary">Download Surat Tugas</a>
     </div>
 </div>

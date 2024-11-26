@@ -1,79 +1,68 @@
 @extends('layouts.template')
 @section('content')
-    <!-- Data and Profile Section -->
-    <div class="d-flex flex-row">
-        <!-- Chart Card -->
-        <div class="card p-4 me-4" style="flex: 3; max-height: 300px; margin-right: 15px;">
-            <div class="d-flex">
-                <div class="d-flex flex-column justify-content-around" style="flex: 2; margin-right: 10px; margin-bottom: 10px;">
-                    <div class="text-center">
-                        <h1 class="fw-bold">{{ $jumlahSertifikasiPelatihan }}</h1>
-                        <h2> Sertifikasi dan Pelatihan</h2>
-                        <!-- Jumlah dan Rata-rata -->
-                        <p>Jumlah Sertifikasi dan Pelatihan: {{ $jumlahSertifikasiPelatihan }}</p>
-                        @if(isset($rataRataSertifikasiPelatihanPerPeriode))
-                            <p>Rata-rata Sertifikasi dan Pelatihan Per Periode: {{ $rataRataSertifikasiPelatihanPerPeriode }}</p>
-                        @endif
+        <!-- Data and Profile Section -->
+        <div class="d-flex flex-row">
+            <!-- Chart Card -->
+            <div class="card p-4 me-4" style="flex: 3; max-height: 300px; margin-right: 15px;">
+                <div class="d-flex flex-column justify-content-around" style="flex: 2; margin-right: 10px; margin-bottom: 50px;"">
+                    <div class="d-flex flex-column justify-content-around" style="flex: 2; margin-right: 10px; margin-bottom: 50px;">
+                        <div class="text-center">
+                            <h1 class="fw-bold">{{ $jumlahSertifikasiPelatihan }}</h1>
+                            <h2> Sertifikasi dan Pelatihan</h2>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Profile Card -->
-        <div class="card p-4 text-center d-flex align-items-center justify-content-center" style="flex: 1; color: black; max-height: 300px;">
-            <h2 class="fw-bold">Profil</h2>
-            <img src="{{ Auth::user()->avatar ? asset('storage/avatar/' . Auth::user()->avatar) : asset('img/user.png') }}"
-                class="rounded-circle mb-3" width="150" height="150" alt="User Avatar">
-            <h4 class="fw-bold">{{ Auth::user()->nama }}</h4>
-        </div>
-    </div>
-    
-    <!-- Data Sertifikasi dan Pelatihan -->
-    <div class="card card-outline card-primary mt-3">
-        <div class="card-header">
-            <h5 class="fw-bold">Data Sertifikasi dan Pelatihan</h5>
-        </div>
-        <div class="card-body">
-            <!-- Sertifikasi Section -->
-            <div id="sertifikasi-container" class="mb-4">
-                <h6 class="fw-bold">Sertifikasi</h6>
-                @if ($sertifikasi->isEmpty())
-                    <p class="text-muted">Belum ada data sertifikasi.</p>
-                @else
-                    <ul class="list-group">
-                        @foreach ($sertifikasi as $item)
-                            <li class="list-group-item">
-                                <strong>{{ $item->nama_sertif }}</strong>
-                                <br>
-                                Tanggal: {{ $item->tanggal }}
-                                <br>
-                                Masa Berlaku: {{ $item->masa_berlaku }}
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
+            <!-- Profile Card -->
+            <div class="card p-4 text-center d-flex align-items-center justify-content-center" style="flex: 1; color: black; max-height: 300px;">
+                <h2 class="fw-bold">Profil</h2>
+                <img src="{{ Auth::user()->avatar ? asset('storage/avatar/' . Auth::user()->avatar) : asset('img/user.png') }}"
+                    class="rounded-circle mb-3" width="150" height="150" alt="User Avatar">
+                <h4 class="fw-bold">{{ Auth::user()->nama }}</h4>
             </div>
+        </div>
+        
+        <!-- Data Sertifikasi dan Pelatihan -->
+        <div id="sertifikasi-container" class="mb-4">
+        <h6 class="fw-bold">Sertifikasi</h6>
+        @if ($sertifikasi->isEmpty())
+            <p class="text-muted">Belum ada data sertifikasi.</p>
+        @else
+            <ul class="list-group">
+                @foreach ($sertifikasi as $item)
+                    <li class="list-group-item">
+                        <strong>{{ $item->nama_sertif }}</strong>
+                        <br>
+                        Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}
+                        <br>
+                        Masa Berlaku: {{ $item->masa_berlaku }}
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
 
-            <!-- Pelatihan Section -->
-            <div id="pelatihan-container">
-                <h6 class="fw-bold">Pelatihan</h6>
-                @if ($pelatihan->isEmpty())
-                    <p class="text-muted">Belum ada data pelatihan.</p>
-                @else
-                    <ul class="list-group">
-                        @foreach ($pelatihan as $item)
-                            <li class="list-group-item">
-                                <strong>{{ $item->nama_pelatihan }}</strong>
-                                <br>
-                                Tanggal: {{ $item->tanggal }}
-                                <br>
-                                Lokasi: {{ $item->lokasi }}
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
-            </div>
-        </div>
+
+                <!-- Pelatihan Section -->
+                <div id="pelatihan-container">
+        <h6 class="fw-bold">Pelatihan</h6>
+        @if ($pelatihan->isEmpty())
+            <p class="text-muted">Belum ada data pelatihan.</p>
+        @else
+            <ul class="list-group">
+                @foreach ($pelatihan as $item)
+                    <li class="list-group-item">
+                        <strong>{{ $item->nama_pelatihan }}</strong>
+                        <br>
+                        Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}
+                        <br>
+                        Lokasi: {{ $item->lokasi }}
+                    </li>
+                @endforeach
+            </ul>
+        @endif
     </div>
+
 
     <!-- Styling untuk list sertifikasi dan pelatihan -->
     <style>

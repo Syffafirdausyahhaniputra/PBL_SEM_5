@@ -43,8 +43,10 @@
                 <h5 class="card-title text-center">{{ $b->bidang_nama }}</h5>
             </div>
         @endforeach
-        <a href="{{ url('/list2') }}" class="see-more-btn">See More</a>
+        <!-- Ubah URL menjadi route yang sesuai -->
+        <a href="{{ route('bidang.detail') }}" class="see-more-btn">See More</a>
     </div>
+
 
     <!-- CSS Styles -->
     <style>

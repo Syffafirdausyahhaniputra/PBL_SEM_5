@@ -3,9 +3,9 @@
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <div class="card-tools">
+            <!-- <div class="card-tools">
                 <button onclick="modalAction('{{ url('/kompetensi_prodi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Kompetensi Prodi</i></button>
-            </div>
+            </div> -->
         </div>
         <div class="card-body">
             @if (session('success'))
@@ -49,7 +49,7 @@
                 // serverSide: true, jika ingin menggunakan server side proses 
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('kompetensi_prodi/list') }}",
+                    "url": "{{ url('kompetensi/list') }}",
                     "dataType": "json",
                     "type": "POST"
                 },

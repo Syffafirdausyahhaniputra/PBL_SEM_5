@@ -40,28 +40,27 @@ class PelatihanController extends Controller
         ]);
     }
     public function show_ajax(string $id)
-{
-    // Ambil data DataPelatihan berdasarkan id
-    $dataPelatihan = DataPelatihanModel::with([
-        'pelatihan.level',
-        'pelatihan.bidang',
-        'pelatihan.matkul',
-        'pelatihan.vendor',
-        'dosen'
-    ])->find($id);
+    {
+        // Ambil data DataPelatihan berdasarkan id
+        $dataPelatihan = DataPelatihanModel::with([
+            'pelatihan.level',
+            'pelatihan.bidang',
+            'pelatihan.matkul',
+            'pelatihan.vendor',
+        ])->find($id);
 
-    // Periksa apakah data ditemukan
-    if ($dataPelatihan) {
-        // Tampilkan halaman show_ajax dengan data pelatihan
-        return view('pelatihan.show_ajax', ['dataPelatihan' => $dataPelatihan]);
-    } else {
-        // Tampilkan pesan kesalahan jika data tidak ditemukan
-        return response()->json([
-            'status' => false,
-            'message' => 'Data tidak ditemukan'
-        ]);
+        // Periksa apakah data drowukan
+        if ($dataPelatihan) {
+            // Tampilkan halaman show_ajax dengan data pelatihan
+            return view('pelatihan.show_ajax', ['dataPelatihan' => $dataPelatihan]);
+        } else {
+            // Tampilkan pesan kesalahan jika data tidak drowukan
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
     }
-}
 
     // Method untuk menyimpan data pelatihan baru
     public function store(Request $request)
@@ -115,39 +114,42 @@ class PelatihanController extends Controller
     }
 
     public function list(Request $request)
-{
-    // Ambil data Pelatihan beserta relasinya
-    $dataPelatihan = DataPelatihanModel::with(['pelatihan.bidang', 'dosen'])
-    ->select('data_pelatihan_id', 'pelatihan_id', 'dosen_id', 'status', 'created_at')
-    ->groupBy('pelatihan_id')
-    ->with('pelatihan'); // Memuat relasi prodi untuk mendapatkan nama prodi
-    return DataTables::of($dataPelatihan)
-        ->addIndexColumn()
-        ->addColumn('nama_pelatihan', function ($item) {
-            // Tampilkan nama pelatihan, jika ada
-            return $item->pelatihan->nama_pelatihan ?? '-';
-        })
-        ->addColumn('nama_bidang', function ($item) {
-            // Tampilkan nama bidang, jika ada
-            return $item->pelatihan->bidang->bidang_nama ?? '-';
-        })
-        ->addColumn('nama_dosen', function ($item) {
-            // Tampilkan nama dosen, jika ada
-            return $item->dosen->dosen_nama ?? '-';
-        })
-        ->addColumn('tanggal', function ($item) {
-            return $item->pelatihan->tanggal ?? '-'; // Pastikan kolom ini ada
-        })
-        ->addColumn('aksi', function ($item) {
-            // Tambahkan tombol aksi
-            $btn  = '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
-            $btn .= '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-            $btn .= '<button onclick="modalAction(\'' . url('/datapelatihan/' . $item->data_pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button> ';
-            return $btn;
-        })
-        ->rawColumns(['aksi']) // Agar HTML pada kolom 'aksi' dirender dengan benar
-        ->make(true);
-}
+    {
+        // Ambil data DataPelatihanModel beserta relasinya
+        $dataPelatihan = DataPelatihanModel::select('pelatihan_id', 'status')
+            ->groupBy('pelatihan_id', 'status')
+            ->with('pelatihan');
+
+
+        // Menggunakan DataTables untuk memproses data yang telah diambil
+        return DataTables::of($dataPelatihan)
+            ->addIndexColumn() // Menambahkan kolom index
+            ->addColumn('nama_pelatihan', function ($row) {
+                // Tampilkan nama pelatihan berdasarkan pelatihan_id
+                return $row->pelatihan->nama_pelatihan ?? '-';
+            })
+            ->addColumn('nama_bidang', function ($row) {
+                // Tampilkan nama bidang dari relasi pelatihan -> bidang
+                return $row->pelatihan->bidang->bidang_nama ?? '-';
+            })
+            ->addColumn('tanggal', function ($row) {
+                // Tampilkan tanggal pelatihan dari relasi pelatihan
+                return $row->pelatihan->tanggal ?? '-';
+            })
+            ->addColumn('status', function ($row) {
+                // Tampilkan tanggal pelatihan dari relasi pelatihan
+                return $row->status ?? '-';
+            })
+            ->addColumn('aksi', function ($row) {
+                // Tombol aksi
+                $btn  = '<button onclick="modalAction(\'' . url('/pelatihan/' . $row->data_pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $row->data_pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $row->data_pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button>';
+                return $btn;
+            })
+            ->rawColumns(['aksi']) // Pastikan HTML tombol dirender dengan benar
+            ->make(true);
+    }
 
 
     public function create_ajax()
@@ -248,11 +250,10 @@ class PelatihanController extends Controller
 
             return response()->json([
                 'status' => false,
-                'message' => 'Data tidak ditemukan'
+                'message' => 'Data tidak drowukan'
             ]);
         }
 
         return redirect('/');
     }
-
 }

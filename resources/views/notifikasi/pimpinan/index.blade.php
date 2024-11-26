@@ -71,7 +71,7 @@
     $(document).ready(function() {
         // Fetch data dari server dan render sebagai card
         $.ajax({
-            url: "{{ url('riwayat/list') }}",
+            url: "{{ url('notifikasi/list') }}",
             type: "POST",
             dataType: "json",
             success: function(data) {
@@ -104,8 +104,8 @@
 
             // Tentukan URL berdasarkan type
             var url = type === 'sertifikasi' 
-                ? "{{ url('riwayat/sertifikasi') }}/" + id + "/show_ajax"
-                : "{{ url('riwayat/pelatihan') }}/" + id + "/show_ajax";
+                ? "{{ url('notifikasi/sertifikasi') }}/" + id + "/show_ajax"
+                : "{{ url('notifikasi/pelatihan') }}/" + id + "/show_ajax";
 
             $.ajax({
                 url: url,

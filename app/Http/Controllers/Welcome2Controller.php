@@ -12,50 +12,34 @@ use App\Models\PelatihanModel;
 class Welcome2Controller extends Controller
 {
     public function index2()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Selamat Datang',
-            'subtitle' => 'Halo, ' . Auth::user()->nama . '!'
-        ];
-    
-        $activeMenu = 'dashboard';
-    
-        // Mendapatkan data sertifikasi dan pelatihan
-        $sertifikasi = SertifikasiModel::select('nama_sertif', 'tanggal', 'masa_berlaku')->get();
-        $pelatihan = PelatihanModel::select('nama_pelatihan', 'tanggal', 'lokasi')->get();
-    
-        // Menghitung total sertifikasi dan pelatihan
-        $jumlahSertifikasiPelatihan = $sertifikasi->count() + $pelatihan->count();
-    
-        // Menghitung rata-rata sertifikasi dan pelatihan per periode (misalnya berdasarkan bulan)
-        $allMonths = $this->getAllMonths(); // Ambil semua bulan yang relevan
-        $sertifikasiPerBulan = $this->getSertifikasiPerBulan(); // Hitung sertifikasi per bulan
-        $pelatihanPerBulan = $this->getPelatihanPerBulan(); // Hitung pelatihan per bulan
-    
-        // Menyiapkan data sertifikasi dan pelatihan per bulan berdasarkan allMonths
-        $sertifikasiData = [];
-        $pelatihanData = [];
-        foreach ($allMonths as $month) {
-            $sertifikasiData[] = $sertifikasiPerBulan[$month] ?? 0;
-            $pelatihanData[] = $pelatihanPerBulan[$month] ?? 0;
-        }
-    
-        // Menghitung jumlah sertifikasi dan pelatihan keseluruhan
-        $jumlahSertifikasiPelatihan = array_sum($sertifikasiData) + array_sum($pelatihanData);
-    
-        // Menghitung rata-rata sertifikasi dan pelatihan per periode
-        $totalPeriode = count($allMonths);
-        $rataRataSertifikasiPelatihanPerPeriode = $totalPeriode > 0 ? round($jumlahSertifikasiPelatihan / $totalPeriode, 2) : 0;
-    
-        return view('welcome2', [
-            'breadcrumb' => $breadcrumb,
-            'activeMenu' => $activeMenu,
-            'jumlahSertifikasiPelatihan' => $jumlahSertifikasiPelatihan,
-            'sertifikasi' => $sertifikasi,
-            'pelatihan' => $pelatihan,
-            'rataRataSertifikasiPelatihanPerPeriode' => $rataRataSertifikasiPelatihanPerPeriode, // Pastikan ini ada
-        ]);
-    }
+{
+    $breadcrumb = (object) [
+        'title' => 'Selamat Datang',
+        'subtitle' => 'Halo, ' . Auth::user()->nama . '!'
+    ];
+
+    $activeMenu = 'dashboard';
+
+    // Mendapatkan data sertifikasi dan pelatihan dengan relasi bidang
+    $sertifikasi = SertifikasiModel::with('bidang')
+        ->select('nama_sertif', 'masa_berlaku', 'bidang_id')
+        ->get();
+
+    $pelatihan = PelatihanModel::with('bidang')
+        ->select('nama_pelatihan', 'lokasi', 'bidang_id')
+        ->get();
+
+    $jumlahSertifikasiPelatihan = $sertifikasi->count() + $pelatihan->count();
+
+    return view('welcome2', [
+        'breadcrumb' => $breadcrumb,
+        'activeMenu' => $activeMenu,
+        'jumlahSertifikasiPelatihan' => $jumlahSertifikasiPelatihan,
+        'sertifikasi' => $sertifikasi,
+        'pelatihan' => $pelatihan
+    ]);
+}
+
     
     // Menambahkan fungsi untuk mendapatkan data bulan, sertifikasi, dan pelatihan per bulan
     private function getAllMonths()

@@ -91,7 +91,7 @@
         });
 
         // Validasi sebelum submit
-        $("#form-tambah").on("submit", function(e) {
+        $("#form-edit-kompetensi-prodi").on("submit", function(e) {
             e.preventDefault(); // Mencegah submit default
 
             let bidangSelected = [];
@@ -131,8 +131,8 @@
                             title: 'Berhasil',
                             text: response.message
                         });
-                        if (typeof dataKompetensi !== "undefined") {
-                            dataKompetensi.ajax.reload();
+                        if (typeof dataKompetensiProdi !== "undefined") {
+                            dataKompetensiProdi.ajax.reload();
                         }
                     } else {
                         $('.error-text').text('');

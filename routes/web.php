@@ -48,6 +48,7 @@ Route::post('register', [AuthController::class, 'postRegister']);
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
     Route::get('/welcome2', [Welcome2Controller::class, 'index2']);
+    Route::get('/list2', [BidangController::class, 'index2'])->name('bidang.detail');
 
     Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {
         Route::get('/', [UserController::class, 'index']);         // menampilkan halaman awal user
@@ -138,8 +139,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/{prodi_kode}/show_ajax', [KompetensiProdiController::class, 'show_ajax']);
         Route::get('/edit_ajax/{prodi_id}', [KompetensiProdiController::class, 'edit_ajax']); // Menampilkan halaman form edit matkul Ajax
         Route::put('/update_ajax/{prodi_id}', [KompetensiProdiController::class, 'update_ajax']); // Menyimpan perubahan data matkul Ajax
-        Route::get('/{id}/delete_ajax', [KompetensiProdiController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete matkul Ajax
-        Route::delete('/{id}/delete_ajax', [KompetensiProdiController::class, 'delete_ajax']); // Untuk menghapus data matkul Ajax
+        Route::get('/{prodi_id}/delete_ajax', [KompetensiProdiController::class, 'confirm_ajax']); // Untuk menampilkan form konfirmasi delete matkul Ajax
+        Route::delete('/{prodi_id}/delete_ajax', [KompetensiProdiController::class, 'delete_ajax']); // Untuk menghapus data matkul Ajax
+    });
+
+    Route::group(['prefix' => 'kompetensi', 'middleware' => 'authorize:LEAD'], function () {
+        Route::get('/', [KompetensiProdiController::class, 'index2']);         // menampilkan halaman awal matkul
+        Route::post('/list', [KompetensiProdiController::class, 'list2']);     // menampilkan data matkul dalam bentuk json untuk datatables
+        Route::get('/{prodi_kode}/show_ajax', [KompetensiProdiController::class, 'show_ajax']);
     });
 
     Route::group(['prefix' => 'jenis', 'middleware' => 'authorize:ADMN'], function () {
@@ -210,7 +217,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('pelatihan')->group(function () {
-        Route::get('/', [PelatihanController::class, 'index'])->name('pelatihan.index'); // menampilkan daftar pelatihan
+        Route::get('/list', [PelatihanController::class, 'list'])->name('pelatihan.list');
+        Route::get('/', [PelatihanController::class, 'index'])->name('index'); // menampilkan daftar pelatihan
         Route::get('/create', [PelatihanController::class, 'create'])->name('pelatihan.create'); // halaman tambah pelatihan
         Route::post('/store', [PelatihanController::class, 'store'])->name('pelatihan.store'); // simpan data pelatihan
         Route::get('/edit/{id}', [PelatihanController::class, 'edit'])->name('pelatihan.edit'); // halaman edit pelatihan
@@ -222,6 +230,11 @@ Route::middleware('auth')->group(function () {
     
     Route::prefix('sertifikasi')->group(function () {
         Route::get('/', [SertifikasiController::class, 'index'])->name('sertifikasi.index'); 
+        Route::get('/dosen', [SertifikasiController::class, 'indexForDosen'])->name('sertifikasi.dosen.index');
+        Route::get('/dosen/create', [SertifikasiController::class, 'createForDosen'])->name('sertifikasi.dosen.create');
+        Route::post('/dosen/store', [SertifikasiController::class, 'storeForDosen'])->name('sertifikasi.dosen.store');
+
+        Route::get('/list', [SertifikasiController::class, 'list'])->name('sertifikasi.list');
         Route::get('/create', [SertifikasiController::class, 'create'])->name('sertifikasi.create'); 
         Route::post('/store', [SertifikasiController::class, 'store'])->name('sertifikasi.store'); 
         Route::get('/edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit'); 

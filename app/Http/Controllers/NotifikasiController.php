@@ -134,7 +134,7 @@ class NotifikasiController extends Controller
     public function index2()
     {
         $breadcrumb = (object) [
-            'title' => 'Notifikasidosen',
+            'title' => 'Notifikasi Dosen',
             'subtitle'  => ' '
         ];
 

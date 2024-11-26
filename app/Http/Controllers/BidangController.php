@@ -15,8 +15,8 @@ class BidangController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Manage Jabatan',
-            'subtitle'  => 'Daftar jabatan yang terdaftar dalam sistem'
+            'title' => 'Manage Bidang',
+            'subtitle'  => 'Daftar bidang yang terdaftar dalam sistem'
         ];
 
         $activeMenu = 'bidang'; // set menu yang sedang aktif
@@ -81,7 +81,7 @@ class BidangController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Jabatan berhasil disimpan'
+                'message' => 'Bidang berhasil disimpan'
             ]);
         }
 
@@ -95,7 +95,7 @@ class BidangController extends Controller
         if (!$bidang) {
             return response()->json([
                 'status' => false,
-                'message' => 'Jabatan tidak ditemukan'
+                'message' => 'Bidang tidak ditemukan'
             ]);
         }
 

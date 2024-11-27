@@ -44,7 +44,7 @@
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'nama_sertifikasi', name: 'nama_sertifikasi' },
                 { data: 'tanggal', name: 'tanggal' },
-                { data: 'nama_bidanga', name: 'pnama_bidang' },
+                { data: 'nama_bidang', name: 'pnama_bidang' },
                 { data: 'status', name: 'status' },
                 { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
             ]

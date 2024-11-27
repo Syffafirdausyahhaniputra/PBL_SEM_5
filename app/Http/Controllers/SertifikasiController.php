@@ -173,13 +173,13 @@ class SertifikasiController extends Controller
         return DataTables::of($dataSertifikasi)
             ->addIndexColumn()
             ->addColumn('nama_sertifikasi', function ($row) {
-                return $row->sertif->nama_sertif ?? '-';
+                return $row->sertifikasi->nama_sertif ?? '-';
             })
             ->addColumn('nama_bidang', function ($row) {
-                return $row->sertif->bidang->nama_bidang ?? '-';
+                return $row->sertifikasi->bidang->bidang_nama ?? '-';
             })
             ->addColumn('tanggal', function ($row) {
-                return $row->sertif->tanggal ?? '-';
+                return $row->sertifikasi->tanggal ?? '-';
             })
             ->addColumn('status', function ($row) {
                 return $row->status ?? '-';

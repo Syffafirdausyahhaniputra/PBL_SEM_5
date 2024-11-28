@@ -71,32 +71,44 @@
 
         // Validasi sebelum submit
         $("#form-tambah").on("submit", function(e) {
-            e.preventDefault(); // Mencegah submit default
+            e.preventDefault(); // Prevent default submission
 
-            let bidangSelected = [];
+            const prodiSelected = $("#prodi_id").val(); // Get selected prodi ID
+            const bidangSelected = [];
             let hasDuplicate = false;
+
+            // Cek jika prodi dipilih
+            if (!prodiSelected) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Terjadi Kesalahan",
+                    text: "Prodi tidak boleh kosong.",
+                });
+                return false;
+            }
 
             $(".bidang-select").each(function() {
                 const value = $(this).val();
                 if (value) {
                     if (bidangSelected.includes(value)) {
                         hasDuplicate = true;
-                        return false; // Keluar dari loop
+                        return false; // Exit loop
                     }
                     bidangSelected.push(value);
                 }
             });
 
+            // Cek jika ada duplikasi bidang
             if (hasDuplicate) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi Kesalahan',
-                    text: 'Bidang tidak boleh duplikat.'
+                    icon: "error",
+                    title: "Terjadi Kesalahan",
+                    text: "Bidang tidak boleh duplikat.",
                 });
                 return false;
             }
 
-            // Submit form via Ajax jika tidak ada duplikasi
+            // Submit form via Ajax
             const form = this;
             $.ajax({
                 url: form.action,
@@ -106,13 +118,11 @@
                     if (response.status) {
                         $('#myModal').modal('hide');
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: response.message
+                            icon: "success",
+                            title: "Berhasil",
+                            text: response.message,
                         });
-                        if (typeof dataKompetensi !== "undefined") {
-                            dataKompetensi.ajax.reload();
-                        }
+                        dataKompetensi.ajax.reload();
                     } else {
                         $('.error-text').text('');
                         if (response.msgField) {
@@ -121,34 +131,19 @@
                             });
                         }
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Terjadi Kesalahan',
-                            text: response.message
+                            icon: "error",
+                            title: "Terjadi Kesalahan",
+                            text: response.message,
                         });
                     }
                 },
-                error: function(xhr) {
-                    if (xhr.status === 422) { // Validasi gagal
-                        const response = xhr.responseJSON;
-                        $('.error-text').text('');
-                        if (response.msgField) {
-                            $.each(response.msgField, function(prefix, val) {
-                                $('#error-' + prefix).text(val[0]);
-                            });
-                        }
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Terjadi Kesalahan',
-                            text: response.message || 'Validasi gagal, periksa input Anda.'
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Terjadi Kesalahan',
-                            text: 'Terjadi kesalahan pada inputan (terjadi duplikasi).'
-                        });
-                    }
-                }
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Gagal",
+                        text: "Terjadi kesalahan pada server, coba lagi nanti.",
+                    });
+                },
             });
         });
     });

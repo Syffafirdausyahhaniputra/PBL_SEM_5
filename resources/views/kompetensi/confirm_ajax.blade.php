@@ -1,4 +1,4 @@
-@empty($kompetensi_prodi)
+@empty($kompetensi_prodi->prodi)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">

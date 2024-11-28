@@ -52,14 +52,14 @@ class KompetensiProdiController extends Controller
                 return $row->total_bidang;
             })
             ->addColumn('aksi', function ($kompetensi_prodi) {
-                $btn  = '<button onclick="modalAction(\'' . url('/kompetensi_prodi/' . $kompetensi_prodi->prodi->prodi_kode .
+                $btn  = '<button onclick="modalAction(\'' . url('/kompetensi_prodi/' . $kompetensi_prodi->prodi->prodi_id .
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">
                     <i class="fas fa-eye"></i> Detail
                 </button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/kompetensi_prodi/edit_ajax/' . $kompetensi_prodi->prodi_id) . '\')" class="btn btn-warning btn-sm">
                     <i class="fas fa-edit"></i> Edit
                 </button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/kompetensi_prodi/' . $kompetensi_prodi->kompetensi_prodi_id .
+                $btn .= '<button onclick="modalAction(\'' . url('/kompetensi_prodi/' . $kompetensi_prodi->prodi_id .
                     '/delete_ajax') . '\')" class="btn btn-danger btn-sm">
                     <i class="fas fa-trash"></i> Hapus
                 </button> ';
@@ -135,53 +135,66 @@ class KompetensiProdiController extends Controller
 
     public function store_ajax(Request $request)
     {
-        // Validasi input
+        // Validasi input untuk hanya satu prodi dan minimal satu bidang
         $request->validate([
-            'prodi_id' => 'required|exists:prodi,prodi_id', // Prodi harus ada di tabel prodi
+            'prodi_id' => 'required|exists:m_prodi,prodi_id', // Prodi harus valid dan dipilih
             'bidang_id' => 'required|array|min:1', // Minimal satu bidang dipilih
-            'bidang_id.*' => 'exists:bidang,bidang_id', // Semua bidang harus valid
+            'bidang_id.*' => 'exists:m_bidang,bidang_id', // Semua bidang harus valid
         ]);
 
-        $prodiId = $request->input('prodi_id');
-        $bidangIds = $request->input('bidang_id');
+        $prodiId = $request->input('prodi_id'); // Prodi yang dipilih
+        $bidangIds = $request->input('bidang_id'); // Array bidang yang dipilih
 
-        // Periksa duplikasi di database
-        $existing = DB::table('kompetensi_prodi')
-            ->where('prodi_id', $prodiId)
-            ->whereIn('bidang_id', $bidangIds)
-            ->pluck('bidang_id')
-            ->toArray();
+        $duplicateEntries = [];
+        $newEntries = [];
 
-        // Jika ada duplikasi, kembalikan respons error
-        if (!empty($existing)) {
-            $existingNames = DB::table('bidang')
-                ->whereIn('bidang_id', $existing)
-                ->pluck('bidang_nama')
+        // Periksa duplikasi untuk setiap bidang pada prodi yang sama
+        foreach ($bidangIds as $bidangId) {
+            $existing = DB::table('m_kompetensi_prodi')
+                ->where('prodi_id', $prodiId)
+                ->where('bidang_id', $bidangId)
+                ->exists();
+
+            if ($existing) {
+                $duplicateEntries[] = [
+                    'prodi_id' => $prodiId,
+                    'bidang_id' => $bidangId,
+                ];
+            } else {
+                $newEntries[] = [
+                    'prodi_id' => $prodiId,
+                    'bidang_id' => $bidangId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
+        // Jika ada duplikasi, beri respons error
+        if (!empty($duplicateEntries)) {
+            $prodiName = DB::table('m_prodi')
+                ->where('prodi_id', $prodiId)
+                ->pluck('prodi_nama')
+                ->first();
+
+            $bidangNames = DB::table('m_bidang')
+                ->whereIn('bidang_id', array_column($duplicateEntries, 'bidang_id'))
+                ->pluck('bidang_nama', 'bidang_id')
                 ->toArray();
+
+            $errorDetails = [];
+            foreach ($duplicateEntries as $entry) {
+                $errorDetails[] = $prodiName . ' - ' . $bidangNames[$entry['bidang_id']];
+            }
 
             return response()->json([
                 'status' => false,
-                'message' => 'Bidang berikut sudah terdaftar untuk prodi ini: ' . implode(', ', $existingNames),
+                'message' => 'Kombinasi Prodi dan Bidang berikut sudah terdaftar: ' . implode(', ', $errorDetails),
             ], 422);
         }
 
-        // Logging untuk debugging
-Log::info('Cek duplikasi:', [
-    'prodi_id' => $prodiId,
-    'bidang_ids' => $bidangIds,
-    'existing' => $existing
-]);
-
-
         // Simpan data baru ke database
-        foreach ($bidangIds as $bidangId) {
-            DB::table('kompetensi_prodi')->insert([
-                'prodi_id' => $prodiId,
-                'bidang_id' => $bidangId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        DB::table('m_kompetensi_prodi')->insert($newEntries);
 
         // Kembalikan respons sukses
         return response()->json([
@@ -229,43 +242,70 @@ Log::info('Cek duplikasi:', [
 
     public function update_ajax(Request $request, $prodi_id)
     {
-        $kompetensi = KompetensiProdiModel::with('bidang')->where('prodi_id', $prodi_id)->first();
-
-        logger()->info('Request data:', $request->all());
-
-
-        if (!$kompetensi) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data tidak ditemukan.'
-            ], 404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'prodi_id' => 'required|exists:prodi,prodi_id',
+        $request->validate([
             'bidang_id' => 'required|array|min:1',
-            'bidang_id.*' => 'exists:bidang,bidang_id',
+            'bidang_id.*' => 'distinct|exists:m_bidang,bidang_id',
+        ], [
+            'bidang_id.min' => 'Setiap prodi harus memiliki minimal satu bidang.',
+            'bidang_id.*.distinct' => 'Bidang tidak boleh duplikat.',
+            'bidang_id.*.exists' => 'Bidang yang dipilih tidak valid.',
         ]);
 
-        if ($validator->fails()) {
+        // Ambil data bidang yang sudah ada di database
+        $existingBidang = KompetensiProdiModel::where('prodi_id', $prodi_id)
+            ->pluck('bidang_id')
+            ->toArray();
+
+        $newBidang = $request->bidang_id;
+
+        // Bidang yang akan dihapus (ada di database tetapi tidak ada di input)
+        $toBeDeleted = array_diff($existingBidang, $newBidang);
+
+        // Bidang yang akan ditambahkan (ada di input tetapi tidak ada di database)
+        $toBeAdded = array_diff($newBidang, $existingBidang);
+
+        try {
+            DB::beginTransaction();
+
+            // Hapus bidang yang tidak ada di input
+            if (!empty($toBeDeleted)) {
+                KompetensiProdiModel::where('prodi_id', $prodi_id)
+                    ->whereIn('bidang_id', $toBeDeleted)
+                    ->delete();
+            }
+
+            // Tambahkan bidang baru
+            foreach ($toBeAdded as $bidang_id) {
+                KompetensiProdiModel::create([
+                    'prodi_id' => $prodi_id,
+                    'bidang_id' => $bidang_id,
+                ]);
+            }
+
+            // Pastikan minimal ada satu bidang tersisa untuk `prodi_id`
+            $remainingCount = KompetensiProdiModel::where('prodi_id', $prodi_id)->count();
+            if ($remainingCount < 1) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Setiap prodi harus memiliki minimal satu bidang.',
+                ]);
+            }
+
+            DB::commit();
 
             return response()->json([
+                'status' => true,
+                'message' => 'Data berhasil diperbarui.',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            logger()->error("Error update_ajax: " . $e->getMessage());
+            return response()->json([
                 'status' => false,
-                'msgField' => $validator->errors()
-            ], 422);
+                'message' => 'Terjadi kesalahan pada server.',
+            ], 500);
         }
-
-        // Update Prodi ID
-        $kompetensi->prodi_id = $request->prodi_id;
-        $kompetensi->save();
-
-        // Update relasi bidang
-        $kompetensi->bidang()->sync($request->bidang_id);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Data berhasil diperbarui.'
-        ]);
     }
 
     public function confirm_ajax(string $prodi_id)
@@ -332,11 +372,11 @@ Log::info('Cek duplikasi:', [
             return redirect('/');
         }
     }
-    public function show_ajax(string $prodi_kode)
+    public function show_ajax(string $prodi_id)
     {
         try {
             // Cari prodi berdasarkan prodi_kode
-            $prodi = ProdiModel::where('prodi_kode', $prodi_kode)->first();
+            $prodi = ProdiModel::where('prodi_id', $prodi_id)->first();
 
             if (!$prodi) {
                 return response()->json([

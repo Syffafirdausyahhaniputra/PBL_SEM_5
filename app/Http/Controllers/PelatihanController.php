@@ -31,6 +31,24 @@ class PelatihanController extends Controller
         ]);
     }
 
+    public function indexForDosen()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Data Pelatihan Dosen',
+            'subtitle' => ' '
+        ];
+
+        // Mengambil data sertifikasi dengan relasi ke bidang dan jenis
+        $pelatihan = PelatihanModel::with(['bidang', 'vendor'])->get();
+
+        return view('pelatihan.index_dosen', [
+            'activeMenu' => 'pelatihan_dosen',
+            'pelatihan' => $pelatihan,
+            'breadcrumb' => $breadcrumb,
+        ]);
+    }
+
+
 
     // Method untuk menampilkan form tambah pelatihan
     public function create()

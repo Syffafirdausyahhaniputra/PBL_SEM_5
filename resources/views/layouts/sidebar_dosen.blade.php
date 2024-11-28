@@ -27,7 +27,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/pelatihan') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active' : '' }} ">
+                <a href="{{ url('/pelatihan/dosen') }}" class="nav-link {{ $activeMenu == 'pelatihan_dosen' ? 'active' : '' }} ">
                     <i class="nav-icon far fa-user"></i>
                     <p>Data Pelatihan</p>
                 </a>

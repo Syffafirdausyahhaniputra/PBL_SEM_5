@@ -21,8 +21,8 @@
                 </a>
             </li>
             <li class="nav-item">
-                {{-- <a href="{{ url('/kompetensi') }}" class="nav-link {{ $activeMenu == 'profile' ? 'active' : '' }} "> --}}
-                <a href="{{ url('/kompetensi') }}" class="nav-link">
+                <a href="{{ url('/kompetensi') }}" class="nav-link {{ $activeMenu == 'profile' ? 'active' : '' }} ">
+                {{-- <a href="{{ url('/kompetensi') }}" class="nav-link"> --}}
                     <i class="nav-icon far fa-user"></i>
                     <p>Kompetensi Prodi</p>
                 </a>

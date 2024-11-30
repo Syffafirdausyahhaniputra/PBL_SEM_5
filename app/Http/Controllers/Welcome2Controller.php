@@ -26,7 +26,7 @@ class Welcome2Controller extends Controller
         ->get();
 
     $pelatihan = PelatihanModel::with('bidang')
-        ->select('nama_pelatihan', 'lokasi', 'bidang_id')
+        ->select('nama_pelatihan', 'vendor_id', 'bidang_id')
         ->get();
 
     $jumlahSertifikasiPelatihan = $sertifikasi->count() + $pelatihan->count();

@@ -56,7 +56,7 @@
                         <br>
                         Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}
                         <br>
-                        Lokasi: {{ $item->lokasi }}
+                        Penyelenggara: {{ $item->vendor->vendor_nama }}
                     </li>
                 @endforeach
             </ul>

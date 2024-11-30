@@ -1,4 +1,4 @@
-@empty($kompetensi_prodi->prodi)
+@empty($prodi)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -16,7 +16,7 @@
         </div>
     </div>
 @else
-    <form action="{{ url('/kompetensi_prodi/' . $kompetensi_prodi->prodi_id . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/kompetensi_prodi/' . $prodi->prodi_id . '/delete_ajax') }}" method="POST" id="form-delete">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">

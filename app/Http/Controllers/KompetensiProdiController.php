@@ -355,18 +355,33 @@ class KompetensiProdiController extends Controller
     {
         // cek apakah request dari ajax
         if ($request->ajax() || $request->wantsJson()) {
-            $kompetensi_prodi = KompetensiProdiModel::with('bidang')->where('prodi_id', $prodi_id)->first();
-            if ($kompetensi_prodi) {
-                $kompetensi_prodi->delete();
+            try {
+                // Cari semua kompetensi_prodi berdasarkan prodi_id
+                $kompetensi_prodi = KompetensiProdiModel::where('prodi_id', $prodi_id)->get();
+
+                // Periksa apakah ada data yang ditemukan
+                if ($kompetensi_prodi->isEmpty()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Data tidak ditemukan'
+                    ]);
+                }
+
+                // Hapus seluruh data yang terkait dengan prodi_id
+                foreach ($kompetensi_prodi as $data) {
+                    $data->delete();
+                }
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Data berhasil dihapus'
                 ]);
-            } else {
+            } catch (\Exception $e) {
+                logger()->error("Error di delete_ajax: " . $e->getMessage());
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data tidak ditemukan'
-                ]);
+                    'message' => 'Terjadi kesalahan server. Periksa log untuk detail.'
+                ], 500);
             }
         } else {
             return redirect('/');

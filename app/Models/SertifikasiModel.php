@@ -20,7 +20,7 @@ class SertifikasiModel extends Model implements JWTSubject
 
     protected $table = 't_sertifikasi';
     protected $primaryKey = 'sertif_id';
-    protected $fillable = ['jenis_id', 'bidang_id', 'mk_id', 'vendor_id', 'nama_sertif', 'tanggal', 'masa_berlaku', 'periode', 'created_at', 'updated_at'];
+    protected $fillable = ['jenis_id', 'bidang_id', 'mk_id', 'vendor_id', 'nama_sertif', 'tanggal', 'masa_berlaku', 'tanggal_akhir', 'biaya', 'periode', 'created_at', 'updated_at'];
 
     public function dataSertifikasi()
     {

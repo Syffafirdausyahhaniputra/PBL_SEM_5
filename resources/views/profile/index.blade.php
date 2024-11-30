@@ -13,10 +13,14 @@
                             <div class="text-center me-3">
                                 <form id="avatar-form" enctype="multipart/form-data">
                                     <label for="avatar" style="cursor: pointer;">
-                                        <img id="profile-pic" src="{{ $user->avatar ? asset('storage/avatar/' . $user->avatar) . '?v=' . time() : asset('img/user.png') }}" 
-                                             class="rounded-circle" width="100" height="100" alt="Profile Picture">
+                                        <img id="profile-pic" 
+                                             src="{{ $user->avatar ? asset('avatars/' . $user->avatar) : asset('img/user.png') }}" 
+                                             class="rounded-circle" 
+                                             width="100" 
+                                             height="100" 
+                                             alt="Profile Picture">
                                     </label>
-                                    <input type="file" id="avatar" name="avatar" class="d-none" onchange="previewAndUploadImage(event)" disabled accept="image/*">
+                                    <input type="file" id="avatar" name="avatar" class="d-none" onchange="previewAndUploadImage(event)" accept="image/*">
                                 </form>
                             </div>
                             <div>

@@ -21,9 +21,12 @@ class ProfileController extends Controller
 
         $activeMenu = 'profile';
 
+        $user = Auth::user();
+
         return view('profile.index', compact('user'), [
             'breadcrumb' => $breadcrumb, 
-            'activeMenu' => $activeMenu
+            'activeMenu' => $activeMenu,
+            'user' => $user
         ]);
     }
 
@@ -76,38 +79,42 @@ class ProfileController extends Controller
                 $user->password = Hash::make($request->password);
             }
 
-            // Handle avatar upload
-            if ($request->hasFile('avatar')) {
-                if (!Storage::exists('public/avatar')) {
-                    Storage::makeDirectory('public/avatar');
-                }
-
-                // Delete old avatar
-                if ($user->avatar) {
-                    $oldAvatarPath = storage_path('app/public/avatar/' . $user->avatar);
-                    if (file_exists($oldAvatarPath)) {
-                        unlink($oldAvatarPath);
-                    }
-                }
-
-                // Store new avatar
-                $file = $request->file('avatar');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->storeAs('public/avatar', $fileName);
-                $user->avatar = $fileName;
-            }
-
-            $user->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Profile berhasil diperbarui!',
-                'user' => [
-                    'nama' => $user->nama,
-                    'username' => $user->username,
-                    'avatar' => $user->avatar ? asset('storage/avatar/' . $user->avatar) : null
-                ]
+           // Handle avatar upload
+           if ($request->hasFile('avatar')) {
+            // Validasi file upload
+            $request->validate([
+                'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             ]);
+        
+            // Hapus avatar lama jika ada
+            if ($user->avatar) {
+                $oldAvatarPath = public_path('avatars/' . $user->avatar);
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath);
+                }
+            }
+        
+            // Simpan avatar baru di folder 'avatars' pada direktori public
+            $file = $request->file('avatar');
+            $fileName = time() . '' . preg_replace('/\\s+/', '', $file->getClientOriginalName());
+            $file->move(public_path('avatars'), $fileName);
+        
+            // Perbarui avatar di database
+            $user->avatar = $fileName;
+        }
+        
+        // Simpan perubahan pada user
+        $user->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile berhasil diperbarui!',
+            'user' => [
+                'nama' => $user->nama,
+                'username' => $user->username,
+                'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : null
+            ]
+        ]);
 
         } catch (\Exception $e) {
             return response()->json([

@@ -14,8 +14,7 @@
                 <!-- Display user's name -->
                 {{ Auth::user()->nama }} <span class="caret"></span>
                 <!-- Display user's avatar -->
-                <img src="{{ Auth::user()->avatar ? asset('storage/avatar/' . Auth::user()->avatar) : asset('img/user.png') }}"
-                    class="rounded-circle" width="30" height="30" alt="User Avatar">
+                <img src="{{ auth()->user()->avatar ? asset('avatars/' . auth()->user()->avatar) : asset('img/user.png') }}" class="rounded-circle" width="30" height="30" alt="User Avatar">
             </a>
         </li>
     </ul>

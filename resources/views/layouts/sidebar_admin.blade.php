@@ -15,15 +15,15 @@
                 </a>
             </li>
             <!-- Manage Dropdown -->
-            <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
+            <li class="nav-item has-treeview {{ in_array($activeMenu, ['user', 'role', 'vendor', 'bidang', 'matkul', 'prodi', 'kompetensi_prodi', 'jenis', 'level', 'sertifikasi', 'pelatihan']) ? 'menu-open' : '' }}">
+                <a href="#" class="nav-link {{ in_array($activeMenu, ['user', 'role', 'vendor', 'bidang', 'matkul', 'prodi', 'kompetensi_prodi', 'jenis', 'level', 'sertifikasi', 'pelatihan']) ? 'active' : '' }}">
                     <i class="nav-icon fas fa-users-cog"></i>
                     <p>
                         Manage
                         <i class="right fas fa-angle-left"></i>
                     </p>
                 </a>
-                <ul class="nav nav-treeview">
+                <ul class="nav nav-treeview" style="padding-left: 15px; font-size: 14px;">
                     <li class="nav-item">
                         <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                             <i class="fas fa-users nav-icon"></i>

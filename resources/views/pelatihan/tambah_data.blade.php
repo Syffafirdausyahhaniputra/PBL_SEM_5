@@ -52,6 +52,10 @@
                     <input type="date" class="form-control" id="tanggal" name="tanggal" required>
                 </div>
                 <div class="mb-3">
+                    <label for="tanggal_akhir" class="form-label">Tanggal Akhir</label>
+                    <input type="date" class="form-control" id="tanggal_akhir" name="tanggal_akhir" required>
+                </div>    
+                <div class="mb-3">
                     <label for="kuota" class="form-label">Kuota</label>
                     <input type="number" class="form-control" id="kuota" name="kuota" required>
                 </div>
@@ -60,9 +64,13 @@
                     <input type="text" class="form-control" id="lokasi" name="lokasi" required>
                 </div>
                 <div class="mb-3">
+                    <label for="biaya" class="form-label">Biaya</label>
+                    <input type="number" class="form-control" id="biaya" name="biaya" required>
+                </div> 
+                <div class="mb-3">
                     <label for="periode" class="form-label">Periode</label>
                     <input type="text" class="form-control" id="periode" name="periode" required>
-                </div>
+                </div>           
                 <button type="submit" class="btn btn-success">Simpan</button>
                 <a href="{{ route('pelatihan.index') }}" class="btn btn-secondary">Kembali</a>
             </form>            

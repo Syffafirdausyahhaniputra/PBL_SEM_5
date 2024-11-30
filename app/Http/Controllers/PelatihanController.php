@@ -131,9 +131,11 @@ class PelatihanController extends Controller
             'vendor_id' => 'required|integer',
             'nama_pelatihan' => 'required|string|max:255',
             'tanggal' => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
             'kuota' => 'required|integer',
             'lokasi' => 'required|string|max:255',
             'periode' => 'required|string|max:50',
+            'biaya' => 'required|numeric|min:0',
         ]);
 
         try {
@@ -146,6 +148,7 @@ class PelatihanController extends Controller
                 ->with('error', 'Terjadi kesalahan! Gagal menambahkan pelatihan.');
         }
     }
+
 
 
     // Method untuk menampilkan form edit pelatihan

@@ -20,7 +20,20 @@ class PelatihanModel extends Model implements JWTSubject
 
     protected $table = 't_pelatihan';
     protected $primaryKey = 'pelatihan_id';
-    protected $fillable = ['level_id', 'bidang_id', 'mk_id', 'vendor_id', 'nama_pelatihan', 'tanggal', 'kuota', 'lokasi', 'periode', 'created_at', 'updated_at'];
+    protected $fillable = [
+        'level_id',
+        'bidang_id',
+        'mk_id',
+        'vendor_id',
+        'nama_pelatihan',
+        'tanggal',
+        'tanggal_akhir',
+        'kuota',
+        'lokasi',
+        'periode',
+        'biaya',
+    ];
+    
 
     public function dataPelatihan()
     {

@@ -126,6 +126,8 @@ class SertifikasiController extends Controller
             'mk_id' => 'required|integer',
             'vendor_id' => 'required|integer',
             'tanggal' => 'required|date',
+            'tanggal_akhir' => 'required|date',
+            'biaya' => 'required|numeric|min:0',
             'masa_berlaku' => 'nullable|date',
             'periode' => 'required|string|max:50',
         ]);

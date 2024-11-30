@@ -2,6 +2,17 @@
 
 @section('content')
 <div class="container">
+    <!-- Menampilkan Flash Message jika ada -->
+    @if(session('success'))
+        <div class="alert alert-success mt-3">
+            {{ session('success') }}
+        </div>
+    @elseif(session('error'))
+        <div class="alert alert-danger mt-3">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-12">
             <!-- Perulangan untuk setiap sertifikasi -->
@@ -16,12 +27,14 @@
             @endforeach
         </div>
     </div>
+
     <div class="row">
         <div class="col-12">
             <!-- Tombol Tambah Sertifikasi -->
             <div class="d-flex justify-content-end mb-3">
                 <a href="{{ route('sertifikasi.dosen.create') }}" class="btn btn-warning shadow-sm">Tambah Data</a>
             </div>
+        </div>
     </div>
 </div>
 @endsection

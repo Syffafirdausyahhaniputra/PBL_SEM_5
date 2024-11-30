@@ -22,13 +22,13 @@
             </li>
             <li class="nav-item">
                 <a href="{{ url('/sertifikasi/dosen') }}" class="nav-link {{ $activeMenu == 'sertifikasi_dosen' ? 'active' : '' }} ">
-                    <i class="nav-icon far fa-user"></i>
+                    <i class="nav-icon fas fa-folder"></i>
                     <p>Data Sertifikasi</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ url('/pelatihan/dosen') }}" class="nav-link {{ $activeMenu == 'pelatihan_dosen' ? 'active' : '' }} ">
-                    <i class="nav-icon far fa-user"></i>
+                    <i class="nav-icon fas fa-file"></i>
                     <p>Data Pelatihan</p>
                 </a>
             </li>

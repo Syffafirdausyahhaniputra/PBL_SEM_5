@@ -62,16 +62,21 @@ class SertifikasiController extends Controller
             'subtitle' => 'Tambah Sertifikasi'
         ];
 
-        $bidangs = BidangModel::all(); // Mengambil semua bidang
-        $jenis = JenisModel::all();   // Mengambil semua jenis
+        $bidangs = BidangModel::all();
+        $jenis = JenisModel::all();
+        $matkuls = MatkulModel::all(); // Ambil data mata kuliah
+        $vendors = VendorModel::all(); // Ambil data vendor
 
-        return view('sertifikasi.tambah_data', [ // Pastikan file view benar
+        return view('sertifikasi.tambah_data', [
             'activeMenu' => 'sertifikasi_dosen',
             'breadcrumb' => $breadcrumb,
             'bidangs' => $bidangs,
-            'jenis' => $jenis
+            'jenis' => $jenis,
+            'matkuls' => $matkuls,
+            'vendors' => $vendors,
         ]);
     }
+
 
 
     public function show_ajax(string $id)
@@ -118,13 +123,24 @@ class SertifikasiController extends Controller
             'nama_sertif' => 'required|string|max:255',
             'bidang_id' => 'required|integer',
             'jenis_id' => 'required|integer',
+            'mk_id' => 'required|integer',
+            'vendor_id' => 'required|integer',
+            'tanggal' => 'required|date',
             'masa_berlaku' => 'nullable|date',
+            'periode' => 'required|string|max:50',
         ]);
 
-        SertifikasiModel::create($validatedData);
+        try {
+            SertifikasiModel::create($validatedData);
 
-        return redirect()->route('sertifikasi.dosen.index')->with('success', 'Sertifikasi berhasil ditambahkan!');
+            return redirect()->route('sertifikasi.dosen.index')
+                ->with('success', 'Sertifikasi berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->route('sertifikasi.dosen.index')
+                ->with('error', 'Terjadi kesalahan! Gagal menambahkan sertifikasi.');
+        }
     }
+
 
 
     public function edit($id)

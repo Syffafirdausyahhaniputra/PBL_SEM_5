@@ -2,6 +2,16 @@
 
 @section('content')
 <div class="container">
+    <!-- Menampilkan Flash Message jika ada -->
+    @if(session('success'))
+        <div class="alert alert-success mt-3">
+            {{ session('success') }}
+        </div>
+    @elseif(session('error'))
+        <div class="alert alert-danger mt-3">
+            {{ session('error') }}
+        </div>
+    @endif
     <div class="row">
         <div class="col-12">
             <!-- Perulangan untuk setiap pelatihan -->

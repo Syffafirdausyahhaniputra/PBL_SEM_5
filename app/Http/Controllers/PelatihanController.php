@@ -9,6 +9,7 @@ use App\Models\BidangModel;
 use App\Models\MatkulModel;
 use App\Models\VendorModel;
 use App\Models\DataPelatihanModel;
+use App\Models\JenisModel;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -57,6 +58,32 @@ class PelatihanController extends Controller
             'activeMenu' => 'pelatihan', // Menandai menu Pelatihan sebagai aktif
         ]);
     }
+
+    public function createForDosen()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Pelatihan Dosen',
+            'subtitle' => 'Tambah Pelatihan'
+        ];
+
+        $bidangs = BidangModel::all();
+        $jenis = JenisModel::all();
+        $matkuls = MatkulModel::all(); // Ambil data mata kuliah
+        $vendors = VendorModel::all(); // Ambil data vendor
+        $levels = LevelPelatihanModel::all();
+
+        return view('pelatihan.tambah_data', [
+            'activeMenu' => 'pelatihan_dosen',
+            'breadcrumb' => $breadcrumb,
+            'bidangs' => $bidangs,
+            'jenis' => $jenis,
+            'matkuls' => $matkuls,
+            'vendors' => $vendors,
+            'levels' => $levels,
+        ]);
+        
+    }
+
     public function show_ajax(string $id)
     {
         // Ambil data DataPelatihan berdasarkan id
@@ -92,8 +119,34 @@ class PelatihanController extends Controller
 
         PelatihanModel::create($validatedData); // Menyimpan data ke database
 
-        return redirect()->route('pelatihan.index')->with('success', 'Pelatihan berhasil ditambahkan!');
+        return redirect()->route('pelatihan.dosen.index')->with('success', 'Pelatihan berhasil ditambahkan!');
     }
+
+    public function storeForDosen(Request $request)
+    {
+        $validatedData = $request->validate([
+            'level_id' => 'required|integer',
+            'bidang_id' => 'required|integer',
+            'mk_id' => 'required|integer',
+            'vendor_id' => 'required|integer',
+            'nama_pelatihan' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'kuota' => 'required|integer',
+            'lokasi' => 'required|string|max:255',
+            'periode' => 'required|string|max:50',
+        ]);
+
+        try {
+            PelatihanModel::create($validatedData);
+
+            return redirect()->route('pelatihan.dosen.index')
+                ->with('success', 'Pelatihan berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->route('pelatihan.dosen.index')
+                ->with('error', 'Terjadi kesalahan! Gagal menambahkan pelatihan.');
+        }
+    }
+
 
     // Method untuk menampilkan form edit pelatihan
     public function edit($id)

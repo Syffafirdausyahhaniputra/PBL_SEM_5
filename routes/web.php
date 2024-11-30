@@ -221,6 +221,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [PelatihanController::class, 'index'])->name('pelatihan.index'); // menampilkan daftar pelatihan
         Route::get('/dosen', [PelatihanController::class, 'indexForDosen'])->name('pelatihan.dosen.index');
         Route::get('/dosen/create', [PelatihanController::class, 'createForDosen'])->name('pelatihan.dosen.create');
+        Route::post('/dosen/store', [PelatihanController::class, 'storeForDosen'])->name('pelatihan.dosen.store');
         Route::get('/create', [PelatihanController::class, 'create'])->name('pelatihan.create'); // halaman tambah pelatihan
         Route::post('/store', [PelatihanController::class, 'store'])->name('pelatihan.store'); // simpan data pelatihan
         Route::get('/edit/{id}', [PelatihanController::class, 'edit'])->name('pelatihan.edit'); // halaman edit pelatihan

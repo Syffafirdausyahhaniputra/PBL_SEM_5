@@ -41,6 +41,7 @@ class DashboardController extends Controller
         $pelatihanCount = DataPelatihanModel::where('dosen_id', $dosenId)->count();
         $jumlahSertifikasiPelatihan = $sertifikasiCount + $pelatihanCount;
 
+
         // Mendapatkan detail sertifikasi
         $sertifikasi = DataSertifikasiModel::where('dosen_id', $dosenId)
             ->with(['sertif.jenis', 'sertif.bidang'])
@@ -80,6 +81,86 @@ class DashboardController extends Controller
                 'sertifikasi' => $sertifikasi,
                 'pelatihan' => $pelatihan,
             ]
+        ], 200);
+    }
+
+    public function listData()
+    {
+        // Cek apakah user sudah terautentikasi
+        if (!Auth::guard('api')->check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
+        // Mendapatkan informasi user
+        $user = Auth::guard('api')->user();
+
+        // Mendapatkan dosen_id berdasarkan user_id
+        $dosen = DosenModel::where('user_id', $user->user_id)->first();
+
+        if (!$dosen) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dosen tidak ditemukan untuk user ini.'
+            ], 404);
+        }
+
+        // Mendapatkan sertifikasi dan pelatihan
+        $dosenId = $dosen->dosen_id;
+
+        $sertifikasi = DataSertifikasiModel::where('dosen_id', $dosenId)
+            ->with(['sertif.jenis', 'sertif.bidang'])
+            ->get()
+            ->map(function ($data) {
+                return [
+                    'nama_sertifikasi' => $data->sertif->nama_sertif ?? '-',
+                    'bidang_sertifikasi' => $data->sertif->bidang->bidang_nama ?? '-',
+                    'masa_berlaku' => $data->sertif->masa_berlaku ?? '-',
+                ];
+            });
+
+        $pelatihan = DataPelatihanModel::where('dosen_id', $dosenId)
+            ->with(['pelatihan.bidang'])
+            ->get()
+            ->map(function ($data) {
+                return [
+                    'nama_pelatihan' => $data->pelatihan->nama_pelatihan ?? '-',
+                    'bidang_pelatihan' => $data->pelatihan->bidang->bidang_nama ?? '-',
+                    'masa_berlaku' => $data->pelatihan->tanggal ?? '-', // Asumsi masa berlaku menggunakan 'periode'
+                ];
+            });
+
+        // merge data pelatihan dan sertifikasi with format JSON
+        // $data = [
+        //     'nama' => ,
+        //     'bidang' => ,
+        //     'masa_berlaku' => $pelatihan,
+        // ];
+        $data = [];
+
+        foreach ($sertifikasi as $sertif) {
+            $data[] = [
+                'nama' => $sertif['nama_sertifikasi'],
+                'bidang' => $sertif['bidang_sertifikasi'],
+                'masa_berlaku' => $sertif['masa_berlaku'],
+            ];
+        }
+
+        foreach ($pelatihan as $latih) {
+            $data[] = [
+                'nama' => $latih['nama_pelatihan'],
+                'bidang' => $latih['bidang_pelatihan'],
+                'masa_berlaku' => $latih['masa_berlaku'],
+            ];
+        }
+
+        // Menyiapkan respons JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'List data berhasil diambil',
+            'data' => $data
         ], 200);
     }
 }

@@ -112,7 +112,13 @@ class SertifikasiController extends Controller
             'periode' => 'nullable|string|max:50',
         ]);
 
-        SertifikasiModel::create($validatedData);
+        $sertif_id = SertifikasiModel::create(attributes: $validatedData);
+
+        DataSertifikasiModel::create([
+            'sertif_id' => $sertif_id->sertif_id,
+            'dosen_id' => auth()->user()->dosen->dosen_id,
+            'status' => 'Pending'
+        ]);
 
         return redirect()->route('sertifikasi.index')->with('success', 'Sertifikasi berhasil ditambahkan!');
     }
@@ -203,7 +209,7 @@ class SertifikasiController extends Controller
                 return $row->status ?? '-';
             })
             ->addColumn('aksi', function ($row) {
-                $btn  = '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+                $btn = '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button>';
                 return $btn;

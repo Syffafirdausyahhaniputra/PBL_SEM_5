@@ -4,12 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\DosenModel;
-use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class ProfileController extends Controller
+class ProfileDosenController extends Controller
 {
     /**
      * Display the authenticated dosen's profile.
@@ -18,30 +17,31 @@ class ProfileController extends Controller
     {
         try {
             // Ambil data dosen dengan relasi user, bidang, matkul
-            
-                $user = UserModel::with([])
+            $dosen = DosenModel::with(['user', 'bidang', 'matkul'])
                 ->where('user_id', Auth::id())
                 ->first();
 
-            if (!$user) {
+            if (!$dosen) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Data User tidak ditemukan.'
+                    'message' => 'Data dosen tidak ditemukan.'
                 ], 404);
             }
 
             // Ambil data role melalui relasi User
-            $role = $user->role;
+            $role = $dosen->user->role;
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'id' => $user->user_id,
-                    'nama' => $user->nama,
-                    'username' => $user->username,
-                    'nip' => $user->nip,
+                    'id' => $dosen->dosen_id,
+                    'nama' => $dosen->user->nama,
+                    'username' => $dosen->user->username,
+                    'nip' => $dosen->user->nip,
                     'role' => $role->role_nama,  // Menambahkan role
-                    'avatar' => $user->avatar ? asset('avatars/' . $user->user->avatar) : asset('avatars/user.jpg')
+                    'bidang' => $dosen->bidang ? $dosen->bidang->bidang_nama : null,
+                    'matkul' => $dosen->matkul ? $dosen->matkul->mk_nama : null,
+                    'avatar' => $dosen->user->avatar ? asset('avatars/' . $dosen->user->avatar) : asset('avatars/user.jpg')
                 ]
             ]);
         } catch (\Exception $e) {
@@ -58,20 +58,24 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         try {
-            $user = UserModel::where('user_id', Auth::id())->first();
+            $dosen = DosenModel::where('user_id', Auth::id())->first();
 
-            if (!$user) {
+            if (!$dosen) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Data Pimpinan tidak ditemukan.'
+                    'message' => 'Data dosen tidak ditemukan.'
                 ], 404);
             }
+
+            $user = $dosen->user;
 
             // Validasi input
             $request->validate([
                 'username' => 'required|string|min:3|unique:m_user,username,' . $user->user_id . ',user_id',
                 'nama'     => 'required|string|max:100',
                 'nip'      => 'required|string|max:50',
+                'bidang_id' => 'nullable|exists:m_bidang,bidang_id',
+                'mk_id'    => 'nullable|exists:m_matkul,mk_id',
                 'old_password' => 'nullable|string',
                 'password' => 'nullable|min:5',
                 'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
@@ -85,8 +89,9 @@ class ProfileController extends Controller
                 $user->nama != $request->nama ||
                 $user->nip != $request->nip ||
                 $request->hasFile('avatar') ||
-                $request->filled('old_password') 
-       
+                $request->filled('old_password') ||
+                $dosen->bidang_id != $request->bidang_id ||
+                $dosen->mk_id != $request->mk_id
             ) {
                 $isChanged = true;
             }
@@ -103,7 +108,10 @@ class ProfileController extends Controller
             $user->nama = $request->nama;
             $user->nip = $request->nip;
 
-      
+            // Update data dosen
+            $dosen->bidang_id = $request->bidang_id;
+            $dosen->mk_id = $request->mk_id;
+
             // Handle password update
             if ($request->filled('old_password')) {
                 if (!Hash::check($request->old_password, $user->password)) {
@@ -132,7 +140,7 @@ class ProfileController extends Controller
 
             // Simpan perubahan
             $user->save();
-       
+            $dosen->save();
 
             return response()->json([
                 'success' => true,
@@ -141,6 +149,8 @@ class ProfileController extends Controller
                     'nama' => $user->nama,
                     'username' => $user->username,
                     'nip' => $user->nip,
+                    'bidang' => $dosen->bidang ? $dosen->bidang->bidang_nama : null,
+                    'matkul' => $dosen->matkul ? $dosen->matkul->mk_nama : null,
                     'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : asset('avatars/user.jpg')
                 ]
             ]);

@@ -4,7 +4,7 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/pelatihan/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Pelatihan</i></button>
+                <button onclick="modalAction('{{ url('/pelatihan/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus">Tambah Pelatihan</i></button>
             </div>
         </div>
         <div class="card-body">
@@ -15,7 +15,6 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-
             <!-- Tabel Pelatihan -->
             <table class="table table-bordered table-striped table-hover" id="table-pelatihan">
                 <thead>
@@ -31,10 +30,19 @@
             </table>
         </div>
     </div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true">
+    </div>
 @endsection
 
 @push('js')
 <script>
+    function modalAction(url = '') {
+        $('#myModal').load(url, function() {
+            $('#myModal').modal('show');
+        });
+    }
+
     $(document).ready(function() {
         $('#table-pelatihan').DataTable({
             processing: true,

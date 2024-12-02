@@ -10,6 +10,7 @@ use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\API\SertifikasiController;
 use App\Http\Controllers\Api\DosenController;
+use App\Http\Controllers\API\NotifikasiPimpinanController;
 use App\Http\Controllers\API\ProfileDosenController;
 
 /*
@@ -58,6 +59,12 @@ Route::middleware('auth:api')->group(function () {
         Route::post('create', [SertifikasiApiController::class, 'store']); // Menambahkan data dosen
         Route::get('show/{id}', [SertifikasiApiController::class, 'show']); // Menampilkan data dosen berdasarkan ID
         Route::post('update/{id}', [SertifikasiApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
+    });
+    
+    Route::group(['prefix' => 'notifikasi'], function () {
+        Route::get('/list', [NotifikasiPimpinanController::class, 'list']); 
+        Route::get('/show/{type}/{id}', [NotifikasiPimpinanController::class, 'show']); 
+        Route::post('/verify/{type}/{id}', [NotifikasiPimpinanController::class, 'verify']); 
     });
 
     // Route untuk get all data

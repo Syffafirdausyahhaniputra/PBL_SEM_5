@@ -20,7 +20,7 @@ class DataPelatihanModel extends Model implements JWTSubject
 
     protected $table = 't_data_pelatihan';
     protected $primaryKey = 'data_pelatihan_id';
-    protected $fillable = ['pelatihan_id', 'dosen_id', 'status', 'created_at', 'updated_at'];
+    protected $fillable = ['pelatihan_id', 'dosen_id', 'surat_tugas_id', 'keterangan', 'status', 'sertifikat', 'created_at', 'updated_at'];
 
     public function pelatihan()
   {
@@ -32,4 +32,8 @@ class DataPelatihanModel extends Model implements JWTSubject
     return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
   }
 
+  public function surat_tugas()
+  {
+    return $this->belongsTo(SuratTugasModel::class, 'surat_tugas_id');
+  }
 }

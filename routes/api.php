@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Dashboard2Controller;
 use App\Http\Controllers\Api\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -8,7 +9,7 @@ use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\API\SertifikasiController;
 use App\Http\Controllers\Api\DosenController;
-
+use App\Http\Controllers\API\ProfileDosenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,7 @@ use App\Http\Controllers\Api\DosenController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::get('/pelatihan', [PelatihanController::class, 'list']);
 Route::get('create', [PelatihanController::class, 'create'])->name('pelatihan.create');
 Route::post('store', [PelatihanController::class, 'store'])->name('pelatihan.store');
@@ -42,10 +44,26 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Route yang hanya dapat diakses setelah login
 Route::middleware('auth:api')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard2', [Dashboard2Controller::class, 'index']);
 
     // Route untuk get all data
     Route::get('listData', [DashboardController::class, 'listData'])->name('listData');
+
+    Route::get('/profiledosen', [ProfileDosenController::class, 'index']); // Menampilkan profil dosen
+    Route::patch('/profiledosen', [ProfileDosenController::class, 'update']); // Mengupdate profil dosen
+
+      // Route untuk get all data
+      Route::get('listData', [Dashboard2Controller::class, 'listData'])->name('listData');
+
+      Route::get('/profile', [ProfileController::class, 'index']); // Menampilkan profil dosen
+      Route::patch('/profile', [ProfileController::class, 'update']); // Mengupdate profil dosen  
 });
+
+Route::get('/kompetensi', [App\Http\Controllers\Api\KompetensiController::class, 'index']);
+Route::post('/kompetensi/list', [App\Http\Controllers\Api\KompetensiController::class, 'list']);
+Route::get('/kompetensi/{prodi_kode}/show_ajax', [App\Http\Controllers\Api\KompetensiController::class, 'show_ajax']);
+
+
 
 Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
 Route::resource('pelatihan', PelatihanController::class);

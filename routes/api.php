@@ -59,7 +59,19 @@ Route::middleware('auth:api')->group(function () {
         Route::get('show/{id}', [SertifikasiApiController::class, 'show']); // Menampilkan data dosen berdasarkan ID
         Route::post('update/{id}', [SertifikasiApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
     });
+
+    // Route untuk get all data
+    Route::get('listData', [Dashboard2Controller::class, 'listData'])->name('listData');
+
+    Route::get('/profile', [ProfileController::class, 'index']); // Menampilkan profil dosen
+    Route::patch('/profile', [ProfileController::class, 'update']); // Mengupdate profil dosen  
 });
+
+Route::get('/kompetensi', [App\Http\Controllers\Api\KompetensiController::class, 'index']);
+Route::post('/kompetensi/list', [App\Http\Controllers\Api\KompetensiController::class, 'list']);
+Route::get('/kompetensi/{prodi_kode}/show_ajax', [App\Http\Controllers\Api\KompetensiController::class, 'show_ajax']);
+
+
 
 Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
 Route::resource('pelatihan', PelatihanController::class);

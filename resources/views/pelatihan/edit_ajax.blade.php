@@ -1,4 +1,4 @@
-@empty($user)
+@empty($pelatihan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,137 +9,119 @@
             <div class="modal-body">
                 <div class="alert alert-danger">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                    Data yang anda cari tidak ditemukan
-                </div>
+                    Data yang anda cari tidak ditemukan</div>
                 <a href="{{ url('/pelatihan') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/pelatihan/' . $pelatihan->pealtihan_id . '/update_ajax') }}" method="POST" id="form-edit">
-        @csrf
-        @method('PUT')
-        <div id="modal-master" class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Pelatihan</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+<form action="{{ url('/pelatihan/' . $pelatihan->pelatihan_id.'/update_ajax') }}" method="POST" id="form-edit-pelatihan">
+    @csrf
+    @method('PUT')
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Data Pelatihan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nama Pelatihan</label>
+                    <input value="{{ $pelatihan->nama_pelatihan }}" type="text" name="nama_pelatihan" id="nama_pelatihan"
+                        class="form-control" required>
+                    <small id="error-nama_pelatihan" class="error-text form-text text-danger"></small>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Jabatan Pengguna</label>
-                        <select name="role_id" id="role_id" class="form-control" required>
-                            <option value="">- Pilih Jabatan -</option>
-                            @foreach ($role as $l)
-                                <option {{ $l->role_id == $user->role_id ? 'selected' : '' }}
-                                    value="{{ $l->role_id }}">{{ $l->role_nama }}</option>
-                            @endforeach
-                        </select>
-                        <small id="error-role_id" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input value="{{ $user->username }}" type="text" name="username" id="username"
-                            class="form-control" required>
-                        <small id="error-username" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Nama</label>
-                        <input value="{{ $user->nama }}" type="text" name="nama" id="nama" class="form-control"
-                            required>
-                        <small id="error-nama" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>NIP</label>
-                        <input value="{{ $user->nip }}" type="text" name="nip" id="nip" class="form-control"
-                            required>
-                        <small id="error-nip" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input value="" type="password" name="password" id="password" class="form-control">
-                        <small class="form-text text-muted">Abaikan jika tidak ingin ubah
-                            password</small>
-                        <small id="error-password" class="error-text form-text text-danger"></small>
-                    </div>
+                <div class="form-group">
+                    <label>Tanggal</label>
+                    <input value="{{ $pelatihan->tanggal }}" type="date" name="tanggal" id="tanggal"
+                        class="form-control" required>
+                    <small id="error-tanggal" class="error-text form-text text-danger"></small>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="form-group">
+                    <label>Kuota</label>
+                    <input value="{{ $pelatihan->kuota }}" type="number" name="kuota" id="kuota"
+                        class="form-control" required>
+                    <small id="error-kuota" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Lokasi</label>
+                    <input value="{{ $pelatihan->lokasi }}" type="text" name="lokasi" id="lokasi"
+                        class="form-control" required>
+                    <small id="error-lokasi" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Periode</label>
+                    <input value="{{ $pelatihan->periode }}" type="text" name="periode" id="periode"
+                        class="form-control" required>
+                    <small id="error-periode" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Biaya</label>
+                    <input value="{{ $pelatihan->biaya }}" type="number" name="biaya" id="biaya"
+                        class="form-control" required>
+                    <small id="error-biaya" class="error-text form-text text-danger"></small>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
         </div>
-    </form>
-    <script>
-        $(document).ready(function() {
-            $("#form-edit").validate({
-                rules: {
-                    role_id: {
-                        required: true,
-                        number: true
-                    },
-                    username: {
-                        required: true,
-                        minlength: 3,
-                        maxlength: 20
-                    },
-                    nama: {
-                        required: true,
-                        minlength: 3,
-                        maxlength: 100
-                    },
-                    nip: {
-                        required: true,
-                        minlength: 3,
-                        maxlength: 100
-                    },
-                    password: {
-                        minlength: 6,
-                        maxlength: 20
-                    }
-                },
-                submitHandler: function(form) {
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: $(form).serialize(),
-                        success: function(response) {
-                            if (response.status) {
-                                $('#myModal').modal('hide');
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message
-                                });
-                                dataUser.ajax.reload();
-                            } else {
-                                $('.error-text').text('');
-                                $.each(response.msgField, function(prefix, val) {
-                                    $('#error-' + prefix).text(val[0]);
-                                });
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Terjadi Kesalahan',
-                                    text: response.message
-                                });
-                            }
+    </div>
+</form>
+<script>
+    $(document).ready(function () {
+        $("#form-edit-pelatihan").validate({
+            rules: {
+                nama_pelatihan: { required: true, minlength: 3, maxlength: 255 },
+                tanggal: { required: true, date: true },
+                kuota: { required: true, min: 1 },
+                lokasi: { required: true, minlength: 3, maxlength: 255 },
+                periode: { required: true, minlength: 3, maxlength: 50 },
+                biaya: { required: true, min: 0 }
+            },
+            submitHandler: function (form) {
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: $(form).serialize(),
+                    success: function (response) {
+                        if (response.status) {
+                            $('#myModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message
+                            });
+                            datapelatihan.ajax.reload();
+                        } else {
+                            $('.error-text').text('');
+                            $.each(response.msgField, function (prefix, val) {
+                                $('#error-' + prefix).text(val[0]);
+                            });
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Terjadi Kesalahan',
+                                text: response.message
+                            });
                         }
-                    });
-                    return false;
-                },
-                errorElement: 'span',
-                errorPlacement: function(error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function(element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function(element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
-                }
-            });
+                    }
+                });
+                return false;
+            },
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            }
         });
-    </script>
+    });
+</script>
 @endempty

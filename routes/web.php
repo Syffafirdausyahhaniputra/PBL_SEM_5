@@ -222,12 +222,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/dosen', [PelatihanController::class, 'indexForDosen'])->name('pelatihan.dosen.index');
         Route::get('/dosen/create', [PelatihanController::class, 'createForDosen'])->name('pelatihan.dosen.create');
         Route::post('/dosen/store', [PelatihanController::class, 'storeForDosen'])->name('pelatihan.dosen.store');
-        Route::get('/create', [PelatihanController::class, 'create'])->name('pelatihan.create'); // halaman tambah pelatihan
-        Route::post('/store', [PelatihanController::class, 'store'])->name('pelatihan.store'); // simpan data pelatihan
-        Route::get('/edit/{id}', [PelatihanController::class, 'edit'])->name('pelatihan.edit'); // halaman edit pelatihan
-        Route::put('/update/{id}', [PelatihanController::class, 'update'])->name('pelatihan.update'); // update data pelatihan
-        Route::delete('/destroy/{id}', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy'); // hapus data pelatihan
-        Route::get('/detail/{id}/show_ajax', [PelatihanController::class, 'show_ajax'])->name('pelatihan.show_ajax'); // detail pelatihan dengan AJAX
+        Route::get('/create_ajax', [PelatihanController::class, 'create_ajax']); // Menampilkan halaman form tambah pelatihan Ajax
+        Route::post('/ajax', [PelatihanController::class, 'store_ajax']);  
+        Route::get('/{id}/edit_ajax', [PelatihanController::class, 'edit_ajax']); 
+        Route::get('/{id}/show_ajax', [PelatihanController::class, 'show_ajax']);
+        Route::get('/{id}/delete_ajax', [PelatihanController::class, 'confirm_ajax']);
+        Route::delete('/{id}/delete_ajax', [PelatihanController::class, 'delete_ajax']);
         Route::get('/dosen', [PelatihanController::class, 'indexForDosen'])->name('pelatihan.dosen.index');
     });
     

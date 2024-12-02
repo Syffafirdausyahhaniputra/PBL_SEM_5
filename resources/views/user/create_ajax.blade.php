@@ -9,9 +9,9 @@
             </div> 
             <div class="modal-body"> 
                 <div class="form-group"> 
-                    <label>Jabatan Pengguna</label> 
+                    <label>Role Pengguna</label> 
                     <select name="role_id" id="role_id" class="form-control" required> 
-                        <option value="">- Pilih Jabatan -</option> 
+                        <option value="">- Pilih Role -</option> 
                         @foreach($role as $l) 
                             <option value="{{ $l->role_id }}">{{ $l->role_nama }}</option> 
                         @endforeach 

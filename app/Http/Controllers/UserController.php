@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BidangModel;
+use App\Models\DosenModel;
+use App\Models\MatkulModel;
 use App\Models\RoleModel;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
@@ -66,7 +69,7 @@ class UserController extends Controller
 
     public function create_ajax()
     {
-        $role = roleModel::select('role_id', 'role_nama')->get();
+        $role = RoleModel::select('role_id', 'role_nama')->get();
 
         return view('user.create_ajax')
             ->with('role', $role);
@@ -74,7 +77,6 @@ class UserController extends Controller
 
     public function store_ajax(Request $request)
     {
-        // Cek apakah request berupa Ajax
         if ($request->ajax() || $request->wantsJson()) {
             // Aturan validasi
             $rules = [
@@ -88,28 +90,33 @@ class UserController extends Controller
             // Validasi data inputan
             $validator = Validator::make($request->all(), $rules);
 
-            // Jika validasi gagal
             if ($validator->fails()) {
                 return response()->json([
-                    'status' => false,  // Status respon, false: error/gagal, true: berhasil
+                    'status' => false,
                     'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors()  // Pesan error validasi
+                    'msgField' => $validator->errors()
                 ]);
             }
 
-            // Simpan data ke database
-            UserModel::create($request->all());
+            // Simpan data ke tabel m_user
+            $user = UserModel::create($request->only(['role_id', 'username', 'nama', 'nip', 'password']));
 
-            // Kembalikan respon JSON jika berhasil
+            // Simpan data ke tabel m_dosen jika role_id adalah 3
+            if ($request->role_id == 3) {
+                DosenModel::create([
+                    'user_id' => $user->user_id,
+                ]);
+            }
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data user berhasil disimpan'
             ]);
         }
 
-        // Jika bukan request Ajax, redirect ke halaman lain (misalnya halaman utama)
         return redirect('/');
     }
+
     public function edit_ajax(string $id)
     {
         $user = UserModel::find($id);
@@ -166,11 +173,20 @@ class UserController extends Controller
     }
     public function delete_ajax(Request $request, $id)
     {
-        // cek apakah request dari ajax
+        // Cek apakah request dari ajax
         if ($request->ajax() || $request->wantsJson()) {
             $user = UserModel::find($id);
+
             if ($user) {
+                // Periksa apakah role_id adalah 3
+                if ($user->role_id == 3) {
+                    // Hapus data di tabel m_dosen berdasarkan user_id
+                    DosenModel::where('user_id', $user->user_id)->delete();
+                }
+
+                // Hapus data di tabel m_user
                 $user->delete();
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Data berhasil dihapus'
@@ -185,6 +201,7 @@ class UserController extends Controller
             return redirect('/');
         }
     }
+
     public function show_ajax(string $id)
     {
         // Cari user berdasarkan id

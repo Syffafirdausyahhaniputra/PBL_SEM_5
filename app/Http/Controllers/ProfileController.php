@@ -112,7 +112,7 @@ class ProfileController extends Controller
             'user' => [
                 'nama' => $user->nama,
                 'username' => $user->username,
-                'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : null
+                'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : asset('avatars/user.jpg')
             ]
         ]);
 

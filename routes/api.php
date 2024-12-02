@@ -66,6 +66,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/list', [NotifikasiPimpinanController::class, 'list']); 
         Route::get('/show/{type}/{id}', [NotifikasiPimpinanController::class, 'show']); 
         Route::post('/verify/{type}/{id}', [NotifikasiPimpinanController::class, 'verify']); 
+    });
 
     Route::group(['prefix' => 'pelatihan'], function () {
         Route::get('/', [PelatihanApiController::class, 'index']); // Menampilkan data dosen
@@ -102,7 +103,6 @@ Route::post('/profil', [App\Http\Controllers\Api\ProfileController::class, 'inde
 Route::get('/profil/{id}', [App\Http\Controllers\Api\ProfileController::class, 'show']);
 // });
 
-});
 // Route untuk mendapatkan profil pengguna yang sedang login
 // Route::middleware('auth:api')->get('/profil', [ProfileController::class, 'index']);
 

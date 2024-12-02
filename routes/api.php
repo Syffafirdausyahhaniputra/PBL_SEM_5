@@ -70,6 +70,9 @@ Route::middleware('auth:api')->group(function () {
     // Route untuk get all data
     Route::get('listData', [Dashboard2Controller::class, 'listData'])->name('listData');
 
+    Route::get('listData', [DashboardController::class, 'listData'])->name('listData');
+
+
     Route::get('/profile', [ProfileController::class, 'index']); // Menampilkan profil dosen
     Route::patch('/profile', [ProfileController::class, 'update']); // Mengupdate profil dosen  
 });

@@ -22,7 +22,7 @@
                         <tr>
                             <th>No</th>
                             <th>Program Studi</th>
-                            <th>Aksi</th>
+                            <th>Bidang</th>
                         </tr>
                     </thead>
                 </table>

@@ -8,7 +8,7 @@ use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\API\SertifikasiController;
 use App\Http\Controllers\Api\DosenController;
-
+use App\Http\Controllers\API\ProfileDosenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\DosenController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::get('/pelatihan', [PelatihanController::class, 'list']);
 Route::get('create', [PelatihanController::class, 'create'])->name('pelatihan.create');
 Route::post('store', [PelatihanController::class, 'store'])->name('pelatihan.store');
@@ -45,6 +46,9 @@ Route::middleware('auth:api')->group(function () {
 
     // Route untuk get all data
     Route::get('listData', [DashboardController::class, 'listData'])->name('listData');
+
+    Route::get('/profiledosen', [ProfileDosenController::class, 'index']); // Menampilkan profil dosen
+    Route::patch('/profiledosen', [ProfileDosenController::class, 'update']); // Mengupdate profil dosen
 });
 
 Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);

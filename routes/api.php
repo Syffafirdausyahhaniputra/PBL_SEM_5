@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\API\PelatihanController as PelatihanApiController;
+use App\Http\Controllers\API\PelatihanApiController;
 use App\Http\Controllers\Api\Dashboard2Controller;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\API\SertifikasiApiController;

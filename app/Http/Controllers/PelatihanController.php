@@ -49,16 +49,7 @@ class PelatihanController extends Controller
         ]);
     }
 
-
-
-    // Method untuk menampilkan form tambah pelatihan
-    public function create()
-    {
-        return view('pelatihan.create', [
-            'activeMenu' => 'pelatihan', // Menandai menu Pelatihan sebagai aktif
-        ]);
-    }
-
+  
     public function createForDosen()
     {
         $breadcrumb = (object) [
@@ -87,17 +78,19 @@ class PelatihanController extends Controller
     public function show_ajax(string $id)
     {
         // Ambil data DataPelatihan berdasarkan id
+        
+        $pelatihan = PelatihanModel::find((int) $id);
         $dataPelatihan = DataPelatihanModel::with([
             'pelatihan.level',
             'pelatihan.bidang',
             'pelatihan.matkul',
             'pelatihan.vendor',
         ])->find($id);
-
+        
         // Periksa apakah data drowukan
-        if ($dataPelatihan) {
+        if ($pelatihan !== null) {
             // Tampilkan halaman show_ajax dengan data pelatihan
-            return view('pelatihan.show_ajax', ['dataPelatihan' => $dataPelatihan]);
+            return view('pelatihan.show_ajax', ['dataPelatihan' => $dataPelatihan,'pelatihan'=>$pelatihan]);
         } else {
             // Tampilkan pesan kesalahan jika data tidak drowukan
             return response()->json([
@@ -105,21 +98,6 @@ class PelatihanController extends Controller
                 'message' => 'Data tidak ditemukan'
             ]);
         }
-    }
-
-    // Method untuk menyimpan data pelatihan baru
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'nama_pelatihan' => 'required|string|max:255',
-            'tanggal' => 'required|date',
-            'kuota' => 'required|integer',
-            'lokasi' => 'required|string|max:255',
-        ]);
-
-        PelatihanModel::create($validatedData); // Menyimpan data ke database
-
-        return redirect()->route('pelatihan.dosen.index')->with('success', 'Pelatihan berhasil ditambahkan!');
     }
 
     public function storeForDosen(Request $request)
@@ -194,6 +172,8 @@ class PelatihanController extends Controller
             ->groupBy('pelatihan_id', 'status')
             ->with('pelatihan');
 
+        $hostname = $request->getHost();
+
 
         // Menggunakan DataTables untuk memproses data yang telah diambil
         return DataTables::of($dataPelatihan)
@@ -216,9 +196,9 @@ class PelatihanController extends Controller
             })
             ->addColumn('aksi', function ($row) {
                 // Tombol aksi
-                $btn  = '<button onclick="modalAction(\'' . url('/pelatihan/' . $row->data_pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $row->data_pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $row->data_pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button>';
+                $btn  = '<button onclick="modalAction(\'' . url('/pelatihan/' . $row->pelatihan_id) . '/show_ajax' . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $row->pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $row->pelatihan->pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button>';
                 return $btn;
             })
             ->rawColumns(['aksi']) // Pastikan HTML tombol dirender dengan benar
@@ -228,18 +208,34 @@ class PelatihanController extends Controller
 
     public function create_ajax()
     {
-        // Ambil data tambahan jika diperlukan
-        return view('pelatihan.create_ajax');
+        $vendors = VendorModel::select('vendor_id', 'vendor_nama')->get();
+        $levels = LevelPelatihanModel::select('level_id', 'level_nama')->get();
+        $bidangs = BidangModel::all();
+        $matkuls = MatkulModel::all();
+
+        return view('pelatihan.create_ajax')->with([
+            'vendors' => $vendors,
+            'levels' => $levels,
+            'bidangs' => $bidangs,
+            'matkuls' => $matkuls
+        ]);
     }
 
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
+                'level_id' => 'required|integer',
+                'bidang_id' => 'required|integer',
+                'mk_id' => 'required|integer',
+                'vendor_id' => 'required|integer',
                 'nama_pelatihan' => 'required|string|max:255',
                 'tanggal' => 'required|date',
+                'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
                 'kuota' => 'required|integer',
                 'lokasi' => 'required|string|max:255',
+                'periode' => 'required|string|max:50',
+                'biaya' => 'required|numeric|min:0',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -252,21 +248,40 @@ class PelatihanController extends Controller
                 ]);
             }
 
-            PelatihanModel::create($request->all());
-
+            // Simpan data user dengan hanya field yang diperlukan
+            $pelatihan = PelatihanModel::create([
+                'nama_pelatihan'  => $request->nama_pelatihan,
+                'lokasi'      => $request->lokasi,
+                'tanggal'      => $request->tanggal,
+                'sertifikat'      => $request->sertifikat,
+                'kuota'      => $request->kuota,
+                'biaya'      => $request->biaya,
+                'vendor_id'  => $request->vendor_id,
+                'level_id'  => $request->level_id,
+                'periode'  => $request->periode
+            ]);
             return response()->json([
                 'status' => true,
-                'message' => 'Pelatihan berhasil disimpan'
+                'message' => 'Data user berhasil disimpan'
             ]);
         }
-
         return redirect('/');
     }
 
     public function edit_ajax($id)
     {
+        // Mencari data pelatihan berdasarkan ID
         $pelatihan = PelatihanModel::find($id);
 
+        // Jika pelatihan tidak ditemukan
+        if (!$pelatihan) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Pelatihan tidak ditemukan'
+        ]);
+    }
+
+        // Mengembalikan tampilan dengan data pelatihan
         return view('pelatihan.edit_ajax', ['pelatihan' => $pelatihan]);
     }
 
@@ -309,25 +324,66 @@ class PelatihanController extends Controller
         return redirect('/');
     }
 
-    public function delete_ajax(Request $request, $id)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $pelatihan = PelatihanModel::find($id);
+    public function confirm_ajax($id)
+{
+    // Cari data pelatihan berdasarkan ID
+    $pelatihan = PelatihanModel::find($id);
 
-            if ($pelatihan) {
-                $pelatihan->delete();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Pelatihan berhasil dihapus'
-                ]);
-            }
+    // Jika pelatihan tidak ditemukan
+    if (!$pelatihan) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Pelatihan tidak ditemukan'
+        ]);
+    }
+
+    // Mengembalikan tampilan konfirmasi untuk menghapus
+    return view('pelatihan.confirm_delete', ['pelatihan' => $pelatihan]);
+}
+
+public function delete_ajax(Request $request, $id)
+{
+    $pelatihan = PelatihanModel::find($id);
+
+    if ($pelatihan) {
+        try {
+            $pelatihan->delete();
 
             return response()->json([
+                'status' => true,
+                'message' => 'Pelatihan berhasil dihapus!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
                 'status' => false,
-                'message' => 'Data tidak drowukan'
+                'message' => 'Terjadi kesalahan saat menghapus data!'
             ]);
         }
-
-        return redirect('/');
     }
+
+    return response()->json([
+        'status' => false,
+        'message' => 'Data tidak ditemukan!'
+    ]);
+}
+
+    public function showPelatihan($id)
+{
+    // Cari pelatihan berdasarkan id
+    dd($id);
+    $pelatihan = PelatihanModel::find($id);
+
+    // Periksa apakah pelatihan ditemukan
+    if ($pelatihan) {
+        // Tampilkan halaman show_ajax dengan data pelatihan
+        return view('pelatihan.show_ajax', ['pelatihan' => $pelatihan]);
+    } else {
+        // Tampilkan pesan kesalahan jika pelatihan tidak ditemukan
+        return response()->json([
+            'status' => false,
+            'message' => 'Data pelatihan tidak ditemukan'
+        ]);
+    }
+}
+
 }

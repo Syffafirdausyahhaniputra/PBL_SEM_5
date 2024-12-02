@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\PelatihanController as PelatihanApiController;
 use App\Http\Controllers\Api\Dashboard2Controller;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\API\SertifikasiApiController;
@@ -58,6 +59,12 @@ Route::middleware('auth:api')->group(function () {
         Route::post('create', [SertifikasiApiController::class, 'store']); // Menambahkan data dosen
         Route::get('show/{id}', [SertifikasiApiController::class, 'show']); // Menampilkan data dosen berdasarkan ID
         Route::post('update/{id}', [SertifikasiApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
+    });
+    Route::group(['prefix' => 'pelatihan'], function () {
+        Route::get('/', [PelatihanApiController::class, 'index']); // Menampilkan data dosen
+        Route::post('create', [PelatihanApiController::class, 'store']); // Menambahkan data dosen
+        Route::get('show/{id}', [PelatihanApiController::class, 'show']); // Menampilkan data dosen berdasarkan ID
+        Route::post('update/{id}', [PelatihanApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
     });
 
     // Route untuk get all data

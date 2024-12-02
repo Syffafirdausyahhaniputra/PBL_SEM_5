@@ -21,8 +21,8 @@
             </div>
         </div>
         
-        <!-- Data Sertifikasi dan Pelatihan -->
-        <div id="sertifikasi-container" class="mb-4">
+        <!-- Data Sertifikasi -->
+    <div id="sertifikasi-container" class="mb-4 card">
         <h6 class="fw-bold">Sertifikasi</h6>
         @if ($sertifikasi->isEmpty())
             <p class="text-muted">Belum ada data sertifikasi.</p>
@@ -41,9 +41,8 @@
         @endif
     </div>
 
-
-                <!-- Pelatihan Section -->
-                <div id="pelatihan-container">
+    <!-- Data Pelatihan -->
+    <div id="pelatihan-container" class="card">
         <h6 class="fw-bold">Pelatihan</h6>
         @if ($pelatihan->isEmpty())
             <p class="text-muted">Belum ada data pelatihan.</p>
@@ -63,26 +62,77 @@
     </div>
 
 
+
     <!-- Styling untuk list sertifikasi dan pelatihan -->
     <style>
-        .list-group-item {
-            border: 1px solid #ddd;
-            margin-bottom: 5px;
-            border-radius: 5px;
+        /* Styling untuk card container */
+        .card {
+            border-radius: 10px;      /* Sudut membulat */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
+            background: linear-gradient(to bottom right, #ffffff, #f9f9f9); /* Gradasi warna */
+            margin-bottom: 20px;     /* Spasi antar card */
+        }
+        
+        #sertifikasi-container, #pelatihan-container {
+            padding: 20px; /* Spasi dalam container */
+            background: #ffffff; /* Warna latar putih */
+            border-radius: 10px; /* Sudut membulat */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Bayangan */
+            margin-bottom: 20px; /* Jarak antar container */
         }
 
-        .list-group-item strong {
-            color: #007bff;
+        .list-group-item {
+            margin-bottom: 10px; /* Jarak antar item */
+            border-radius: 8px; /* Sudut membulat */
+            background: #fdfdfd; /* Warna latar */
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .list-group-item:hover {
+            transform: translateY(-3px); /* Efek hover: sedikit terangkat */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Bayangan lebih tebal saat hover */
+        }
+
+    
+        /* Styling untuk list item */
+        .list-group-item {
+            border: 2px solid #007bff; /* Garis tepi biru */
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #fdfdfd;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+    
+        .list-group-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+        }
+    
+        /* Header teks */
+        h1, h2, h6 {
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 15px;
+        }
+    
+        h1 {
+            font-size: 2.5rem;
+            color: #000000; /* Warna biru */
+        }
+    
+        h2, h6 {
+            color: #333; /* Warna teks abu gelap */
+        }
+    
+        /* Gambar profil */
+        .rounded-circle {
+            border: 2px solid #000000; /* Garis tepi biru */
+            padding: 2px;
         }
     </style>
     
-    <!-- JavaScript Section -->
-    @push('js')
-    <script>
-        $(document).ready(function() {
-            // Ajax untuk riwayat jika diperlukan
-        });
-    </script>
+    
     
 
     <!-- Chart.js Script -->
@@ -122,5 +172,4 @@
             }
         });
     </script>
-    @endpush
 @endsection

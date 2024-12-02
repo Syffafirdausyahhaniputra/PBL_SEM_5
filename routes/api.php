@@ -44,6 +44,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Route yang hanya dapat diakses setelah login
 Route::middleware('auth:api')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard2', [Dashboard2Controller::class, 'index']);
 
     // Route untuk get all data
     Route::get('listData', [DashboardController::class, 'listData'])->name('listData');

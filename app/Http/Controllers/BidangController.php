@@ -32,6 +32,7 @@ class BidangController extends Controller
     }
     public function index2()
     {
+        $bidangs = BidangModel::all();
         $breadcrumb = (object) [
             'title' => 'Daftar Bidang',
             'subtitle'  => 'Daftar bidang yang terdaftar dalam sistem'
@@ -42,6 +43,7 @@ class BidangController extends Controller
         return view('bidang.indexDetailBidang', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu,
+            'bidangs' => $bidangs
         ]);
     }
 

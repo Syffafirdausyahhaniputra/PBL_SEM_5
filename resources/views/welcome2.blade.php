@@ -22,80 +22,56 @@
         </div>
         
         <!-- Data Sertifikasi -->
-    <div id="sertifikasi-container" class="mb-4 card">
-        <h6 class="fw-bold">Sertifikasi</h6>
-        @if ($sertifikasi->isEmpty())
-            <p class="text-muted">Belum ada data sertifikasi.</p>
-        @else
-            <ul class="list-group">
-                @foreach ($sertifikasi as $item)
-                    <li class="list-group-item">
-                        <strong>{{ $item->nama_sertif }}</strong>
-                        <br>
-                        Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}
-                        <br>
-                        Masa Berlaku: {{ $item->masa_berlaku }}
-                    </li>
-                @endforeach
-            </ul>
-        @endif
-    </div>
+        <div id="sertifikasi-container" class="mb-4 card">
+            <h6 class="fw-bold">Sertifikasi</h6>
+            @if ($sertifikasi->isEmpty())
+                <p class="text-muted">Belum ada data sertifikasi.</p>
+            @else
+                <ul class="list-group">
+                    @foreach ($sertifikasi as $item)
+                        <li class="list-group-item">
+                            <strong>{{ $item->nama_sertif }}</strong>
+                            <br>
+                            Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}
+                            <br>
+                            Masa Berlaku: {{ $item->masa_berlaku }}
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
 
-    <!-- Data Pelatihan -->
-    <div id="pelatihan-container" class="card">
-        <h6 class="fw-bold">Pelatihan</h6>
-        @if ($pelatihan->isEmpty())
-            <p class="text-muted">Belum ada data pelatihan.</p>
-        @else
-            <ul class="list-group">
-                @foreach ($pelatihan as $item)
-                    <li class="list-group-item">
-                        <strong>{{ $item->nama_pelatihan }}</strong>
-                        <br>
-                        Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}
-                        <br>
-                        Penyelenggara: {{ $item->vendor->vendor_nama }}
-                    </li>
-                @endforeach
-            </ul>
-        @endif
-    </div>
-
+        <!-- Data Pelatihan -->
+        <div id="pelatihan-container" class="card">
+            <h6 class="fw-bold">Pelatihan</h6>
+            @if ($pelatihan->isEmpty())
+                <p class="text-muted">Belum ada data pelatihan.</p>
+            @else
+                <ul class="list-group">
+                    @foreach ($pelatihan as $item)
+                        <li class="list-group-item">
+                            <strong>{{ $item->nama_pelatihan }}</strong>
+                            <br>
+                            Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}
+                            <br>
+                            Penyelenggara: {{ $item->vendor->vendor_nama }}
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
 
 
     <!-- Styling untuk list sertifikasi dan pelatihan -->
     <style>
         /* Styling untuk card container */
         .card {
-            border-radius: 10px;      /* Sudut membulat */
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
-            background: linear-gradient(to bottom right, #ffffff, #f9f9f9); /* Gradasi warna */
-            margin-bottom: 20px;     /* Spasi antar card */
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to bottom right, #ffffff, #f9f9f9);
         }
-        
-        #sertifikasi-container, #pelatihan-container {
-            padding: 20px; /* Spasi dalam container */
-            background: #ffffff; /* Warna latar putih */
-            border-radius: 10px; /* Sudut membulat */
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Bayangan */
-            margin-bottom: 20px; /* Jarak antar container */
-        }
-
-        .list-group-item {
-            margin-bottom: 10px; /* Jarak antar item */
-            border-radius: 8px; /* Sudut membulat */
-            background: #fdfdfd; /* Warna latar */
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .list-group-item:hover {
-            transform: translateY(-3px); /* Efek hover: sedikit terangkat */
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Bayangan lebih tebal saat hover */
-        }
-
     
-        /* Styling untuk list item */
+        /* Styling untuk list sertifikasi dan pelatihan */
         .list-group-item {
             border: 2px solid #007bff; /* Garis tepi biru */
             margin-bottom: 10px;
@@ -110,7 +86,12 @@
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
         }
     
-        /* Header teks */
+        /* Highlight untuk teks */
+        .list-group-item strong {
+            color: #000000;
+        }
+    
+        /* Header section */
         h1, h2, h6 {
             font-family: 'Poppins', sans-serif;
             margin-bottom: 15px;
@@ -118,20 +99,22 @@
     
         h1 {
             font-size: 2.5rem;
-            color: #000000; /* Warna biru */
+            color: #000000;
         }
     
         h2, h6 {
-            color: #333; /* Warna teks abu gelap */
+            color: #333;
         }
     
-        /* Gambar profil */
-        .rounded-circle {
-            border: 2px solid #000000; /* Garis tepi biru */
-            padding: 2px;
+        /* Container layout */
+        #sertifikasi-container, #pelatihan-container {
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
     </style>
-    
     
     
 

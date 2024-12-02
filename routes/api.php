@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Dashboard2Controller;
 use App\Http\Controllers\Api\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

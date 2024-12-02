@@ -48,7 +48,18 @@ class SertifikasiApiController extends Controller
             return response()->json(['error' => 'Data not found'], 404);
         }
 
-        return response()->json($sertifikasi);
+        $data = [
+            'nama_sertif' => $sertifikasi->nama_sertif,
+            'tanggal' => $sertifikasi->tanggal,
+            'masa_berlaku' => $sertifikasi->masa_berlaku,
+            'periode' => $sertifikasi->periode,
+            'jenis' => $sertifikasi->jenis->jenis_nama,
+            'bidang' => $sertifikasi->bidang->bidang_nama,
+            'matkul' => $sertifikasi->matkul->mk_nama,
+            'vendor' => $sertifikasi->vendor->vendor_nama,
+        ];
+
+        return response()->json($data);
     }
 
     // PUT/PATCH: Memperbarui data sertifikasi

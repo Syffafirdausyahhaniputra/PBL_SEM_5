@@ -48,6 +48,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($data) {
                 return [
+                    'id_sertifikasi' => $data->sertif_id,
                     'nama_sertifikasi' => $data->sertif->nama_sertif ?? '-',
                     'bidang_sertifikasi' => $data->sertif->bidang->bidang_nama ?? '-',
                     'masa_berlaku' => $data->sertif->masa_berlaku ?? '-',
@@ -60,6 +61,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($data) {
                 return [
+                    'id_pelatihan' => $data->pelatihan_id,
                     'nama_pelatihan' => $data->pelatihan->nama_pelatihan ?? '-',
                     'bidang_pelatihan' => $data->pelatihan->bidang->bidang_nama ?? '-',
                     'masa_berlaku' => $data->pelatihan->tanggal ?? '-', // Asumsi masa berlaku menggunakan 'periode'
@@ -115,6 +117,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($data) {
                 return [
+                    'id_sertifikasi' => $data->sertif_id,
                     'nama_sertifikasi' => $data->sertif->nama_sertif ?? '-',
                     'bidang_sertifikasi' => $data->sertif->bidang->bidang_nama ?? '-',
                     'masa_berlaku' => $data->sertif->masa_berlaku ?? '-',
@@ -126,6 +129,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($data) {
                 return [
+                    'id_pelatihan' => $data->pelatihan_id,
                     'nama_pelatihan' => $data->pelatihan->nama_pelatihan ?? '-',
                     'bidang_pelatihan' => $data->pelatihan->bidang->bidang_nama ?? '-',
                     'masa_berlaku' => $data->pelatihan->tanggal ?? '-', // Asumsi masa berlaku menggunakan 'periode'
@@ -138,23 +142,10 @@ class DashboardController extends Controller
         //     'bidang' => ,
         //     'masa_berlaku' => $pelatihan,
         // ];
-        $data = [];
-
-        foreach ($sertifikasi as $sertif) {
-            $data[] = [
-                'nama' => $sertif['nama_sertifikasi'],
-                'bidang' => $sertif['bidang_sertifikasi'],
-                'masa_berlaku' => $sertif['masa_berlaku'],
-            ];
-        }
-
-        foreach ($pelatihan as $latih) {
-            $data[] = [
-                'nama' => $latih['nama_pelatihan'],
-                'bidang' => $latih['bidang_pelatihan'],
-                'masa_berlaku' => $latih['masa_berlaku'],
-            ];
-        }
+        $data = [
+            'sertifikasi' => $sertifikasi,
+            'pelatihan' => $pelatihan,
+        ];
 
         // Menyiapkan respons JSON
         return response()->json([

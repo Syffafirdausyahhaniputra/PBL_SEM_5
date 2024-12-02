@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Dashboard2Controller;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\API\SertifikasiApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RiwayatController;
@@ -51,6 +52,13 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/profiledosen', [ProfileDosenController::class, 'index']); // Menampilkan profil dosen
     Route::patch('/profiledosen', [ProfileDosenController::class, 'update']); // Mengupdate profil dosen
+
+    Route::group(['prefix' => 'sertifikasi'], function () {
+        Route::get('/', [SertifikasiApiController::class, 'index']); // Menampilkan data dosen
+        Route::post('create', [SertifikasiApiController::class, 'store']); // Menambahkan data dosen
+        Route::get('show/{id}', [SertifikasiApiController::class, 'show']); // Menampilkan data dosen berdasarkan ID
+        Route::post('update/{id}', [SertifikasiApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
+    });
 });
 
 Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);

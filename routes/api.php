@@ -7,10 +7,13 @@ use App\Http\Controllers\API\SertifikasiApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\API\SertifikasiController;
+use App\Http\Controllers\API\InputSertifController;
 use App\Http\Controllers\Api\DosenController;
+use App\Http\Controllers\Api\LoginController as ApiLoginController;
 use App\Http\Controllers\API\NotifikasiPimpinanController;
 use App\Http\Controllers\API\ProfileDosenController;
 
@@ -39,7 +42,7 @@ Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifika
 Route::put('update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update');
 Route::delete('destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
 
-Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
+Route::post('/login',ApiLoginController::class)->name('login');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -85,6 +88,10 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update']); // Mengupdate profil dosen  
 });
 
+Route::group(['prefix' => 'sertifikasi'], function () {
+    Route::post('/store', [InputSertifController::class, 'store']); // Endpoint untuk menyimpan data
+    Route::get('/list', [InputSertifController::class, 'list']);   // Endpoint untuk mendapatkan daftar data
+});
 Route::get('/kompetensi', [App\Http\Controllers\Api\KompetensiController::class, 'index']);
 Route::post('/kompetensi/list', [App\Http\Controllers\Api\KompetensiController::class, 'list']);
 Route::get('/kompetensi/{prodi_kode}/show_ajax', [App\Http\Controllers\Api\KompetensiController::class, 'show_ajax']);

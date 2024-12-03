@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\PelatihanApiController;
 use App\Http\Controllers\Api\Dashboard2Controller;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\API\SertifikasiApiController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\API\SertifikasiController;
 use App\Http\Controllers\Api\DosenController;
+use App\Http\Controllers\API\NotifikasiPimpinanController;
 use App\Http\Controllers\API\ProfileDosenController;
 
 /*
@@ -59,6 +61,19 @@ Route::middleware('auth:api')->group(function () {
         Route::get('show/{id}', [SertifikasiApiController::class, 'show']); // Menampilkan data dosen berdasarkan ID
         Route::post('update/{id}', [SertifikasiApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
     });
+    
+    Route::group(['prefix' => 'notifikasi'], function () {
+        Route::get('/list', [NotifikasiPimpinanController::class, 'list']); 
+        Route::get('/show/{type}/{id}', [NotifikasiPimpinanController::class, 'show']); 
+        Route::post('/verify/{type}/{id}', [NotifikasiPimpinanController::class, 'verify']); 
+    });
+
+    Route::group(['prefix' => 'pelatihan'], function () {
+        Route::get('/', [PelatihanApiController::class, 'index']); // Menampilkan data dosen
+        Route::post('create', [PelatihanApiController::class, 'store']); // Menambahkan data dosen
+        Route::get('show/{id}', [PelatihanApiController::class, 'show']); // Menampilkan data dosen berdasarkan ID
+        Route::post('update/{id}', [PelatihanApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
+    });
 
     // Route untuk get all data
     Route::get('listData', [Dashboard2Controller::class, 'listData'])->name('listData');
@@ -87,7 +102,6 @@ Route::resource('pelatihan', PelatihanController::class);
 Route::post('/profil', [App\Http\Controllers\Api\ProfileController::class, 'index']);
 Route::get('/profil/{id}', [App\Http\Controllers\Api\ProfileController::class, 'show']);
 // });
-
 
 // Route untuk mendapatkan profil pengguna yang sedang login
 // Route::middleware('auth:api')->get('/profil', [ProfileController::class, 'index']);

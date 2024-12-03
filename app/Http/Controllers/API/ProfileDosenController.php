@@ -16,7 +16,6 @@ class ProfileDosenController extends Controller
     public function index()
     {
         try {
-            // Ambil data dosen dengan relasi user, bidang, matkul
             $dosen = DosenModel::with(['user', 'bidang', 'matkul'])
                 ->where('user_id', Auth::id())
                 ->first();
@@ -28,20 +27,18 @@ class ProfileDosenController extends Controller
                 ], 404);
             }
 
-            // Ambil data role melalui relasi User
-            $role = $dosen->user->role;
+            $user = $dosen->user;
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'id' => $dosen->dosen_id,
-                    'nama' => $dosen->user->nama,
-                    'username' => $dosen->user->username,
-                    'nip' => $dosen->user->nip,
-                    'role' => $role->role_nama,  // Menambahkan role
-                    'bidang' => $dosen->bidang ? $dosen->bidang->bidang_nama : null,
-                    'matkul' => $dosen->matkul ? $dosen->matkul->mk_nama : null,
-                    'avatar' => $dosen->user->avatar ? asset('avatars/' . $dosen->user->avatar) : asset('avatars/user.jpg')
+                    'nama' => $user->nama,
+                    'username' => $user->username,
+                    'nip' => $user->nip,
+                    'role' => $user->role->role_nama ?? 'Unknown',
+                    'bidang' => $dosen->bidang->bidang_nama ?? null,
+                    'matkul' => $dosen->matkul->mk_nama ?? null,
+                    'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : asset('avatars/user.jpg'),
                 ]
             ]);
         } catch (\Exception $e) {
@@ -81,38 +78,20 @@ class ProfileDosenController extends Controller
                 'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
-            // Cek perubahan data
-            $isChanged = false;
-
-            if (
-                $user->username != $request->username ||
-                $user->nama != $request->nama ||
-                $user->nip != $request->nip ||
-                $request->hasFile('avatar') ||
-                $request->filled('old_password') ||
-                $dosen->bidang_id != $request->bidang_id ||
-                $dosen->mk_id != $request->mk_id
-            ) {
-                $isChanged = true;
-            }
-
-            if (!$isChanged) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tidak ada perubahan pada profil Anda.'
-                ]);
-            }
-
             // Update data user
-            $user->username = $request->username;
-            $user->nama = $request->nama;
-            $user->nip = $request->nip;
+            $user->update([
+                'username' => $request->username,
+                'nama' => $request->nama,
+                'nip' => $request->nip,
+            ]);
 
-            // Update data dosen
-            $dosen->bidang_id = $request->bidang_id;
-            $dosen->mk_id = $request->mk_id;
+            // Update bidang dan matkul
+            $dosen->update([
+                'bidang_id' => $request->bidang_id,
+                'mk_id' => $request->mk_id,
+            ]);
 
-            // Handle password update
+            // Update password jika diperlukan
             if ($request->filled('old_password')) {
                 if (!Hash::check($request->old_password, $user->password)) {
                     return response()->json([
@@ -121,10 +100,12 @@ class ProfileDosenController extends Controller
                     ]);
                 }
                 $user->password = Hash::make($request->password);
+                $user->save();
             }
 
-            // Handle avatar upload
+            // Update avatar
             if ($request->hasFile('avatar')) {
+                // Hapus avatar lama jika ada
                 if ($user->avatar) {
                     $oldAvatarPath = public_path('avatars/' . $user->avatar);
                     if (file_exists($oldAvatarPath)) {
@@ -135,12 +116,10 @@ class ProfileDosenController extends Controller
                 $file = $request->file('avatar');
                 $fileName = time() . '_' . preg_replace('/\\s+/', '', $file->getClientOriginalName());
                 $file->move(public_path('avatars'), $fileName);
-                $user->avatar = $fileName;
-            }
 
-            // Simpan perubahan
-            $user->save();
-            $dosen->save();
+                $user->avatar = $fileName;
+                $user->save();
+            }
 
             return response()->json([
                 'success' => true,
@@ -149,9 +128,9 @@ class ProfileDosenController extends Controller
                     'nama' => $user->nama,
                     'username' => $user->username,
                     'nip' => $user->nip,
-                    'bidang' => $dosen->bidang ? $dosen->bidang->bidang_nama : null,
-                    'matkul' => $dosen->matkul ? $dosen->matkul->mk_nama : null,
-                    'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : asset('avatars/user.jpg')
+                    'bidang' => $dosen->bidang->bidang_nama ?? null,
+                    'matkul' => $dosen->matkul->mk_nama ?? null,
+                    'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : asset('avatars/user.jpg'),
                 ]
             ]);
         } catch (\Exception $e) {

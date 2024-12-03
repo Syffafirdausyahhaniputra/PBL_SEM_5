@@ -18,8 +18,8 @@ class ProfileController extends Controller
     {
         try {
             // Ambil data dosen dengan relasi user, bidang, matkul
-            
-                $user = UserModel::with([])
+
+            $user = UserModel::with([])
                 ->where('user_id', Auth::id())
                 ->first();
 
@@ -41,7 +41,7 @@ class ProfileController extends Controller
                     'username' => $user->username,
                     'nip' => $user->nip,
                     'role' => $role->role_nama,  // Menambahkan role
-                    'avatar' => $user->avatar ? asset('avatars/' . $user->user->avatar) : asset('avatars/user.jpg')
+                    'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : asset('avatars/user.jpg')
                 ]
             ]);
         } catch (\Exception $e) {
@@ -85,8 +85,8 @@ class ProfileController extends Controller
                 $user->nama != $request->nama ||
                 $user->nip != $request->nip ||
                 $request->hasFile('avatar') ||
-                $request->filled('old_password') 
-       
+                $request->filled('old_password')
+
             ) {
                 $isChanged = true;
             }
@@ -103,7 +103,7 @@ class ProfileController extends Controller
             $user->nama = $request->nama;
             $user->nip = $request->nip;
 
-      
+
             // Handle password update
             if ($request->filled('old_password')) {
                 if (!Hash::check($request->old_password, $user->password)) {
@@ -132,7 +132,7 @@ class ProfileController extends Controller
 
             // Simpan perubahan
             $user->save();
-       
+
 
             return response()->json([
                 'success' => true,
@@ -151,4 +151,6 @@ class ProfileController extends Controller
             ], 500);
         }
     }
+
+    
 }

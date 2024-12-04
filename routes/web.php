@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProfileDosenController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
@@ -214,6 +215,11 @@ Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'profile'], function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::patch('/{id}', [ProfileController::class, 'update'])->name('profile.update');
+    });
+    
+    Route::group(['prefix' => 'profileDosen'], function () {
+        Route::get('/', [ProfileDosenController::class, 'index']);
+        Route::patch('/{id}', [ProfileDosenController::class, 'update']);
     });
 
     Route::prefix('pelatihan')->group(function () {

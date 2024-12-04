@@ -50,7 +50,7 @@
     <!-- CSS Styles -->
     <style>
         .bidang-container {
-            background-color: #2C65C8;
+            background-color: ;
             padding: 20px;
             border-radius: 20px;
             display: flex;

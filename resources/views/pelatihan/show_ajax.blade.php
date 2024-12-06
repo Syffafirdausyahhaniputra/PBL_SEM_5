@@ -31,10 +31,11 @@
                 <table class="table table-sm table-bordered table-striped"> 
                     <tr><th class="text-right col-3">Nama Pelatihan :</th><td class="col-9">{{ $dataPelatihan->pelatihan->nama_pelatihan }}</td></tr> 
                     <tr><th class="text-right col-3">Bidang :</th><td class="col-9">{{ $dataPelatihan->pelatihan->bidang->bidang_nama }}</td></tr> 
-                    <tr><th class="text-right col-3">Mata Kuliah :</th><td class="col-9">{{ $dataPelatihan->pelatihan->matkul->matkul_nama }}</td></tr> 
+                    <tr><th class="text-right col-3">Mata Kuliah :</th><td class="col-9">{{ $dataPelatihan->pelatihan->matkul->mk_nama }}</td></tr> 
                     <tr><th class="text-right col-3">Vendor :</th><td class="col-9">{{ $dataPelatihan->pelatihan->vendor->vendor_nama }}</td></tr>
                     <tr><th class="text-right col-3">Level Pelatihan :</th><td class="col-9">{{ $dataPelatihan->pelatihan->level->level_nama }}</td></tr>
-                    <tr><th class="text-right col-3">Tanggal :</th><td class="col-9">{{ \Carbon\Carbon::parse($dataPelatihan->pelatihan->tanggal)->format('d-m-Y') }}</td></tr> 
+                    <tr><th class="text-right col-3">Tanggal :</th><td class="col-9">{{ \Carbon\Carbon::parse($dataPelatihan->pelatihan->tanggal)->format('d-m-Y') }}</td></tr>
+                    <tr><th class="text-right col-3">Masa Berlaku :</th><td class="col-9">{{ \Carbon\Carbon::parse($dataPelatihan->pelatihan->tanggal_akhir)->format('d-m-Y') }}</td></tr>  
                     <tr><th class="text-right col-3">Kuota :</th><td class="col-9">{{ $dataPelatihan->pelatihan->kuota }}</td></tr> 
                     <tr><th class="text-right col-3">Lokasi :</th><td class="col-9">{{ $dataPelatihan->pelatihan->lokasi }}</td></tr> 
                     <tr><th class="text-right col-3">Biaya :</th><td class="col-9">{{ number_format($dataPelatihan->pelatihan->biaya, 2, ',', '.') }}</td></tr> 

@@ -9,7 +9,7 @@
             <div class="modal-body">
                 <div class="alert alert-danger">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                    Data yang anda cari tidak ditemukan
+                    Data yang Anda cari tidak ditemukan.
                 </div>
                 <a href="{{ url('/pelatihan') }}" class="btn btn-warning">Kembali</a>
             </div>
@@ -41,12 +41,19 @@
                             <th class="text-right col-3">Tanggal</th>
                             <td class="col-9">{{ $pelatihan->tanggal }}</td>
                         </tr>
-                        <!-- Tambahkan data lainnya -->
+                        <tr>
+                            <th class="text-right col-3">Bidang</th>
+                            <td class="col-9">{{ $pelatihan->nama_bidang }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Status</th>
+                            <td class="col-9">{{ $pelatihan->status }}</td>
+                        </tr>
                     </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Ya, Hapus</button>
+                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
                 </div>
             </div>
         </div>
@@ -54,8 +61,36 @@
 @endif
 <script>
     $(document).ready(function() {
-        $("#form-delete").validate({
-            rules: {},
+        $('#form-tambah-pelatihan').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.status) {
+                        Swal.fire('Berhasil', response.message, 'success');
+                        $('#modal-container').modal('hide');
+                        $('#table-pelatihan').DataTable().ajax.reload();
+                    } else {
+                        Swal.fire('Gagal', response.message, 'error');
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire('Gagal', 'Terjadi kesalahan saat menyimpan data.', 'error');
+                }
+            });
+        });
+
+        $("#form-tambah-pelatihan").validate({
+            rules: {
+                nama_pelatihan: { required: true, minlength: 3 },
+                tanggal: { required: true, date: true },
+                tanggal_akhir: { required: true, date: true },
+                kuota: { required: true, number: true },
+                lokasi: { required: true, minlength: 3 },
+                biaya: { required: true, number: true },
+            },
             submitHandler: function(form) {
                 $.ajax({
                     url: form.action,
@@ -63,7 +98,7 @@
                     data: $(form).serialize(),
                     success: function(response) {
                         if (response.status) {
-                            $('#myModal').modal('hide');
+                            $('#modal-master').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
@@ -81,13 +116,6 @@
                                 text: response.message
                             });
                         }
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Terjadi Kesalahan',
-                            text: 'Gagal memproses permintaan, coba lagi nanti.'
-                        });
                     }
                 });
                 return false;
@@ -97,10 +125,10 @@
                 error.addClass('invalid-feedback');
                 element.closest('.form-group').append(error);
             },
-            highlight: function(element, errorClass, validClass) {
+            highlight: function(element) {
                 $(element).addClass('is-invalid');
             },
-            unhighlight: function(element, errorClass, validClass) {
+            unhighlight: function(element) {
                 $(element).removeClass('is-invalid');
             }
         });

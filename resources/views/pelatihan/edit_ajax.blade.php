@@ -9,7 +9,8 @@
             <div class="modal-body">
                 <div class="alert alert-danger">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                    Data yang anda cari tidak ditemukan</div>
+                    Data yang anda cari tidak ditemukan
+                </div>
                 <a href="{{ url('/pelatihan') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
@@ -33,10 +34,40 @@
                     <small id="error-nama_pelatihan" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Tanggal</label>
+                    <label>Bidang</label>
+                    <input value="{{ $pelatihan->bidang->bidang_nama }}" type="text" name="bidang_nama" id="bidang_nama"
+                        class="form-control" required>
+                    <small id="error-bidang_nama" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Mata Kuliah</label>
+                    <input value="{{ $pelatihan->matkul->mk_nama }}" type="text" name="mk_nama" id="mk_nama"
+                        class="form-control" required>
+                    <small id="error-mk_nama" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Vendor</label>
+                    <input value="{{ $pelatihan->vendor->vendor_nama }}" type="text" name="vendor" id="vendor"
+                        class="form-control" required>
+                    <small id="error-vendor" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Level Pelatihan</label>
+                    <input value="{{ $pelatihan->level->level_nama}}" type="text" name="level_nama" id="level_nama"
+                        class="form-control" required>
+                    <small id="error-level_nama" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal Mulai</label>
                     <input value="{{ $pelatihan->tanggal }}" type="date" name="tanggal" id="tanggal"
                         class="form-control" required>
                     <small id="error-tanggal" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Masa Berlaku</label>
+                    <input value="{{ $pelatihan->tanggal_akhir }}" type="date" name="tanggal_akhir" id="tanggal_akhir"
+                        class="form-control" required>
+                    <small id="error-tanggal_akhir" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Kuota</label>
@@ -51,21 +82,27 @@
                     <small id="error-lokasi" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Periode</label>
-                    <input value="{{ $pelatihan->periode }}" type="text" name="periode" id="periode"
-                        class="form-control" required>
-                    <small id="error-periode" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
                     <label>Biaya</label>
                     <input value="{{ $pelatihan->biaya }}" type="number" name="biaya" id="biaya"
                         class="form-control" required>
                     <small id="error-biaya" class="error-text form-text text-danger"></small>
                 </div>
+                <div class="form-group">
+                    <label>Periode</label>
+                    <input value="{{ $pelatihan->periode }}" type="number" name="periode" id="periode"
+                        class="form-control" required>
+                    <small id="error-periode" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <input value="{{ $pelatihan->status }}" type="text" name="status" id="status"
+                        class="form-control" required>
+                    <small id="error-status" class="error-text form-text text-danger"></small>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="submit" class="btn btn-primary" id="btn-simpan">Simpan</button>
             </div>
         </div>
     </div>
@@ -74,18 +111,74 @@
     $(document).ready(function () {
         $("#form-edit-pelatihan").validate({
             rules: {
-                nama_pelatihan: { required: true, minlength: 3, maxlength: 255 },
-                tanggal: { required: true, date: true },
-                kuota: { required: true, min: 1 },
-                lokasi: { required: true, minlength: 3, maxlength: 255 },
-                periode: { required: true, minlength: 3, maxlength: 50 },
-                biaya: { required: true, min: 0 }
-            },
+            nama_pelatihan: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        bidang_nama: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        mk_nama: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        vendor: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        level_nama: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 100 
+        },
+        tanggal: { 
+            required: true, 
+            date: true 
+        },
+        tanggal_akhir: { 
+            required: true, 
+            date: true 
+        },
+        kuota: { 
+            required: true, 
+            min: 1, 
+            number: true 
+        },
+        lokasi: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        biaya: { 
+            required: true, 
+            min: 0, 
+            number: true 
+        },
+        periode: { 
+            required: true, 
+            minlength: 1, 
+            maxlength: 50, 
+            digits: true // Hanya angka yang diizinkan
+        },
+        status: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 50 
+        }
+    },
             submitHandler: function (form) {
+                let formData = new FormData(form); // Serialize form data
                 $.ajax({
-                    url: form.action,
-                    type: form.method,
-                    data: $(form).serialize(),
+                    url: $(form).attr('action'),
+                    type: "POST",
+                    data: formData,
+                    processData: false, // Required for FormData
+                    contentType: false, // Required for FormData
                     success: function (response) {
                         if (response.status) {
                             $('#myModal').modal('hide');
@@ -94,11 +187,11 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            datapelatihan.ajax.reload();
+                            datapelatihan.ajax.reload(); // Refresh datatable
                         } else {
                             $('.error-text').text('');
-                            $.each(response.msgField, function (prefix, val) {
-                                $('#error-' + prefix).text(val[0]);
+                            $.each(response.errors, function (key, value) {
+                                $('#error-' + key).text(value);
                             });
                             Swal.fire({
                                 icon: 'error',
@@ -106,6 +199,13 @@
                                 text: response.message
                             });
                         }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan',
+                            text: 'Gagal memproses data'
+                        });
                     }
                 });
                 return false;
@@ -115,10 +215,10 @@
                 error.addClass('invalid-feedback');
                 element.closest('.form-group').append(error);
             },
-            highlight: function (element, errorClass, validClass) {
+            highlight: function (element) {
                 $(element).addClass('is-invalid');
             },
-            unhighlight: function (element, errorClass, validClass) {
+            unhighlight: function (element) {
                 $(element).removeClass('is-invalid');
             }
         });

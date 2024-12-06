@@ -208,64 +208,54 @@ class PelatihanController extends Controller
 
     public function create_ajax()
     {
-        $vendors = VendorModel::select('vendor_id', 'vendor_nama')->get();
-        $levels = LevelPelatihanModel::select('level_id', 'level_nama')->get();
-        $bidangs = BidangModel::all();
-        $matkuls = MatkulModel::all();
+        $breadcrumb = (object) [
+            'title' => 'Pelatihan Dosen',
+            'subtitle' => 'Tambah Pelatihan'
+        ];
 
-        return view('pelatihan.create_ajax')->with([
+        $bidangs = BidangModel::all();
+        $jenis = JenisModel::all();
+        $matkuls = MatkulModel::all(); // Ambil data mata kuliah
+        $vendors = VendorModel::all(); // Ambil data vendor
+        $levels = LevelPelatihanModel::all();
+
+        return view('pelatihan.create_ajax', [
+            'activeMenu' => 'pelatihan',
+            'breadcrumb' => $breadcrumb,
+            'bidangs' => $bidangs,
+            'jenis' => $jenis,
+            'matkuls' => $matkuls,
             'vendors' => $vendors,
             'levels' => $levels,
-            'bidangs' => $bidangs,
-            'matkuls' => $matkuls
         ]);
+        
     }
 
     public function store_ajax(Request $request)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'level_id' => 'required|integer',
-                'bidang_id' => 'required|integer',
-                'mk_id' => 'required|integer',
-                'vendor_id' => 'required|integer',
-                'nama_pelatihan' => 'required|string|max:255',
-                'tanggal' => 'required|date',
-                'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
-                'kuota' => 'required|integer',
-                'lokasi' => 'required|string|max:255',
-                'periode' => 'required|string|max:50',
-                'biaya' => 'required|numeric|min:0',
-            ];
+        $validatedData = $request->validate([
+            'level_id' => 'required|integer',
+            'bidang_id' => 'required|integer',
+            'mk_id' => 'required|integer',
+            'vendor_id' => 'required|integer',
+            'nama_pelatihan' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
+            'kuota' => 'required|integer',
+            'lokasi' => 'required|string|max:255',
+            'periode' => 'required|string|max:50',
+            'biaya' => 'required|numeric|min:0',
+        ]);
 
-            $validator = Validator::make($request->all(), $rules);
+        try {
+            PelatihanModel::create($validatedData);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors()
-                ]);
-            }
-
-            // Simpan data user dengan hanya field yang diperlukan
-            $pelatihan = PelatihanModel::create([
-                'nama_pelatihan'  => $request->nama_pelatihan,
-                'lokasi'      => $request->lokasi,
-                'tanggal'      => $request->tanggal,
-                'sertifikat'      => $request->sertifikat,
-                'kuota'      => $request->kuota,
-                'biaya'      => $request->biaya,
-                'vendor_id'  => $request->vendor_id,
-                'level_id'  => $request->level_id,
-                'periode'  => $request->periode
-            ]);
-            return response()->json([
-                'status' => true,
-                'message' => 'Data user berhasil disimpan'
-            ]);
+            return redirect()->route('pelatihan.index')
+                ->with('success', 'Pelatihan berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->route('pelatihan.index')
+                ->with('error', 'Terjadi kesalahan! Gagal menambahkan pelatihan.');
         }
-        return redirect('/');
     }
 
     public function edit_ajax($id)
@@ -289,10 +279,17 @@ class PelatihanController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
+                'level_id' => 'required|integer',
+                'bidang_id' => 'required|integer',
+                'mk_id' => 'required|integer',
+                'vendor_id' => 'required|integer',
                 'nama_pelatihan' => 'required|string|max:255',
                 'tanggal' => 'required|date',
+                'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
                 'kuota' => 'required|integer',
                 'lokasi' => 'required|string|max:255',
+                'periode' => 'required|string|max:50',
+                'biaya' => 'required|numeric|min:0',
             ];
 
             $validator = Validator::make($request->all(), $rules);

@@ -4,23 +4,14 @@
     @csrf
     <div class="modal-header">
         <h5 class="modal-title">Tambah Pelatihan</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
     </div>
     <div class="modal-body">
         <!-- Nama Pelatihan -->
         <div class="form-group">
             <label for="nama_pelatihan">Nama Pelatihan</label>
             <input type="text" name="nama_pelatihan" id="nama_pelatihan" class="form-control" required>
-        </div>
-
-        <!-- Tanggal -->
-        <div class="form-group">
-            <label for="tanggal">Tanggal Mulai</label>
-            <input type="date" name="tanggal" id="tanggal" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="tanggal_akhir">Tanggal Akhir</label>
-            <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" required>
         </div>
 
         <!-- Bidang -->
@@ -34,21 +25,59 @@
             </select>
         </div>
 
-        <!-- Vendor -->
+        <!-- Mata Kuliah -->
         <div class="form-group">
-            <label for="vendor_id">Vendor</label>
-            <select name="vendor_id" id="vendor_id" class="form-control" required>
-                <option value="">Pilih Vendor</option>
-                @foreach ($vendors as $vendor)
-                    <option value="{{ $vendor->id }}">{{ $vendor->nama }}</option>
+            <label for="mk_id">Mata Kuliah</label>
+            <select name="mk_id" id="mk_id" class="form-control" required>
+                <option value="">Pilih Mata Kuliah</option>
+                @foreach ($matkuls as $matkul)
+                    <option value="{{ $matkul->id }}">{{ $matkul->mk_nama }}</option>
                 @endforeach
             </select>
         </div>
 
-        <!-- Kuota -->
+        <!-- Vendor -->
+        <div class="mb-3">
+            <label for="vendor_id" class="form-label">Vendor</label>
+            <select class="form-control" id="vendor_id" name="vendor_id" required>
+                <option value="">Pilih Vendor</option>
+                @foreach($vendors as $vendor)
+                    <option value="{{ $vendor->vendor_id }}">{{ $vendor->vendor_nama }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Level -->
+        <div class="mb-3">
+            <label for="level_id" class="form-label">Level</label>
+            <select class="form-control" id="level_id" name="level_id" required>
+                <option value="">Pilih Level</option>
+                @foreach($levels as $level)
+                    <option value="{{ $level->level_id }}">{{ $level->level_nama }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Tanggal -->
         <div class="form-group">
+            <label for="tanggal">Tanggal Mulai</label>
+            <input type="date" name="tanggal" id="tanggal" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="tanggal_akhir">Tanggal Akhir</label>
+            <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" required>
+        </div>
+
+         <!-- Kuota -->
+         <div class="form-group">
             <label for="kuota">Kuota</label>
             <input type="number" name="kuota" id="kuota" class="form-control" required>
+        </div>
+
+         <!-- Lokasi -->
+         <div class="form-group">
+            <label for="lokasi">Lokasi</label>
+            <input type="text" name="lokasi" id="lokasi" class="form-control" required>
         </div>
 
         <!-- Biaya -->
@@ -56,10 +85,16 @@
             <label for="biaya">Biaya</label>
             <input type="number" name="biaya" id="biaya" class="form-control" required>
         </div>
+
+         <!-- Periode -->
+        <div class="form-group">
+            <label for="biaya">Periode</label>
+            <input type="number" name="periode" id="periode" class="form-control" required>
+        </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="submit" class="btn btn-primary">Simpan</button>
+        <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
     </div>
 </form>
     </div>
@@ -89,14 +124,66 @@
         });
 
         $("#form-tambah-pelatihan").validate({
-            rules: {
-                nama_pelatihan: { required: true, minlength: 3 },
-                tanggal: { required: true, date: true },
-                tanggal_akhir: { required: true, date: true },
-                kuota: { required: true, number: true },
-                lokasi: { required: true, minlength: 3 },
-                biaya: { required: true, number: true },
-            },
+            nama_pelatihan: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        bidang_nama: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        mk_nama: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        vendor: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        level_nama: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 100 
+        },
+        tanggal: { 
+            required: true, 
+            date: true 
+        },
+        tanggal_akhir: { 
+            required: true, 
+            date: true 
+        },
+        kuota: { 
+            required: true, 
+            min: 1, 
+            number: true 
+        },
+        lokasi: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 255 
+        },
+        biaya: { 
+            required: true, 
+            min: 0, 
+            number: true 
+        },
+        periode: { 
+            required: true, 
+            minlength: 1, 
+            maxlength: 50, 
+            digits: true // Hanya angka yang diizinkan
+        },
+        status: { 
+            required: true, 
+            minlength: 3, 
+            maxlength: 50 
+        }
+    },
             submitHandler: function(form) {
                 $.ajax({
                     url: form.action,

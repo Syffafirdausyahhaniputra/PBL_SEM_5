@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::group(['prefix' => 'bidang', 'middleware' => 'authorize:ADMN,LEAD'], function () {
+        Route::get('/bidang/dosen', [BidangController::class, 'show_dosen'])->name('bidang.show_dosen');
         Route::get('/list2', [BidangController::class, 'index1']);
         Route::get('/', [BidangController::class, 'index']);         // menampilkan halaman awal bidang
         Route::post('/list', [BidangController::class, 'list']);     // menampilkan data bidang dalam bentuk json untuk datables

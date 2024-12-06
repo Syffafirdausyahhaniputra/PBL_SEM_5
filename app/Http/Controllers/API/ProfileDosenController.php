@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\DosenModel;
+use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +18,7 @@ class ProfileDosenController extends Controller
     {
         try {
             // Ambil data dosen dengan relasi user, bidang, matkul
-            $dosen = DosenModel::with(['user', 'bidang', 'matkul'])
+            $dosen = DosenModel::with([])
                 ->where('user_id', Auth::id())
                 ->first();
 
@@ -30,7 +31,6 @@ class ProfileDosenController extends Controller
 
             // Ambil data role melalui relasi User
             $role = $dosen->user->role;
-
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -39,8 +39,8 @@ class ProfileDosenController extends Controller
                     'username' => $dosen->user->username,
                     'nip' => $dosen->user->nip,
                     'role' => $role->role_nama,  // Menambahkan role
-                    'bidang' => $dosen->bidang ? $dosen->bidang->bidang_nama : null,
-                    'matkul' => $dosen->matkul ? $dosen->matkul->mk_nama : null,
+                    'bidang' => $dosen->bidang_id,
+                    'matkul' => $dosen->mk_id,
                     'avatar' => $dosen->user->avatar ? asset('avatars/' . $dosen->user->avatar) : asset('avatars/user.jpg')
                 ]
             ]);
@@ -67,41 +67,23 @@ class ProfileDosenController extends Controller
                 ], 404);
             }
 
-            $user = $dosen->user;
+            $user = UserModel::where('user_id', Auth::id())->first();
 
             // Validasi input
             $request->validate([
                 'username' => 'required|string|min:3|unique:m_user,username,' . $user->user_id . ',user_id',
-                'nama'     => 'required|string|max:100',
-                'nip'      => 'required|string|max:50',
+                'nama' => 'required|string|max:100',
+                'nip' => 'required|string|max:50',
                 'bidang_id' => 'nullable|exists:m_bidang,bidang_id',
-                'mk_id'    => 'nullable|exists:m_matkul,mk_id',
+                'mk_id' => 'nullable|exists:m_matkul,mk_id',
                 'old_password' => 'nullable|string',
                 'password' => 'nullable|min:5',
-                'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
+
 
             // Cek perubahan data
             $isChanged = false;
-
-            if (
-                $user->username != $request->username ||
-                $user->nama != $request->nama ||
-                $user->nip != $request->nip ||
-                $request->hasFile('avatar') ||
-                $request->filled('old_password') ||
-                $dosen->bidang_id != $request->bidang_id ||
-                $dosen->mk_id != $request->mk_id
-            ) {
-                $isChanged = true;
-            }
-
-            if (!$isChanged) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tidak ada perubahan pada profil Anda.'
-                ]);
-            }
 
             // Update data user
             $user->username = $request->username;
@@ -138,9 +120,29 @@ class ProfileDosenController extends Controller
                 $user->avatar = $fileName;
             }
 
+
             // Simpan perubahan
             $user->save();
             $dosen->save();
+
+            if (
+                $user->username != $request->username ||
+                $user->nama != $request->nama ||
+                $user->nip != $request->nip ||
+                $request->hasFile('avatar') ||
+                $request->filled('old_password') ||
+                $dosen->bidang_id != $request->bidang_id ||
+                $dosen->mk_id != $request->mk_id
+            ) {
+                $isChanged = true;
+            }
+
+            if (!$isChanged) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada perubahan pada profil Anda.'
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

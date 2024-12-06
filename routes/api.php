@@ -17,6 +17,8 @@ use App\Http\Controllers\Api\LoginController as ApiLoginController;
 use App\Http\Controllers\API\NotifikasiPimpinanController;
 use App\Http\Controllers\API\ProfileDosenController;
 use App\Http\Controllers\Api\PlthnController;
+use App\Http\Controllers\API\BidangApiController;
+use App\Http\Controllers\API\MataKuliahApiController;
 
 
 /*
@@ -44,7 +46,7 @@ Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifika
 Route::put('update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update');
 Route::delete('destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
 
-Route::post('/login',ApiLoginController::class)->name('login');
+Route::post('/login', ApiLoginController::class)->name('login');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -58,7 +60,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('listData', [DashboardController::class, 'listData'])->name('listData');
 
     Route::get('/profiledosen', [ProfileDosenController::class, 'index']); // Menampilkan profil dosen
-    Route::patch('/profiledosen', [ProfileDosenController::class, 'update']); // Mengupdate profil dosen
+    Route::post('/profiledosen', [ProfileDosenController::class, 'update']); // Mengupdate profil dosen
 
     Route::group(['prefix' => 'sertifikasi'], function () {
         Route::get('/', [SertifikasiApiController::class, 'index']); // Menampilkan data dosen
@@ -66,11 +68,27 @@ Route::middleware('auth:api')->group(function () {
         Route::get('show/{id}', [SertifikasiApiController::class, 'show']); // Menampilkan data dosen berdasarkan ID
         Route::post('update/{id}', [SertifikasiApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
     });
-    
+
+    // Route untuk bidang
+    Route::group(['prefix' => 'bidang'], function () {
+        Route::get('/', [BidangApiController::class, 'index']); // Menampilkan data bidang
+        Route::post('create', [BidangApiController::class, 'store']); // Menambahkan data bidang
+        Route::get('show/{id}', [BidangApiController::class, 'show']); // Menampilkan data bidang berdasarkan ID
+        Route::post('update/{id}', [BidangApiController::class, 'update']); // Mengupdate data bidang berdasarkan ID
+    });
+
+    // Route untuk mata kuliah
+    Route::group(['prefix' => 'matakuliah'], function () {
+        Route::get('/', [MataKuliahApiController::class, 'index']); // Menampilkan data mata kuliah
+        Route::post('create', [MataKuliahApiController::class, 'store']); // Menambahkan data mata kuliah
+        Route::get('show/{id}', [MataKuliahApiController::class, 'show']); // Menampilkan data mata kuliah berdasarkan ID
+        Route::post('update/{id}', [MataKuliahApiController::class, 'update']); // Mengupdate data mata kuliah berdasarkan ID
+    });
+
     Route::group(['prefix' => 'notifikasiPimpinan'], function () {
-        Route::get('/list', [NotifikasiPimpinanController::class, 'list']); 
-        Route::get('/show/{type}/{id}', [NotifikasiPimpinanController::class, 'show']); 
-        Route::post('/verify/{type}/{id}', [NotifikasiPimpinanController::class, 'verify']); 
+        Route::get('/list', [NotifikasiPimpinanController::class, 'list']);
+        Route::get('/show/{type}/{id}', [NotifikasiPimpinanController::class, 'show']);
+        Route::post('/verify/{type}/{id}', [NotifikasiPimpinanController::class, 'verify']);
     });
 
     Route::group(['prefix' => 'pelatihan'], function () {

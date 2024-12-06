@@ -31,6 +31,11 @@ class UserModel extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(RoleModel::class, 'role_id', 'role_id');
     }
+    
+    public function dosen() : BelongsTo
+    {
+        return $this->belongsTo(DosenModel::class, 'user_id', 'user_id');
+    }
 
     /**
      * mendapatkan nama role

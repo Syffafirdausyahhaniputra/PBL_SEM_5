@@ -228,8 +228,8 @@ class UserController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                // validasi file harus xls atau xlsx, max 1MB 
-                'file_user' => ['required', 'mimes:xlsx', 'max:1024']
+                // Validasi file harus xlsx dan maksimal 1MB
+                'file_user' => ['required', 'mimes:xlsx', 'max:2048']
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -241,33 +241,56 @@ class UserController extends Controller
                 ]);
             }
 
-            $file = $request->file('file_user');  // ambil file dari request 
-
-            $reader = IOFactory::createReader('Xlsx');  // load reader file excel 
-            $reader->setReadDataOnly(true);             // hanya membaca data 
-            $spreadsheet = $reader->load($file->getRealPath()); // load file excel 
-            $sheet = $spreadsheet->getActiveSheet();    // ambil sheet yang aktif 
-
-            $data = $sheet->toArray(null, false, true, true);   // ambil data excel 
+            $file = $request->file('file_user'); // Ambil file dari request
+            $reader = IOFactory::createReader('Xlsx'); // Load reader file excel
+            $reader->setReadDataOnly(true); // Hanya membaca data
+            $spreadsheet = $reader->load($file->getRealPath()); // Load file excel
+            $sheet = $spreadsheet->getActiveSheet(); // Ambil sheet yang aktif
+            $data = $sheet->toArray(null, false, true, true); // Ambil data excel
 
             $insert = [];
-            if (count($data) > 1) { // jika data lebih dari 1 baris 
+            $dosenInsert = []; // Data untuk tabel dosen
+
+            if (count($data) > 1) { // Jika data lebih dari 1 baris
                 foreach ($data as $baris => $value) {
-                    if ($baris > 1) { // baris ke 1 adalah header, maka lewati 
-                        $insert[] = [
+                    if ($baris > 1) { // Baris ke-1 adalah header, maka lewati
+                        $hashedPassword = Hash::make($value['E']); // Hash password
+                        $insertData = [
                             'role_id' => $value['A'],
                             'username' => $value['B'],
                             'nama' => $value['C'],
                             'nip' => $value['D'],
-                            'password' => Hash::make($value['E']),
+                            'password' => $hashedPassword,
                             'created_at' => now(),
                         ];
+                        $insert[] = $insertData;
+
+                        // Tambahkan ke tabel Dosen jika role_id adalah 3
+                        if ((int)$value['A'] === 3) {
+                            $dosenInsert[] = [
+                                'username' => $value['B'], // Asumsikan ini dapat digunakan untuk mapping
+                                'created_at' => now(),
+                            ];
+                        }
                     }
                 }
 
                 if (count($insert) > 0) {
-                    // insert data ke database, jika data sudah ada, maka diabaikan 
+                    // Insert data ke tabel user
                     userModel::insertOrIgnore($insert);
+
+                    // Ambil user_id berdasarkan username untuk setiap dosen dan masukkan ke tabel dosen
+                    if (!empty($dosenInsert)) {
+                        foreach ($dosenInsert as $dosenData) {
+                            $user = userModel::where('username', $dosenData['username'])->first();
+                            if ($user) {
+                                DosenModel::create([
+                                    'user_id' => $user->user_id, // Menggunakan user_id dari tabel user
+                                    'created_at' => now(),
+                                ]);
+                            }
+                        }
+                    }
                 }
 
                 return response()->json([

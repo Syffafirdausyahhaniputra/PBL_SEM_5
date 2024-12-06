@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\BidangModel;
+use App\Models\DosenBidangModel;
+use App\Models\DosenModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -65,6 +67,23 @@ class BidangController extends Controller
             })
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+
+    public function show_dosen()
+    {
+        $bidangs = DosenBidangModel::all();
+        $breadcrumb = (object) [
+            'title' => 'Daftar Dosen',
+            'subtitle'  => 'Daftar dosen di setiap bidang'
+        ];
+
+        $activeMenu = 'bidang'; // set menu yang sedang aktif
+
+        return view('bidang.show_dosen', [
+            'breadcrumb' => $breadcrumb,
+            'activeMenu' => $activeMenu,
+            'bidangs' => $bidangs
+        ]);
     }
 
     public function create_ajax()

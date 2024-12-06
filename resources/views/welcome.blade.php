@@ -37,20 +37,20 @@
     <h2 class="mt-5">Bidang</h2>
     <div class="bidang-container">
         @foreach ($bidang as $b)
-            <div class="bidang-card">
-                <img src="{{ asset('img/IT.png') }}" alt="{{ $b->bidang_nama }}">
-                <h5 class="card-title text-center">{{ $b->bidang_nama }}</h5>
-            </div>
+            <a href="{{ route('bidang.show_dosen', $b->id) }}" class="text-decoration-none">
+                <div class="bidang-card">
+                    <img src="{{ asset('img/IT.png') }}" alt="{{ $b->bidang_nama }}">
+                    <h5 class="card-title text-center">{{ $b->bidang_nama }}</h5>
+                </div>
+            </a>
         @endforeach
-        <!-- Ubah URL menjadi route yang sesuai -->
-        <a href="{{ route('bidang.detail') }}" class="see-more-btn">See More</a>
     </div>
 
 
     <!-- CSS Styles -->
     <style>
         .bidang-container {
-            background-color: #2C65C8;
+            background-color: ;
             padding: 20px;
             border-radius: 20px;
             display: flex;
@@ -82,19 +82,6 @@
             border-radius: 10px;
         }
 
-        .see-more-btn {
-            background-color: #FFB400;
-            color: white;
-            font-weight: bold;
-            border-radius: 10px;
-            padding: 10px 20px;
-            text-align: center;
-        }
-
-        .see-more-btn:hover {
-            background-color: #e0a600;
-            color: white;
-        }
     </style>
 
     <!-- Chart.js Script -->

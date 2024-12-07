@@ -1,5 +1,5 @@
 <footer class="main-footer">
-    2241760005 - Syffa Firdausyah Hani Putra - SIB 3A
+    Kelompok 5 - SIB 3A
   </footer>
 
   <!-- Control Sidebar -->

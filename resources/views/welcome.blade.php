@@ -24,13 +24,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Profile Card -->
-        <div class="card p-4 text-center d-flex align-items-center justify-content-center" style="flex: 1; color: black; max-height: 300px;">
-            <h2 class="fw-bold">Profil</h2>
-            <img src="{{ auth()->user()->avatar ? asset('avatars/' . auth()->user()->avatar) : asset('img/user.png') }}" class="rounded-circle" width="30" height="30" alt="User Avatar">
-            <h4 class="fw-bold">{{ Auth::user()->nama }}</h4>
-        </div>
     </div>
 
     <!-- Bidang Section -->

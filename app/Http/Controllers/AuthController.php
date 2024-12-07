@@ -28,42 +28,45 @@ class AuthController extends Controller
     }
 
     public function postlogin(Request $request)
-{
-    if ($request->ajax() || $request->wantsJson()) {
-        $credentials = $request->only('username', 'password');
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $credentials = $request->only('username', 'password');
 
-        if (Auth::attempt($credentials)) {
-            // Ambil data user yang sudah login
-            $user = Auth::user();
+            // Tentukan apakah input adalah email atau username
+            $loginField = filter_var($credentials['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-            // Simpan role_id ke dalam session
-            session(['role_id' => $user->role_id]);
+            // Gunakan field dinamis untuk autentikasi
+            $attempt = Auth::attempt([
+                $loginField => $credentials['username'],
+                'password' => $credentials['password'],
+            ]);
 
-            // Tentukan URL pengalihan berdasarkan role_id
-            if ($user->role_id == 1 || $user->role_id == 2) {
-                $redirectUrl = '/welcome'; // Redirect untuk role_id 1 dan 2
-            } elseif ($user->role_id == 3) {
-                $redirectUrl = '/welcome2'; // Redirect untuk role_id 3
-            } else {
-                // Jika ada role_id lain, Anda bisa mengatur pengalihan default atau menangani sesuai kebutuhan
-                $redirectUrl = '/default'; // Contoh pengalihan default
+            if ($attempt) {
+                $user = Auth::user();
+
+                session(['role_id' => $user->role_id]);
+
+                $redirectUrl = match ($user->role_id) {
+                    1, 2 => '/welcome',
+                    3 => '/welcome2',
+                    default => '/default',
+                };
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Login Berhasil',
+                    'redirect' => url($redirectUrl)
+                ]);
             }
 
             return response()->json([
-                'status' => true,
-                'message' => 'Login Berhasil',
-                'redirect' => url($redirectUrl) // Gunakan URL yang ditentukan
+                'status' => false,
+                'message' => 'Login Gagal'
             ]);
         }
 
-        return response()->json([
-            'status' => false,
-            'message' => 'Login Gagal'
-        ]);
+        return redirect('login');
     }
-
-    return redirect('login');
-}
 
     public function logout(Request $request)
     {
@@ -73,50 +76,5 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('login');
-    }
-
-    public function register()
-    {
-        $role = RoleModel::select('role_id', 'role_nama')->get();
-
-        return view('auth.register')->with('role', $role);
-    }
-
-    public function postRegister(Request $request)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'role_id' => 'required|integer',
-                'username' => 'required|string|min:3|unique:m_user,username',
-                'nama' => 'required|string|max:100',
-                'nip' => 'required|string|max:50',
-                'password' => 'required|min:5'
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(),
-                ]);
-            }
-
-            // Hash password sebelum disimpan
-            $data = $request->all();
-            $data['password'] = Hash::make($request->password);
-
-            // Simpan data user
-            UserModel::create($data);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Data user berhasil disimpan',
-                'redirect' => url('login') // Redirect ke halaman login
-            ]);
-        }
-
-        // Jika bukan AJAX, arahkan ke halaman login
-        return redirect('login')->with('success', 'Registrasi berhasil!');
     }
 }

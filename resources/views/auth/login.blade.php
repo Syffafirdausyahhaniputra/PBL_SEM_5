@@ -104,15 +104,15 @@
                 <form action="{{ url('login') }}" method="POST" id="form-login">
                     @csrf
                     <div class="input-group mb-3">
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Username"
-                            value="{{ old('username') }}" required>
+                        <input type="text" id="username" name="username" class="form-control" 
+                               placeholder="Username atau Email" value="{{ old('username') }}" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
                             </div>
                         </div>
                         <small id="error-username" class="error-text text-danger"></small>
-                    </div>
+                    </div>                    
                     <div class="input-group mb-3">
                         <input type="password" id="password" name="password" class="form-control" placeholder="Password"
                             required>
@@ -153,7 +153,7 @@
                     username: {
                         required: true,
                         minlength: 4,
-                        maxlength: 20
+                        maxlength: 100
                     },
                     password: {
                         required: true,

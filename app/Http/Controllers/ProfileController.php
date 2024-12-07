@@ -36,8 +36,7 @@ class ProfileController extends Controller
             // Validasi input
             $request->validate([
                 'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id',
-                'nama'     => 'required|string|max:100',
-                'nip'      => 'required|string|max:50',
+                'email'     => 'required|string|max:100',
                 'old_password' => 'nullable|string',
                 'password' => 'nullable|min:5',
                 'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
@@ -49,8 +48,7 @@ class ProfileController extends Controller
             $isChanged = false;
 
             if ($user->username != $request->username || 
-                $user->nama != $request->nama || 
-                $user->nip != $request->nip || 
+                $user->email != $request->email || 
                 $request->hasFile('avatar') ||
                 $request->filled('old_password')) {
                 $isChanged = true;
@@ -65,7 +63,7 @@ class ProfileController extends Controller
 
             // Update data user
             $user->username = $request->username;
-            $user->nama = $request->nama;
+            $user->email = $request->email;
             $user->nip = $request->nip;
 
             // Handle password update
@@ -110,7 +108,7 @@ class ProfileController extends Controller
             'success' => true,
             'message' => 'Profile berhasil diperbarui!',
             'user' => [
-                'nama' => $user->nama,
+                'email' => $user->email,
                 'username' => $user->username,
                 'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : asset('avatars/user.jpg')
             ]

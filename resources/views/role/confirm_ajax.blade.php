@@ -23,7 +23,7 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document"> 
         <div class="modal-content"> 
             <div class="modal-header"> 
-                <h5 class="modal-title" id="exampleModalLabel">Hapus Jabatan</h5> 
+                <h5 class="modal-title" id="exampleModalLabel">Hapus Role</h5> 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button> 
@@ -34,8 +34,8 @@
                     Apakah Anda ingin menghapus data berikut? 
                 </div> 
                 <table class="table table-sm table-bordered table-striped"> 
-                    <tr><th class="text-right col-3">Kode Jabatan :</th><td class="col-9">{{ $role->role_kode }}</td></tr> 
-                    <tr><th class="text-right col-3">Nama Jabatan :</th><td class="col-9">{{ $role->role_nama }}</td></tr> 
+                    <tr><th class="text-right col-3">Kode Role :</th><td class="col-9">{{ $role->role_kode }}</td></tr> 
+                    <tr><th class="text-right col-3">Nama Role :</th><td class="col-9">{{ $role->role_nama }}</td></tr> 
                 </table> 
             </div> 
             <div class="modal-footer"> 

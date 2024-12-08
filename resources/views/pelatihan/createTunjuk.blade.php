@@ -1,5 +1,3 @@
-<div id="modal-master" class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
         <form action="{{ url('/pelatihan/tunjuk/store') }}" method="POST" id="form-tambah-pelatihan">
             @csrf
             <div id="modal-master" class="modal-dialog modal-lg" role="document">
@@ -24,7 +22,7 @@
                             <select name="bidang_id" id="bidang_id" class="form-control" required>
                                 <option value="">Pilih Bidang</option>
                                 @foreach ($bidangs as $bidang)
-                                    <option value="{{ $bidang->id }}">{{ $bidang->bidang_nama }}</option>
+                                    <option value="{{ $bidang->bidang_id }}">{{ $bidang->bidang_nama }}</option>
                                 @endforeach
                             </select>
                             <small id="error-bidang_id" class="error-text form-text text-danger"></small>
@@ -36,7 +34,7 @@
                             <select name="mk_id" id="mk_id" class="form-control" required>
                                 <option value="">Pilih Mata Kuliah</option>
                                 @foreach ($matkuls as $matkul)
-                                    <option value="{{ $matkul->id }}">{{ $matkul->mk_nama }}</option>
+                                    <option value="{{ $matkul->mk_id }}">{{ $matkul->mk_nama }}</option>
                                 @endforeach
                             </select>
                             <small id="error-mk_id" class="error-text form-text text-danger"></small>
@@ -116,12 +114,14 @@
             </div>
         </form>
         <script>
-            submitHandler: function(form) {
+            $(document).ready(function() {
+                $('#form-tambah-pelatihan').on('submit', function(event) {
+                    event.preventDefault(); // Mencegah form dikirim langsung
                     $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: $(form).serialize(),
-                        dataType: 'json', // Tambahkan ini untuk parsing JSON
+                        url: this.action,
+                        type: this.method,
+                        data: $(this).serialize(),
+                        dataType: 'json', // Parsing JSON
                         success: function(response) {
                             if (response.status) {
                                 $('#modal-master').modal('hide');
@@ -144,20 +144,16 @@
                             }
                         },
                         error: function(xhr) {
-                            // Tambahkan penanganan error yang lebih detail
                             let errorMessage = 'Terjadi kesalahan saat menyimpan data.';
                             if (xhr.responseJSON && xhr.responseJSON.message) {
                                 errorMessage = xhr.responseJSON.message;
                             }
-
-                            // Tampilkan pesan error validasi
                             if (xhr.status === 422) {
                                 $('.error-text').text('');
                                 $.each(xhr.responseJSON.msgField, function(prefix, val) {
                                     $('#error-' + prefix).text(val[0]);
                                 });
                             }
-
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal',
@@ -165,21 +161,8 @@
                             });
                         }
                     });
-                    return false;
-                },
-                errorElement: 'span',
-                errorPlacement: function(error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function(element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function(element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
-                }
-            });
+                });
             });
         </script>
-    </div>
-</div>
+        
+

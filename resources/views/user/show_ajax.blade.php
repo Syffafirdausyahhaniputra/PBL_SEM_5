@@ -33,6 +33,7 @@
                     <tr><th class="text-right col-3">Username :</th><td class="col-9">{{ $user->username }}</td></tr> 
                     <tr><th class="text-right col-3">Nama :</th><td class="col-9">{{ $user->nama }}</td></tr> 
                     <tr><th class="text-right col-3">NIP :</th><td class="col-9">{{ $user->nip }}</td></tr> 
+                    <tr><th class="text-right col-3">Email :</th><td class="col-9">{{ $user->email }}</td></tr> 
                     <tr><th class="text-right col-3">Password :</th><td class="col-9">{{ $user->password }}</td></tr> 
                 </table> 
             </div> 

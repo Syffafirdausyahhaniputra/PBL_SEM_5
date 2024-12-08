@@ -48,6 +48,10 @@
                             <th class="text-right col-3">NIP :</th>
                             <td class="col-9">{{ $user->nip }}</td>
                         </tr>
+                        <tr>
+                            <th class="text-right col-3">Email :</th>
+                            <td class="col-9">{{ $user->email }}</td>
+                        </tr>
                     </table>
                 </div>
                 <div class="modal-footer">

@@ -17,17 +17,17 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-2">
                     <div class="form-group row">
-                        <label class="col-1 control-label col-form-label">Filter:</label>
-                        <div class="col-3">
+                        <label class="col-4 control-label col-form-label">Filter:</label>
+                        <div class="col-7">
                             <select class="form-control" id="role_id" name="role_id" required>
                                 <option value="">- Semua -</option>
                                 @foreach ($role as $item)
                                     <option value="{{ $item->role_id }}">{{ $item->role_nama }}</option>
                                 @endforeach
                             </select>
-                            <small class="form-text text-muted">Jabatan</small>
+                            <small class="form-text text-muted">Role</small>
                         </div>
                     </div>
                 </div>

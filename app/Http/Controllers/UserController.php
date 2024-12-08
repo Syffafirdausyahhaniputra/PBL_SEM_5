@@ -84,6 +84,7 @@ class UserController extends Controller
                 'username' => 'required|string|min:3|unique:m_user,username',
                 'nama' => 'required|string|max:100',
                 'nip' => 'required|string|max:100',
+                'email' => 'required|string|max:100',
                 'password' => 'required|min:6'
             ];
 
@@ -99,7 +100,7 @@ class UserController extends Controller
             }
 
             // Simpan data ke tabel m_user
-            $user = UserModel::create($request->only(['role_id', 'username', 'nama', 'nip', 'password']));
+            $user = UserModel::create($request->only(['role_id', 'username', 'nama', 'nip', 'email', 'password']));
 
             // Simpan data ke tabel m_dosen jika role_id adalah 3
             if ($request->role_id == 3) {
@@ -133,6 +134,7 @@ class UserController extends Controller
                 'username' => 'required|max:20|unique:m_user,username,' . $id . ',user_id',
                 'nama'     => 'required|max:100',
                 'nip'     => 'required|max:100',
+                'email'     => 'required|max:100',
                 'password' => 'nullable|min:6|max:20'
             ];
             // use Illuminate\Support\Facades\Validator; 
@@ -254,12 +256,13 @@ class UserController extends Controller
             if (count($data) > 1) { // Jika data lebih dari 1 baris
                 foreach ($data as $baris => $value) {
                     if ($baris > 1) { // Baris ke-1 adalah header, maka lewati
-                        $hashedPassword = Hash::make($value['E']); // Hash password
+                        $hashedPassword = Hash::make($value['F']); // Hash password
                         $insertData = [
                             'role_id' => $value['A'],
                             'username' => $value['B'],
                             'nama' => $value['C'],
                             'nip' => $value['D'],
+                            'email' => $value['E'],
                             'password' => $hashedPassword,
                             'created_at' => now(),
                         ];

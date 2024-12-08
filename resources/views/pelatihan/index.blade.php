@@ -4,8 +4,10 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/pelatihan/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus">Tambah Pelatihan</i></button>
-            </div>
+                <button onclick="modalAction('{{ url('/pelatihan/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus">Tambah Data Pelatihan</i></button>
+                <button onclick="modalAction('{{ url('/pelatihan/tunjuk') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus">Tambah Penunjukkan Pelatihan</i></button>
+
+                {{-- <a href="{{ url('/pelatihan/penunjukkan') }}" class="btn btn-warning">Tambah Penunjukkan</a>            </div> --}}
         </div>
         <div class="card-body">
             <!-- Pesan sukses/gagal -->

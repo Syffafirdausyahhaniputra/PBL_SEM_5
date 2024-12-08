@@ -230,6 +230,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/dosen/create', [PelatihanController::class, 'createForDosen'])->name('pelatihan.dosen.create');
         Route::post('/dosen/store', [PelatihanController::class, 'storeForDosen'])->name('pelatihan.dosen.store');
         Route::get('/create_ajax', [PelatihanController::class, 'create_ajax']); // Menampilkan halaman form tambah pelatihan Ajax
+        Route::get('/tunjuk', [PelatihanController::class, 'createtunjuk']);
+        Route::post('/tunjuk/store', [PelatihanController::class, 'storeTunjuk'])->name('pelatihan.storeTunjuk');
         Route::post('/ajax', [PelatihanController::class, 'store_ajax']);  
         Route::get('/{id}/edit_ajax', [PelatihanController::class, 'edit_ajax']); 
         Route::get('/{id}/show_ajax', [PelatihanController::class, 'show_ajax']);

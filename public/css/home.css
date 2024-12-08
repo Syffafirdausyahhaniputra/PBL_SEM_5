@@ -19,72 +19,105 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 10px 10%;
+    padding: 15px 10%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 100;
-    background: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+    background: linear-gradient(90deg, #0d47a1, #42a5f5);
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    transition: top 0.3s ease; /* Tambahkan transisi smooth */
+    transition: top 0.3s ease, background 0.3s ease;
 }
 
 .hidden-header {
-    top: -100px; /* Header akan bergeser ke atas ketika disembunyikan */
+    top: -100px;
 }
 
 .brand-title {
-    font-family: 'Pacifico', cursive; /* Font stylish */
-    font-size: 28px;
-    color: #d33a2c;
+    font-family: 'Pacifico', cursive;
+    font-size: 30px;
+    color: #ffffff;
     margin: 0;
-    display: flex;
-    align-items: center;
 }
 
 .navbar {
     display: flex;
     align-items: center;
+    transition: transform 0.3s ease;
 }
 
 .navbar a {
-    cursor: pointer;
-    font-size: 20px;
-    color: #152f4f;
+    font-size: 18px;
+    color: #ffffff;
     text-decoration: none;
     font-weight: 500;
-    margin-left: 35px;
-    background: none;
+    margin-left: 25px;
     position: relative;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .navbar a:hover {
-    color: #d33a2c; /* Warna merah saat hover */
+    transform: scale(1.1);
 }
 
 .btn-login {
-    padding: 15px 30px;
-    font-size: 1.2rem;
+    padding: 10px 20px;
+    font-size: 16px;
     text-transform: uppercase;
-    border: none;
-    border: 1px solid #152f4f;
-    padding: 5px 10px;
+    border: 1px solid #ffffff;
+    color: #ffffff;
     border-radius: 5px;
+    background: transparent;
     text-decoration: none;
     transition: background 0.3s ease, color 0.3s ease;
 }
 
 .btn-login:hover {
+    background-color: #ffeb3b;
+    color: #0d47a1;
     text-decoration: none;
-    color: white;
-    background-color: #152f4f;
 }
 
-.brand-title .emoji {
-    margin-right: 10px;
-    margin-left: 10px;
-    font-size: 28px;
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.hamburger-menu span {
+    background: #ffffff;
+    height: 3px;
+    border-radius: 2px;
+    transition: transform 0.3s ease;
+}
+
+.navbar-visible {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #0d47a1;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    .navbar.navbar-visible {
+        display: flex;
+    }
+
+    .hamburger-menu {
+        display: flex;
+    }
 }
 
 * {
@@ -95,7 +128,7 @@ body {
 
 .banner {
     height: 100vh;
-    background: url("../img/banner.jpg") no-repeat center center/cover;
+    background: url("../img/login.jpg") no-repeat center center/cover;
     display: flex;
     justify-content: center;
     align-items: center;

@@ -12,6 +12,8 @@ use App\Models\DataPelatihanModel;
 use App\Models\JenisModel;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+// use App\Http\Controllers\Log;
+use Illuminate\Support\Facades\Log;
 
 class PelatihanController extends Controller
 {
@@ -99,6 +101,70 @@ class PelatihanController extends Controller
         // return view('pelatihan.createTunjuk');
 
     }
+
+    public function storeTunjuk(Request $request)
+    {
+        Log::info('Received request data:', $request->all());
+
+        // Cek apakah request berupa AJAX
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'level_id' => 'required|integer',
+                'bidang_id' => 'required|integer',
+                'mk_id' => 'required|integer',
+                'vendor_id' => 'required|integer',
+                'nama_pelatihan' => 'required|string|max:255',
+                'tanggal' => 'required|date',
+                'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
+                'kuota' => 'required|integer',
+                'lokasi' => 'required|string|max:255',
+                'periode' => 'required|string|max:50',
+                'biaya' => 'required|numeric|min:0',
+            ];
+
+            // Validasi input
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                Log::error('Validation failed:', $validator->errors()->toArray());
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(), // Pesan error validasi
+                ]);
+            }
+            try {
+                $pelatihan = PelatihanModel::create($request->all());
+                // Log the created model
+                Log::info('Pelatihan created:', $pelatihan->toArray()); // Simpan data ke database
+                // PelatihanModel::create($request->all());
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Pelatihan berhasil disimpan',
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Error saving pelatihan:', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'request_data' => $request->all()
+                ]);
+
+                // Tambahkan informasi spesifik kesalahan
+                $errorMessage = 'Terjadi kesalahan saat menyimpan data';
+                if (strpos($e->getMessage(), 'SQLSTATE') !== false) {
+                    $errorMessage .= ': Kesalahan database';
+                }
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Terjadi kesalahan saat menyimpan data',
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+        // Jika bukan AJAX, redirect ke halaman utama
+        return redirect('/pelatihan');
+    }
+
     //     public function storeTunjuk(Request $request)
     // {
     //     // Cek apakah request berupa AJAX
@@ -125,80 +191,30 @@ class PelatihanController extends Controller
     //                 'status' => false,
     //                 'message' => 'Validasi Gagal',
     //                 'msgField' => $validator->errors(), // Pesan error validasi
-    //             ]);
+    //             ], 422); // Tambahkan status kode 422 untuk validasi error
     //         }
 
     //         try {
     //             // Simpan data ke database
-    //             PelatihanModel::create($request->all());
+    //             $pelatihan = PelatihanModel::create($request->all());
 
     //             return response()->json([
     //                 'status' => true,
     //                 'message' => 'Pelatihan berhasil disimpan',
-    //             ]);
+    //                 'data' => $pelatihan
+    //             ], 201); // Tambahkan status kode 201 untuk created
     //         } catch (\Exception $e) {
     //             return response()->json([
     //                 'status' => false,
     //                 'message' => 'Terjadi kesalahan saat menyimpan data',
     //                 'error' => $e->getMessage(),
-    //             ]);
+    //             ], 500);
     //         }
     //     }
 
     //     // Jika bukan AJAX, redirect ke halaman utama
-    //     return redirect('/pelatihan');
+    //     return redirect('/pelatihan')->with('error', 'Metode pengiriman tidak valid');
     // }
-
-    public function storeTunjuk(Request $request)
-{
-    // Cek apakah request berupa AJAX
-    if ($request->ajax() || $request->wantsJson()) {
-        $rules = [
-            'level_id' => 'required|integer',
-            'bidang_id' => 'required|integer',
-            'mk_id' => 'required|integer',
-            'vendor_id' => 'required|integer',
-            'nama_pelatihan' => 'required|string|max:255',
-            'tanggal' => 'required|date',
-            'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
-            'kuota' => 'required|integer',
-            'lokasi' => 'required|string|max:255',
-            'periode' => 'required|string|max:50',
-            'biaya' => 'required|numeric|min:0',
-        ];
-
-        // Validasi input
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validasi Gagal',
-                'msgField' => $validator->errors(), // Pesan error validasi
-            ], 422); // Tambahkan status kode 422 untuk validasi error
-        }
-
-        try {
-            // Simpan data ke database
-            $pelatihan = PelatihanModel::create($request->all());
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Pelatihan berhasil disimpan',
-                'data' => $pelatihan
-            ], 201); // Tambahkan status kode 201 untuk created
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan data',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    // Jika bukan AJAX, redirect ke halaman utama
-    return redirect('/pelatihan')->with('error', 'Metode pengiriman tidak valid');
-}
 
     public function show_ajax(string $id)
     {

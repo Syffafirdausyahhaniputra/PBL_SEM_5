@@ -15,5 +15,6 @@ class BidangModel extends Model
         return $this->hasMany(DosenBidangModel::class, 'bidang_id', 'bidang_id');
     }
 
+    
 
 }

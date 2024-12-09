@@ -282,8 +282,8 @@ class BidangController extends Controller
         // Ambil data bidang berdasarkan ID
         $bidang = BidangModel::findOrFail($id);
 
-        // Ambil daftar dosen berdasarkan bidang (relasi)
-        $dosen = $bidang->dosenBidang()->with('dosen')->get();
+        // Ambil daftar dosen berdasarkan bidang dengan relasi
+        $dosen = $bidang->dosenBidang()->with('dosen.user')->get();
 
         // Tampilkan view dengan data dosen
         return view('bidang.dosen', [

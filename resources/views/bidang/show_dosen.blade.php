@@ -3,33 +3,37 @@
 @section('title', $bidang->bidang_nama)
 
 @section('content')
+<!-- Header Section -->
 <div class="header">
     <h1>{{ $bidang->bidang_nama }}</h1>
     <small>List Dosen Bidang {{ $bidang->bidang_nama }}</small>
     <img src="{{ asset('images/user-placeholder.jpg') }}" alt="User">
 </div>
 
+<!-- Card List Section -->
 <div class="card-list">
     @if ($bidang->dosenBidang->isNotEmpty())
         @foreach ($bidang->dosenBidang as $dosenBidang)
-        <div class="card">
-            <div>
-                <img src="{{ asset('images/dosen-placeholder.jpg') }}" alt="Dosen">
+            <div class="card">
+                <div>
+                    <img src="{{ asset('images/dosen-placeholder.jpg') }}" alt="Dosen">
+                </div>
+                <div>
+                    <p class="card-title">{{ $dosenBidang->dosen->user->name }}</p>
+                    <p class="card-subtitle">{{ $dosenBidang->dosen->user->email }}</p>
+                </div>
             </div>
-            <div>
-                <p class="card-title">{{ $dosenBidang->dosen->user->name }}</p>
-                <p class="card-subtitle">{{ $dosenBidang->dosen->user->email }}</p>
-            </div>
-        </div>
         @endforeach
     @else
         <p>Tidak ada dosen untuk bidang ini.</p>
     @endif
 </div>
+
 @endsection
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+<style>
     /* Sidebar */
     .sidebar {
         background-color: #003366;
@@ -126,4 +130,5 @@
         }
     }
 
+</style>
 @endsection

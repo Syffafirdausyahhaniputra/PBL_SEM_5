@@ -28,7 +28,10 @@ class DosenBidangModel extends Model implements JWTSubject
     {
         return $this->belongsTo(UserModel::class, 'dosen_id', 'dosen_id');
     }
-
+    public function dosen2()
+    {
+        return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
+    }
     public function bidang()
     {
         return $this->belongsTo(BidangModel::class, 'bidang_id', 'bidang_id');

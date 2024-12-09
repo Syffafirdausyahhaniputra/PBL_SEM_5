@@ -37,7 +37,7 @@
     <!-- Bidang Container -->
     <div class="bidang-container" id="bidangContainer">
         @foreach ($bidang as $b)
-            <a href="{{ route('bidang.show_dosen', $b->id) }}" class="text-decoration-none bidang-item">
+            <a href="{{ route('bidang.showDosenByBidang', ['id' => $b->bidang_id]) }}" class="text-decoration-none bidang-item">
                 <div class="bidang-card">
                     <img src="{{ asset('img/IT.png') }}" alt="{{ $b->bidang_nama }}">
                     <h5 class="card-title text-center">{{ $b->bidang_nama }}</h5>

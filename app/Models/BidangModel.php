@@ -10,4 +10,10 @@ class BidangModel extends Model
     protected $primaryKey = 'bidang_id';
     protected $fillable = ['bidang_kode', 'bidang_nama', 'created_at', 'updated_at'];
 
+    public function dosenBidang()
+    {
+        return $this->hasMany(DosenBidangModel::class, 'bidang_id', 'bidang_id');
+    }
+
+
 }

@@ -277,4 +277,18 @@ class BidangController extends Controller
         }
         return redirect('/');
     }
+    public function showDosenByBidang($id)
+    {
+        // Ambil data bidang berdasarkan ID
+        $bidang = BidangModel::findOrFail($id);
+
+        // Ambil daftar dosen berdasarkan bidang (relasi)
+        $dosen = $bidang->dosenBidang()->with('dosen')->get();
+
+        // Tampilkan view dengan data dosen
+        return view('bidang.dosen', [
+            'bidang' => $bidang,
+            'dosen' => $dosen,
+        ]);
+    }
 }

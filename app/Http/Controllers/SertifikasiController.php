@@ -222,7 +222,7 @@ class SertifikasiController extends Controller
 
                 // Ambil nama dosen terkait dari relasi
                 $dosen = DosenModel::with('user')->find($request->dosen_id);
-                $dosenNama = $dosen && $dosen->user ? $dosen->user->name : 'Tidak diketahui';
+                $dosenNama = $dosen && $dosen->user ? $dosen->user->nama : 'Tidak diketahui';
 
                 Log::info('Pelatihan berhasil dibuat oleh dosen:', [
                     'nama_dosen' => $dosenNama,

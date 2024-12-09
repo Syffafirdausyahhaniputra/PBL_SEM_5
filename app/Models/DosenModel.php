@@ -30,7 +30,7 @@ class DosenModel extends Model implements JWTSubject
     }
     public function dosenBidang()
     {
-        return $this->belongsTo(DosenBidangModel::class, 'dosen_id', 'dosen_id');
+        return $this->hasOne(DosenBidangModel::class, 'dosen_id', 'dosen_id');
     }
     
     public function dosenMatkul()

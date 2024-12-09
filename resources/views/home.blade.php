@@ -11,6 +11,8 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fork-awesome/1.1.7/css/fork-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Great+Vibes&family=Abril+Fatface&family=Caveat:wght@400;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset(path: 'css/home.css') }}">

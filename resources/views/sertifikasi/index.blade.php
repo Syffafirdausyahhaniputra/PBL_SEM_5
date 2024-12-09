@@ -5,7 +5,7 @@
         <div class="card-header">
             <div class="card-tools">
                 <button onclick="modalAction('{{ url('/sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Sertifikasi</i></button>
-                <button onclick="modalAction('{{ url('/sertifikasi/createTunjuk') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Penunjukkan</i></button>
+                <button onclick="modalAction('{{ url('/sertifikasi/tunjuk') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Penunjukkan</i></button>
 
             </div>
         </div>

@@ -3,7 +3,7 @@
             <div id="modal-master" class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Tambah Penunjukkan Pelatihan</h5>
+                        <h5 class="modal-title">Tambah Rekomendasi Pelatihan</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
                     </div>
@@ -85,6 +85,21 @@
                             <small id="error-kuota" class="error-text form-text text-danger"></small>
                         </div>
 
+                        <!-- Anggota -->
+                        <div class="form-group">
+                            <label for="dosen_id">Anggota</label>
+                            <select class="form-control" id="dosen_id" name="dosen_id" required>
+                                <option value="">Pilih Anggota</option>
+                                @foreach ($dataP as $data)
+                                    <option value="{{ $data->dosen_id }}">
+                                        {{ $data->user ? $data->user->nama : 'Nama tidak tersedia' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small id="error-dosen_id" class="error-text form-text text-danger"></small>
+                        </div>
+
+
                         <!-- Lokasi -->
                         <div class="form-group">
                             <label for="lokasi">Lokasi</label>
@@ -164,5 +179,3 @@
                 });
             });
         </script>
-        
-

@@ -244,7 +244,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/dosen', [SertifikasiController::class, 'indexForDosen'])->name('sertifikasi.dosen.index');
         Route::get('/dosen/create', [SertifikasiController::class, 'createForDosen'])->name('sertifikasi.dosen.create');
         Route::post('/dosen/store', [SertifikasiController::class, 'storeForDosen'])->name('sertifikasi.dosen.store');
-
+        Route::get('/tunjuk', [SertifikasiController::class, 'createTunjuk'])->name('sertifikasi.tunjuk'); 
+        Route::post('/tunjuk/store', [SertifikasiController::class, 'storeTunjuk'])->name('sertifikasi.storeTunjuk');
         Route::get('/list', [SertifikasiController::class, 'list'])->name('sertifikasi.list');
         Route::get('/{id}/show_ajax', [SertifikasiController::class, 'show_ajax']);
         Route::get('/create', [SertifikasiController::class, 'create'])->name('sertifikasi.create'); 

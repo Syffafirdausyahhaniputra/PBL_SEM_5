@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\SertifikasiModel;
 use App\Models\DataSertifikasiModel;
 use App\Models\BidangModel;
+use App\Models\DosenModel;
 use App\Models\JenisModel;
 use App\Models\MatkulModel;
 use App\Models\VendorModel;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -81,23 +83,29 @@ class SertifikasiController extends Controller
 
     public function show_ajax(string $id)
     {
+        // Ambil data DataPelatihan berdasarkan id
+
+        $sertifikasi = SertifikasiModel::find((int) $id);
         $dataSertifikasi = DataSertifikasiModel::with([
-            'sertif.jenis',
-            'sertif.bidang',
-            'sertif.matkul',
-            'sertif.vendor',
-            'dosen'
+            'sertifikasi.jenis',
+            'sertifikasi.bidang',
+            'sertifikasi.matkul',
+            'sertifikasi.vendor',
         ])->find($id);
 
-        if ($dataSertifikasi) {
-            return view('sertifikasi.show_ajax', ['dataSertifikasi' => $dataSertifikasi]);
+        // Periksa apakah data drowukan
+        if ($sertifikasi !== null) {
+            // Tampilkan halaman show_ajax dengan data pelatihan
+            return view('sertifikasi.show_ajax', ['dataSertifikasi' => $dataSertifikasi, 'sertifikasi' => $sertifikasi]);
         } else {
+            // Tampilkan pesan kesalahan jika data tidak drowukan
             return response()->json([
                 'status' => false,
                 'message' => 'Data tidak ditemukan'
             ]);
         }
     }
+
 
     public function store(Request $request)
     {
@@ -150,6 +158,92 @@ class SertifikasiController extends Controller
     }
 
 
+    public function createTunjuk()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Sertifikasi Dosen',
+            'subtitle' => 'Tambah Pelatihan'
+        ];
+
+        $bidangs = BidangModel::all();
+        $jenis = JenisModel::all();
+        $matkuls = MatkulModel::all();
+        $vendors = VendorModel::all();
+        $levels = JenisModel::all();
+
+        // Ambil data dosen beserta nama user
+        $dataP = DosenModel::with('user')->get();
+
+        return view('sertifikasi.createTunjuk', [
+            'activeMenu' => 'sertifikasi',
+            'breadcrumb' => $breadcrumb,
+            'bidangs' => $bidangs,
+            'jenis' => $jenis,
+            'matkuls' => $matkuls,
+            'vendors' => $vendors,
+            'levels' => $levels,
+            'dataP' => $dataP,
+        ]);
+    }
+
+    public function storeTunjuk(Request $request)
+    {
+        Log::info('Received request data:', $request->all());
+
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'level_id' => 'required|integer',
+                'bidang_id' => 'required|integer',
+                'mk_id' => 'required|integer',
+                'vendor_id' => 'required|integer',
+                'nama_pelatihan' => 'required|string|max:255',
+                'tanggal' => 'required|date',
+                'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
+                'masa_berlaku' => 'required|date',
+                'kuota' => 'required|integer',
+                'lokasi' => 'required|string|max:255',
+                'periode' => 'required|string|max:50',
+                'biaya' => 'required|numeric|min:0',
+                'dosen_id' => 'required|integer',
+                'user_id' => 'required|integer',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            try {
+                $sertifikasi = SertifikasiModel::create($request->all());
+
+                // Ambil nama dosen terkait dari relasi
+                $dosen = DosenModel::with('user')->find($request->dosen_id);
+                $dosenNama = $dosen && $dosen->user ? $dosen->user->name : 'Tidak diketahui';
+
+                Log::info('Pelatihan berhasil dibuat oleh dosen:', [
+                    'nama_dosen' => $dosenNama,
+                    'pelatihan' => $sertifikasi->toArray(),
+                ]);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Pelatihan berhasil disimpan',
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Terjadi kesalahan saat menyimpan data',
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return redirect('/sertifikasi');
+    }
 
     public function edit($id)
     {
@@ -209,9 +303,9 @@ class SertifikasiController extends Controller
                 return $row->status ?? '-';
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->data_sertifikasi_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button>';
+                $btn = '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->sertif_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->sertif_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->sertifikasi->sertif_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])

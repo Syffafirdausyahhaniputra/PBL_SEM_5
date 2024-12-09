@@ -227,6 +227,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dosen/create', [PelatihanController::class, 'createForDosen'])->name('pelatihan.dosen.create');
         Route::post('/dosen/store', [PelatihanController::class, 'storeForDosen'])->name('pelatihan.dosen.store');
         Route::get('/create_ajax', [PelatihanController::class, 'create_ajax']); // Menampilkan halaman form tambah pelatihan Ajax
+        Route::post('/create_ajax', [PelatihanController::class, 'store_ajax']);
         Route::get('/tunjuk', [PelatihanController::class, 'createtunjuk']);
         Route::post('/tunjuk/store', [PelatihanController::class, 'storeTunjuk'])->name('pelatihan.storeTunjuk');
         Route::post('/ajax', [PelatihanController::class, 'store_ajax']);  
@@ -245,6 +246,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/dosen/store', [SertifikasiController::class, 'storeForDosen'])->name('sertifikasi.dosen.store');
 
         Route::get('/list', [SertifikasiController::class, 'list'])->name('sertifikasi.list');
+        Route::get('/{id}/show_ajax', [SertifikasiController::class, 'show_ajax']);
         Route::get('/create', [SertifikasiController::class, 'create'])->name('sertifikasi.create'); 
         Route::post('/store', [SertifikasiController::class, 'store'])->name('sertifikasi.store'); 
         Route::get('/edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit'); 

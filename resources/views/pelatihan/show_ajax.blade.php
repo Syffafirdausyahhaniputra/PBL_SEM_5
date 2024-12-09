@@ -35,10 +35,8 @@
                     <tr><th class="text-right col-3">Vendor :</th><td class="col-9">{{ $dataPelatihan->pelatihan->vendor->vendor_nama }}</td></tr>
                     <tr><th class="text-right col-3">Level Pelatihan :</th><td class="col-9">{{ $dataPelatihan->pelatihan->level->level_nama }}</td></tr>
                     <tr><th class="text-right col-3">Tanggal :</th><td class="col-9">{{ \Carbon\Carbon::parse($dataPelatihan->pelatihan->tanggal)->format('d-m-Y') }}</td></tr>
-                    <tr><th class="text-right col-3">Masa Berlaku :</th><td class="col-9">{{ \Carbon\Carbon::parse($dataPelatihan->pelatihan->tanggal_akhir)->format('d-m-Y') }}</td></tr>  
-                    <tr><th class="text-right col-3">Kuota :</th><td class="col-9">{{ $dataPelatihan->pelatihan->kuota }}</td></tr> 
-                    <tr><th class="text-right col-3">Lokasi :</th><td class="col-9">{{ $dataPelatihan->pelatihan->lokasi }}</td></tr> 
-                    <tr><th class="text-right col-3">Biaya :</th><td class="col-9">{{ number_format($dataPelatihan->pelatihan->biaya, 2, ',', '.') }}</td></tr> 
+                    <tr><th class="text-right col-3">Masa Berlaku :</th><td class="col-9">{{ \Carbon\Carbon::parse($dataPelatihan->pelatihan->tanggal_akhir)->format('d-m-Y') }}</td></tr>   
+                    <tr><th class="text-right col-3">Lokasi :</th><td class="col-9">{{ $dataPelatihan->pelatihan->lokasi }}</td></tr>  
                     <tr><th class="text-right col-3">Periode :</th><td class="col-9">{{ $dataPelatihan->pelatihan->periode }}</td></tr> 
                     <tr><th class="text-right col-3">Status :</th><td class="col-9">{{ $dataPelatihan->status }}</td></tr>
                 </table> 

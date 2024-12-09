@@ -70,22 +70,10 @@
                     <small id="error-tanggal_akhir" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Kuota</label>
-                    <input value="{{ $pelatihan->kuota }}" type="number" name="kuota" id="kuota"
-                        class="form-control" required>
-                    <small id="error-kuota" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
                     <label>Lokasi</label>
                     <input value="{{ $pelatihan->lokasi }}" type="text" name="lokasi" id="lokasi"
                         class="form-control" required>
                     <small id="error-lokasi" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Biaya</label>
-                    <input value="{{ $pelatihan->biaya }}" type="number" name="biaya" id="biaya"
-                        class="form-control" required>
-                    <small id="error-biaya" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Periode</label>

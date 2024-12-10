@@ -16,38 +16,62 @@
         </div>
     </div>
 @else
-    <form action="{{ url('/pelatihan/' . $pelatihan->id . '/delete') }}" method="POST" id="form-delete">
+    <form action="{{ url('/pelatihan/' . $pelatihan->pelatihan_id . '/delete_ajax') }}" method="POST" id="form-delete">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Detail Data Pelatihan</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Mahasiswa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Tampilkan detail data pelatihan -->
+                    <div class="alert alert-warning">
+                        <h5><i class="icon fas fa-exclamation-triangle"></i> Konfirmasi !!!</h5>
+                        Apakah Anda ingin menghapus data berikut?
+                    </div>
                     <table class="table table-sm table-bordered table-striped">
-                        <tr>
-                            <th class="text-right col-3">ID</th>
-                            <td class="col-9">{{ $pelatihan->id }}</td>
-                        </tr>
                         <tr>
                             <th class="text-right col-3">Nama Pelatihan</th>
                             <td class="col-9">{{ $pelatihan->nama_pelatihan }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Tanggal</th>
-                            <td class="col-9">{{ $pelatihan->tanggal }}</td>
+                            <th class="text-right col-3">Bidang :</th>
+                            <td class="col-9">{{ $pelatihan->bidang->bidang_nama }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Bidang</th>
-                            <td class="col-9">{{ $pelatihan->nama_bidang }}</td>
+                            <th class="text-right col-3">Mata Kuliah :</th>
+                            <td class="col-9">{{ $pelatihan->matkul->mk_nama }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Status</th>
-                            <td class="col-9">{{ $pelatihan->status }}</td>
+                            <th class="text-right col-3">Vendor :</th>
+                            <td class="col-9">{{ $pelatihan->vendor->vendor_nama }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Level Pelatihan :</th>
+                            <td class="col-9">{{ $pelatihan->level->level_nama }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Tanggal :</th>
+                            <td class="col-9">{{ \Carbon\Carbon::parse($pelatihan->tanggal)->format('d-m-Y') }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Masa Berlaku :</th>
+                            <td class="col-9">{{ \Carbon\Carbon::parse($pelatihan->tanggal_akhir)->format('d-m-Y') }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Lokasi :</th>
+                            <td class="col-9">{{ $pelatihan->lokasi }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Periode :</th>
+                            <td class="col-9">{{ $pelatihan->periode }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Status :</th>
+                            <td class="col-9">{{ $pelatihan->data_pelatihan->pluck('status') }}</td>
                         </tr>
                     </table>
                 </div>
@@ -61,76 +85,44 @@
 @endif
 <script>
     $(document).ready(function() {
-        $('#form-tambah-pelatihan').on('submit', function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: $(this).attr('action'),
-                method: $(this).attr('method'),
-                data: $(this).serialize(),
-                success: function(response) {
-                    if (response.status) {
-                        Swal.fire('Berhasil', response.message, 'success');
-                        $('#modal-container').modal('hide');
-                        $('#table-pelatihan').DataTable().ajax.reload();
-                    } else {
-                        Swal.fire('Gagal', response.message, 'error');
-                    }
-                },
-                error: function(xhr) {
-                    Swal.fire('Gagal', 'Terjadi kesalahan saat menyimpan data.', 'error');
-                }
-            });
-        });
-
-        $("#form-tambah-pelatihan").validate({
-            rules: {
-                nama_pelatihan: { required: true, minlength: 3 },
-                tanggal: { required: true, date: true },
-                tanggal_akhir: { required: true, date: true },
-                kuota: { required: true, number: true },
-                lokasi: { required: true, minlength: 3 },
-                biaya: { required: true, number: true },
-            },
-            submitHandler: function(form) {
-                $.ajax({
-                    url: form.action,
-                    type: form.method,
-                    data: $(form).serialize(),
-                    success: function(response) {
-                        if (response.status) {
-                            $('#modal-master').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message
-                            });
-                            dataPelatihan.ajax.reload();
-                        } else {
-                            $('.error-text').text('');
-                            $.each(response.msgField, function(prefix, val) {
-                                $('#error-' + prefix).text(val[0]);
-                            });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan',
-                                text: response.message
-                            });
-                        }
-                    }
-                });
-                return false;
-            },
-            errorElement: 'span',
-            errorPlacement: function(error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function(element) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function(element) {
-                $(element).removeClass('is-invalid');
-            }
-        });
-    });
-</script>
+         // Event submit form
+         $("#form-delete").on('submit', function(event) {
+             event.preventDefault(); // Prevent page reload
+             var form = $(this);
+ 
+             $.ajax({
+                 url: form.attr('action'),
+                 type: form.attr('method'),
+                 data: form.serialize(),
+                 success: function(response) {
+                     if (response.status) {
+                         $('#myModal').modal('hide');
+                         $('#modal-master').modal('hide');
+                         Swal.fire({
+                             icon: 'success',
+                             title: 'Berhasil',
+                             text: response.message
+                         }).then(() => {
+                             // Reload the page directly
+                             location.reload(); // This will reload the page immediately after success
+                         });
+                     } else {
+                         // Show error message
+                         Swal.fire({
+                             icon: 'error',
+                             title: 'Terjadi Kesalahan',
+                             text: response.message
+                         });
+                     }
+                 },
+                 error: function(xhr, status, error) {
+                     Swal.fire({
+                         icon: 'error',
+                         title: 'Terjadi Kesalahan',
+                         text: 'Gagal menghapus data. Silakan coba lagi.'
+                     });
+                 }
+             });
+         });
+     });
+ </script>

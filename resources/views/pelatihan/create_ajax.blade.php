@@ -8,6 +8,18 @@
             aria-hidden="true">&times;</span></button>
     </div>
     <div class="modal-body">
+        <!-- Dosen -->
+        <div class="form-group">
+            <label>Dosen</label>
+            <select name="dosen_id" class="form-control" id="dosen_id" required>
+                <option value="">- Pilih Dosen -</option>
+                @foreach($dosens as $dosen)
+                    <option value="{{ $dosen->dosen_id }}">{{ $dosen->nama }}</option>
+                @endforeach
+            </select>
+            <small id="error-dosen_id" class="error-text form-text text-danger"></small>
+        </div>
+
         <!-- Nama Pelatihan -->
         <div class="form-group">
             <label for="nama_pelatihan">Nama Pelatihan</label>
@@ -90,63 +102,82 @@
             <label for="periode">Periode</label>
             <input type="text" name="periode" id="periode" class="form-control" required>
             <small id="error-periode" class="error-text form-text text-danger"></small>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-        <button type="submit" class="btn btn-primary">Simpan</button>
+                <!-- Formulir Upload File -->
+                <div class="form-group">
+                    <label for="file">Upload Dokumen:</label>
+                    <input type="file" class="form-control" id="file" name="file" required>
+                    <!-- Validasi error -->
+                    @error('file')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
     </div>
     </div>
 </div>
 </form>
 <script>
-$(document).ready(function() {
-$('#form-tambah-pelatihan').on('submit', function(event) {
-    event.preventDefault(); // Mencegah form dikirim langsung
-    $.ajax({
-        url: this.action,
-        type: this.method,
-        data: $(this).serialize(),
-        dataType: 'json', // Parsing JSON
-        success: function(response) {
-            if (response.status) {
-                $('#modal-master').modal('hide');
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: response.message
-                });
-                $('#table-pelatihan').DataTable().ajax.reload();
-            } else {
-                $('.error-text').text('');
-                $.each(response.msgField, function(prefix, val) {
-                    $('#error-' + prefix).text(val[0]);
-                });
+$(document).ready(function () {
+    $('#form-tambah-pelatihan').on('submit', function (event) {
+        event.preventDefault();
+
+        let formData = new FormData(this);
+
+        $.ajax({
+            url: this.action,
+            type: this.method,
+            data: formData,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.status) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message,
+                        timer: 2000, // Notifikasi ditampilkan selama 2 detik
+                        showConfirmButton: false,
+                    }).then(() => {
+                        location.reload(); // Reload halaman setelah notifikasi
+                    });
+
+                    $('#modal-master').modal('hide');
+                } else {
+                    $('.error-text').text('');
+                    $.each(response.msgField, function (prefix, val) {
+                        $('#error-' + prefix).text(val[0]);
+                    });
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: response.message,
+                    });
+                }
+            },
+            error: function (xhr) {
+                let errorMessage = 'Terjadi kesalahan saat menyimpan data.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                if (xhr.status === 422) {
+                    $('.error-text').text('');
+                    $.each(xhr.responseJSON.errors, function (prefix, val) {
+                        $('#error-' + prefix).text(val[0]);
+                    });
+                }
                 Swal.fire({
                     icon: 'error',
-                    title: 'Terjadi Kesalahan',
-                    text: response.message
+                    title: 'Gagal',
+                    text: errorMessage,
                 });
-            }
-        },
-        error: function(xhr) {
-            let errorMessage = 'Terjadi kesalahan saat menyimpan data.';
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                errorMessage = xhr.responseJSON.message;
-            }
-            if (xhr.status === 422) {
-                $('.error-text').text('');
-                $.each(xhr.responseJSON.msgField, function(prefix, val) {
-                    $('#error-' + prefix).text(val[0]);
-                });
-            }
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal',
-                text: errorMessage
-            });
-        }
+            },
+        });
     });
 });
-});
+
 </script>

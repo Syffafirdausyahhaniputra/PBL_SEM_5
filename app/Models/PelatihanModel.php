@@ -34,8 +34,12 @@ class PelatihanModel extends Model implements JWTSubject
         'biaya',
     ];
     
+    public function pelatihan()
+    {
+    return $this->belongsTo(PelatihanModel::class, 'pelatihan_id', 'pelatihan_id');
+    }
 
-    public function dataPelatihan()
+    public function data_pelatihan()
     {
         return $this->hasMany(DataPelatihanModel::class, 'pelatihan_id', 'pelatihan_id');
     }

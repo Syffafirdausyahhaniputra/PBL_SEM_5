@@ -34,29 +34,55 @@
                     <small id="error-nama_pelatihan" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Bidang</label>
-                    <input value="{{ $pelatihan->bidang->bidang_nama }}" type="text" name="bidang_nama" id="bidang_nama"
-                        class="form-control" required>
-                    <small id="error-bidang_nama" class="error-text form-text text-danger"></small>
+                    <label for="bidang_id">Bidang</label>
+                    <select name="bidang_id" id="bidang_id" class="form-control" required>
+                        <option value="">- Pilih Bidang -</option>
+                        @foreach($bidang as $b)
+                            <option value="{{ $b->bidang_id }}" {{ $pelatihan->bidang_id == $b->bidang_id ? 'selected' : '' }}>
+                                {{ $b->bidang_nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-bidang_id" class="form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Mata Kuliah</label>
-                    <input value="{{ $pelatihan->matkul->mk_nama }}" type="text" name="mk_nama" id="mk_nama"
-                        class="form-control" required>
-                    <small id="error-mk_nama" class="error-text form-text text-danger"></small>
+                    <label for="mk_id">Mata Kuliah</label>
+                    <select name="mk_id" id="mk_id" class="form-control" required>
+                        <option value="">- Pilih matkul -</option>
+                        @foreach($matkul as $m)
+                            <option value="{{ $m->mk_id }}" {{ $pelatihan->mk_id == $m->mk_id ? 'selected' : '' }}>
+                                {{ $m->mk_nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-mk_id" class="form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Vendor</label>
-                    <input value="{{ $pelatihan->vendor->vendor_nama }}" type="text" name="vendor" id="vendor"
-                        class="form-control" required>
-                    <small id="error-vendor" class="error-text form-text text-danger"></small>
+                    <label for="vendor_id">Vendor</label>
+                    <select name="vendor_id" id="vendor_id" class="form-control" required>
+                        <option value="">- Pilih Vendor -</option>
+                        @foreach($vendor as $v) <!-- Assuming $vendors is passed from the controller -->
+                            <option value="{{ $v->vendor_id }}" {{ $pelatihan->vendor_id == $v->vendor_id ? 'selected' : '' }}>
+                                {{ $v->vendor_nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-vendor_id" class="form-text text-danger"></small>
                 </div>
+                
                 <div class="form-group">
-                    <label>Level Pelatihan</label>
-                    <input value="{{ $pelatihan->level->level_nama}}" type="text" name="level_nama" id="level_nama"
-                        class="form-control" required>
-                    <small id="error-level_nama" class="error-text form-text text-danger"></small>
+                    <label for="level_id">Level Pelatihan</label>
+                    <select name="level_id" id="level_id" class="form-control" required>
+                        <option value="">- Pilih Level Pelatihan -</option>
+                        @foreach($level as $l) <!-- Assuming $levels is passed from the controller -->
+                            <option value="{{ $l->level_id }}" {{ $pelatihan->level_id == $l->level_id ? 'selected' : '' }}>
+                                {{ $l->level_nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-level_id" class="form-text text-danger"></small>
                 </div>
+                
                 <div class="form-group">
                     <label>Tanggal Mulai</label>
                     <input value="{{ $pelatihan->tanggal }}" type="date" name="tanggal" id="tanggal"
@@ -83,7 +109,7 @@
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <input value="{{ $pelatihan->status }}" type="text" name="status" id="status"
+                    <input value="{{ $pelatihan->data_pelatihan->pluck('status') }}" type="text" name="status" id="status"
                         class="form-control" required>
                     <small id="error-status" class="error-text form-text text-danger"></small>
                 </div>

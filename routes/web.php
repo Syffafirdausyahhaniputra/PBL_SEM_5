@@ -231,11 +231,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/tunjuk', [PelatihanController::class, 'createtunjuk']);
         Route::post('/tunjuk/store', [PelatihanController::class, 'storeTunjuk'])->name('pelatihan.storeTunjuk');
         Route::post('/ajax', [PelatihanController::class, 'store_ajax']);  
-        Route::get('/{id}/edit_ajax', [PelatihanController::class, 'edit_ajax']); 
+        Route::get('/{id}/edit_ajax', [PelatihanController::class, 'edit_ajax']);
+        Route::put('/{id}/update_ajax', [PelatihanController::class, 'update_ajax']);
         Route::get('/{id}/show_ajax', [PelatihanController::class, 'show_ajax']);
         Route::get('/{id}/delete_ajax', [PelatihanController::class, 'confirm_ajax']);
         Route::delete('/{id}/delete_ajax', [PelatihanController::class, 'delete_ajax']);
         Route::get('/dosen', [PelatihanController::class, 'indexForDosen'])->name('pelatihan.dosen.index');
+        Route::post('/upload', [PelatihanController::class, 'uploadBukti'])->name ('pelatihan.dosen.upload');
+        Route::get('/download-sertifikat/{pelatihan_id}', [PelatihanController::class, 'downloadSertifikat'])->name('pelatihan.downloadSertifikat');
     });
     
     

@@ -277,18 +277,28 @@ class BidangController extends Controller
         }
         return redirect('/');
     }
+
+    
     public function showDosenByBidang($id)
     {
+                
         // Ambil data bidang berdasarkan ID
         $bidang = BidangModel::findOrFail($id);
 
         // Ambil daftar dosen berdasarkan bidang dengan relasi
-        $dosen = $bidang->dosenBidang()->with('dosen.user')->get();
+        $dosen = DosenBidangModel::where('bidang_id',$id);
+        //$dosen = $bidang->dosenBidang()->with('dosen.user')->get();
+    
+        $breadcrumb = (object) [
+            'title' => $bidang->bidang_nama,
+            'subtitle'  => 'List dosen bidang '. $bidang->bidang_nama
+        ];
 
         // Tampilkan view dengan data dosen
-        return view('bidang.dosen', [
+        return view('bidang.show_dosen', [
             'bidang' => $bidang,
             'dosen' => $dosen,
+            'breadcrumb' => $breadcrumb
         ]);
     }
 }

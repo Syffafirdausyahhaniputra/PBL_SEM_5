@@ -3,33 +3,35 @@
 @section('title', $bidang->bidang_nama)
 
 @section('content')
-<!-- Header Section -->
-<div class="header">
-    <h1>{{ $bidang->bidang_nama }}</h1>
-    <small>List Dosen Bidang {{ $bidang->bidang_nama }}</small>
-    <img src="{{ asset('images/user-placeholder.jpg') }}" alt="User">
-</div>
-
-<!-- Card List Section -->
-<div class="card-list">
-    @if ($bidang->dosenBidang->isNotEmpty())
-        @foreach ($bidang->dosenBidang as $dosenBidang)
-            <div class="card">
-                <div>
-                    <img src="{{ asset('images/dosen-placeholder.jpg') }}" alt="Dosen">
+<div class="container mt-4">
+    <!-- Card List Section -->
+    <div class="card-list">
+        @if ($bidang->dosenBidang->isNotEmpty())
+            @foreach ($bidang->dosenBidang as $dosenBidang)
+                <div class="card shadow-sm d-flex flex-row align-items-center p-3 mb-3 rounded">
+                    {{-- Menampilkan Avatar --}}
+                    <img 
+                        src="{{ $dosenBidang->dosen2->user->avatar ?? asset('images/default-avatar.png') }}" 
+                        alt="Foto {{ $dosenBidang->dosen2->user->nama ?? 'Dosen' }}" 
+                        class="rounded-circle me-3"
+                        style="width: 60px; height: 60px; object-fit: cover;"
+                    >
+                    {{-- Menampilkan Nama dan NIP --}}
+                    <div>
+                        <h5 class="mb-0">{{ $dosenBidang->dosen2->user->nama ?? 'Nama tidak ditemukan' }}</h5>
+                        <small class="text-muted">NIP: {{ $dosenBidang->dosen2->user->nip ?? 'NIP tidak ditemukan' }}</small>
+                    </div>
                 </div>
-                <div>
-                    <p class="card-title">{{ $dosenBidang->dosen->user->name }}</p>
-                    <p class="card-subtitle">{{ $dosenBidang->dosen->user->email }}</p>
-                </div>
-            </div>
-        @endforeach
-    @else
-        <p>Tidak ada dosen untuk bidang ini.</p>
-    @endif
+            @endforeach
+        @else
+            <p class="no-data text-center">Tidak ada dosen yang terdaftar untuk bidang ini.</p>
+        @endif
+    </div>
 </div>
-
 @endsection
+
+
+
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
@@ -48,20 +50,15 @@
 
     .sidebar a:hover {
         background-color: #004080;
-        color: white;
     }
 
     .sidebar .active {
         background-color: #cb8587;
-        color: white;
     }
 
     /* Header */
     .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
+        padding: 15px 20px;
         background-color: #f4f6f9;
         border-bottom: 1px solid #ddd;
     }
@@ -72,10 +69,9 @@
         color: #333;
     }
 
-    .header img {
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
+    .header small {
+        font-size: 14px;
+        color: #888;
     }
 
     /* Card List */
@@ -89,15 +85,15 @@
     .card {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 15px;
         width: 100%;
         max-width: 400px;
-        padding: 15px 20px;
+        padding: 15px;
         border: 1px solid #ddd;
         border-radius: 10px;
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
         background-color: #fff;
-        transition: 0.3s ease-in-out;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .card:hover {
@@ -109,18 +105,26 @@
         border-radius: 50%;
         width: 50px;
         height: 50px;
-        margin-right: 20px;
     }
 
     .card-title {
         font-size: 18px;
         font-weight: bold;
         color: #333;
+        margin: 0;
     }
 
     .card-subtitle {
         font-size: 14px;
-        color: #888;
+        color: #666;
+        margin: 0;
+    }
+
+    .no-data {
+        font-size: 16px;
+        color: #999;
+        text-align: center;
+        margin-top: 20px;
     }
 
     /* Responsiveness */
@@ -129,6 +133,5 @@
             flex-direction: column;
         }
     }
-
 </style>
 @endsection

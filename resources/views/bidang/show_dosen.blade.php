@@ -11,7 +11,7 @@
                 <div class="card shadow-sm d-flex flex-row align-items-center p-3 mb-3 rounded">
                     {{-- Menampilkan Avatar --}}
                     <img 
-                        src="{{ $dosenBidang->dosen2->user->avatar ?? asset('images/default-avatar.png') }}" 
+                        src="{{ $dosenBidang->dosen2->user->avatar ? asset('avatars/'.$dosenBidang->dosen2->user->avatar) : asset('avatars/user.jpg') }}" 
                         alt="Foto {{ $dosenBidang->dosen2->user->nama ?? 'Dosen' }}" 
                         class="rounded-circle me-3"
                         style="width: 60px; height: 60px; object-fit: cover;"

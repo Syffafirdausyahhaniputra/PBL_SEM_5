@@ -83,7 +83,7 @@ class SertifikasiController extends Controller
 
     public function show_ajax(string $id)
     {
-        // Ambil data DataPelatihan berdasarkan id
+        // Ambil data DataSertifikasi berdasarkan id
 
         $sertifikasi = SertifikasiModel::find((int) $id);
         $dataSertifikasi = DataSertifikasiModel::with([
@@ -95,7 +95,7 @@ class SertifikasiController extends Controller
 
         // Periksa apakah data drowukan
         if ($sertifikasi !== null) {
-            // Tampilkan halaman show_ajax dengan data pelatihan
+            // Tampilkan halaman show_ajax dengan data sertifikasi
             return view('sertifikasi.show_ajax', ['dataSertifikasi' => $dataSertifikasi, 'sertifikasi' => $sertifikasi]);
         } else {
             // Tampilkan pesan kesalahan jika data tidak drowukan
@@ -158,18 +158,18 @@ class SertifikasiController extends Controller
     }
 
 
-    public function createTunjuk()
+    public function createtunjuk()
     {
         $breadcrumb = (object) [
             'title' => 'Sertifikasi Dosen',
-            'subtitle' => 'Tambah Pelatihan'
+            'subtitle' => 'Tambah Penunjukkan'
         ];
 
         $bidangs = BidangModel::all();
         $jenis = JenisModel::all();
         $matkuls = MatkulModel::all();
         $vendors = VendorModel::all();
-        $levels = JenisModel::all();
+        $dataS = DataSertifikasiModel::all();
 
         // Ambil data dosen beserta nama user
         $dataP = DosenModel::with('user')->get();
@@ -181,8 +181,8 @@ class SertifikasiController extends Controller
             'jenis' => $jenis,
             'matkuls' => $matkuls,
             'vendors' => $vendors,
-            'levels' => $levels,
-            'dataP' => $dataP,
+            // 'levels' => $levels,
+            'dataS' => $dataS,
         ]);
     }
 
@@ -190,50 +190,71 @@ class SertifikasiController extends Controller
     {
         Log::info('Received request data:', $request->all());
 
+
+        // Cek apakah request berupa AJAX
         if ($request->ajax() || $request->wantsJson()) {
+            // Validasi input
             $rules = [
-                'level_id' => 'required|integer',
+                'dosen_id' => 'required|exists:m_dosen,dosen_id',
+                'jenis_id' => 'required|integer',
                 'bidang_id' => 'required|integer',
                 'mk_id' => 'required|integer',
                 'vendor_id' => 'required|integer',
-                'nama_pelatihan' => 'required|string|max:255',
+                'nama_sertifikasi' => 'required|string|max:255',
                 'tanggal' => 'required|date',
-                'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
-                'masa_berlaku' => 'required|date',
-                'kuota' => 'required|integer',
-                'lokasi' => 'required|string|max:255',
+                // 'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
+                // 'lokasi' => 'required|string|max:255',
                 'periode' => 'required|string|max:50',
+                'kuota' => 'required|integer',
                 'biaya' => 'required|numeric|min:0',
-                'dosen_id' => 'required|integer',
-                'user_id' => 'required|integer',
+                'masa_berlaku' => 'nullable|date',
+
+
+                // 'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048', // Nullable file field
             ];
 
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
+                Log::error('Validation failed:', $validator->errors()->toArray());
                 return response()->json([
                     'status' => false,
                     'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(),
+                    'msgField' => $validator->errors(), // Pesan error validasi
                 ]);
             }
 
             try {
-                $sertifikasi = SertifikasiModel::create($request->all());
 
-                // Ambil nama dosen terkait dari relasi
-                $dosen = DosenModel::with('user')->find($request->dosen_id);
-                $dosenNama = $dosen && $dosen->user ? $dosen->user->nama : 'Tidak diketahui';
+                // Create Sertifikasi 
+                $sertifikasi = SertifikasiModel::create($request->except('file')); // Save all fields except 'file'
 
-                Log::info('Pelatihan berhasil dibuat oleh dosen:', [
-                    'nama_dosen' => $dosenNama,
-                    'pelatihan' => $sertifikasi->toArray(),
+                // Log the created model
+                Log::info('Sertifikasi created:', $sertifikasi->toArray());
+
+                // Create DataSertifikasi record
+                DataSertifikasiModel::create([
+                    'sertifikasi_id' => $sertifikasi->sertifikasi_id, // ID sertifikasi yang baru saja disimpan
+                    'dosen_id' => $request->input('dosen_id', null), // Sesuaikan input dosen_id
+                    'keterangan' => 'Menunggu validasi', // Atur keterangan default
+                    'status' => 'Proses', // Atur status default
                 ]);
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Pelatihan berhasil disimpan',
+                    'message' => 'Sertifikasi berhasil disimpan',
                 ]);
             } catch (\Exception $e) {
+                Log::error('Error saving sertifikasi:', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'request_data' => $request->all()
+                ]);
+
+                $errorMessage = 'Terjadi kesalahan saat menyimpan data';
+                if (strpos($e->getMessage(), 'SQLSTATE') !== false) {
+                    $errorMessage .= ': Kesalahan database';
+                }
+
                 return response()->json([
                     'status' => false,
                     'message' => 'Terjadi kesalahan saat menyimpan data',
@@ -242,6 +263,7 @@ class SertifikasiController extends Controller
             }
         }
 
+        // Jika bukan AJAX, redirect ke halaman utama
         return redirect('/sertifikasi');
     }
 

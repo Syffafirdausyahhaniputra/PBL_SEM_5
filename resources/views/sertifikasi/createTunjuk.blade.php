@@ -73,9 +73,9 @@
 
                 <!-- Masa Berlaku -->
                 <div class="form-group">
-                    <label for="tanggal_akhir">Masa Berlaku</label>
-                    <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" required>
-                    <small id="error-tanggal_akhir" class="error-text form-text text-danger"></small>
+                    <label for="masa_berlaku">Masa Berlaku</label>
+                    <input type="date" name="masa_berlaku" id="masa_berlaku" class="form-control" required>
+                    <small id="error-masa_berlaku" class="error-text form-text text-danger"></small>
                 </div>
 
                 <!-- Kuota -->
@@ -130,7 +130,7 @@
 </form>
 <script>
     $(document).ready(function() {
-        $('#form-tambah-pelatihan').on('submit', function(event) {
+        $('#form-tambah-sertifikasi').on('submit', function(event) {
             event.preventDefault(); // Mencegah form dikirim langsung
             $.ajax({
                 url: this.action,

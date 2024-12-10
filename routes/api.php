@@ -126,6 +126,3 @@ Route::group(['prefix' => 'plthn'], function () {
 
 Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
 Route::resource('pelatihan', PelatihanController::class);
-
-Route::post('/profil', [App\Http\Controllers\Api\ProfileController::class, 'index']);
-Route::get('/profil/{id}', [App\Http\Controllers\Api\ProfileController::class, 'show']);

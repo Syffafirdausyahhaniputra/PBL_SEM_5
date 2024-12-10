@@ -41,7 +41,7 @@ class ProfileController extends Controller
                     'username' => $user->username,
                     'nip' => $user->nip,
                     'role' => $role->role_nama,  // Menambahkan role
-                    'avatar' => $user->avatar ? asset('avatars/' . $user->user->avatar) : asset('avatars/user.jpg')
+                    'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : asset('avatars/user.jpg')
                 ]
             ]);
         } catch (\Exception $e) {

@@ -86,6 +86,10 @@
             @include('layouts.headerDosen')
         @endif
 
+        <div class="preloader d-flex justify-content-center align-items-center bg-info-dark">
+            <img src="{{ asset('adminlte/dist/img/logo-jti.png') }}" alt="logo-jti" style="max-width: 5%;">
+        </div>
+
         <!-- /.navbar -->
 
         <!-- Main Sidebar Container -->

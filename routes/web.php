@@ -18,6 +18,7 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\BidangController;
 use App\Http\Controllers\KompetensiProdiController;
+use App\Http\Controllers\ValidasiController;
 use App\Http\Controllers\Welcome2Controller;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
@@ -201,13 +202,24 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [NotifikasiController::class, 'delete_ajax']);
         Route::delete('/{id}', [NotifikasiController::class, 'destroy']);
     });
+
     Route::group(['prefix' => 'notifikasi', 'middleware' => 'authorize:ADMN,LEAD'], function () {
         Route::get('/', [NotifikasiController::class, 'index']);
         Route::post('/list', [NotifikasiController::class, 'list']);
-        Route::get('/create_ajax', [NotifikasiController::class, 'create_ajax']);
-        Route::post('/ajax', [NotifikasiController::class, 'store_ajax']);
         Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjax']);
         Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjax']);
+    });
+    
+    Route::group(['prefix' => 'validasi', 'middleware' => 'authorize:LEAD'], function () {
+        Route::get('/', [ValidasiController::class, 'index']);
+        Route::post('/list', [ValidasiController::class, 'list']);
+        Route::get('/{type}/{id}/show_ajax', [ValidasiController::class, 'show_ajax']);
+    });
+    
+    Route::group(['prefix' => 'validasiAdmin', 'middleware' => 'authorize:ADMN'], function () {
+        Route::get('/', [NotifikasiController::class, 'index']);
+        Route::post('/list', [NotifikasiController::class, 'list']);
+        Route::get('/{type}/{id}/show_ajax', [NotifikasiController::class, 'show_ajax']);
     });
 
     Route::group(['prefix' => 'profile'], function () {

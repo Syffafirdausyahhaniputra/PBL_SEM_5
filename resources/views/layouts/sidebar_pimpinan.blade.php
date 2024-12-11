@@ -10,8 +10,14 @@
             </li>
             <li class="nav-item">
                 <a href="{{ url('/notifikasi') }}" class="nav-link {{ $activeMenu == 'notifikasi' ? 'active' : '' }} ">
-                    <i class="nav-icon fas fa-history"></i>
+                    <i class="nav-icon fas fa-bell"></i>
                     <p>Notifikasi</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('/validasi') }}" class="nav-link {{ $activeMenu == 'validasi' ? 'active' : '' }} ">
+                    <i class="nav-icon fas fa-check"></i>
+                    <p>Validasi</p>
                 </a>
             </li>
             <li class="nav-item">

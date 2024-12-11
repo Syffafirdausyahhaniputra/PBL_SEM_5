@@ -21,7 +21,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/profile') }}" class="nav-link {{ $activeMenu == 'profile' ? 'active' : '' }} ">
+                <a href="{{ url('/profileDosen') }}" class="nav-link {{ $activeMenu == 'profileDosen' ? 'active' : '' }} ">
                     <i class="nav-icon far fa-user"></i>
                     <p>Profile</p>
                 </a>
@@ -31,6 +31,18 @@
                 {{-- <a href="{{ url('/kompetensi') }}" class="nav-link"> --}}
                     <i class="nav-icon fas fa-list"></i>
                     <p>Kompetensi Prodi</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('/sertifikasi/dosen') }}" class="nav-link {{ $activeMenu == 'sertifikasi_dosen' ? 'active' : '' }} ">
+                    <i class="nav-icon fas fa-folder"></i>
+                    <p>Data Sertifikasi</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('/pelatihan/dosen') }}" class="nav-link {{ $activeMenu == 'pelatihan_dosen' ? 'active' : '' }} ">
+                    <i class="nav-icon fas fa-file"></i>
+                    <p>Data Pelatihan</p>
                 </a>
             </li>
             <br>

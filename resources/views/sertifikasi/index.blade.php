@@ -4,10 +4,8 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Sertifikasi</i></button>
-                <button onclick="modalAction('{{ url('/sertifikasi/tunjuk') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Penunjukkan</i></button>
-
-            </div>
+                <button onclick="modalAction('{{ url('/sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Data Sertifikasi</i></button>
+                <button onclick="modalAction('{{ url('/sertifikasi/tunjuk') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Penunjukkan Sertifikasi</i></button>
         </div>
         <div class="card-body">
             <!-- Pesan sukses/gagal -->
@@ -17,7 +15,6 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-
             <!-- Tabel Sertifikasi -->
             <table class="table table-bordered table-striped table-hover" id="table-sertifikasi">
                 <thead>
@@ -53,7 +50,7 @@
             ajax: "{{ route('sertifikasi.list') }}", // URL ke method `list()` di controller
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'nama_sertifikasi', name: 'nama_sertifikasi' },
+                { data: 'nama_sertif', name: 'nama_sertif' },
                 { data: 'tanggal', name: 'tanggal' },
                 { data: 'nama_bidang', name: 'pnama_bidang' },
                 { data: 'status', name: 'status' },

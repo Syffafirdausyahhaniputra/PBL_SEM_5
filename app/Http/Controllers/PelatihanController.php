@@ -82,7 +82,6 @@ class PelatihanController extends Controller
 
     public function createtunjuk()
     {
-
         $breadcrumb = (object) [
             'title' => 'Pelatihan Dosen',
             'subtitle' => 'Tambah Pelatihan'
@@ -113,8 +112,12 @@ class PelatihanController extends Controller
     {
         Log::info('Received request data:', $request->all());
 
+
+        // Cek apakah request berupa AJAX
         if ($request->ajax() || $request->wantsJson()) {
+            // Validasi input
             $rules = [
+                'dosen_id' => 'required|exists:m_dosen,dosen_id',
                 'level_id' => 'required|integer',
                 'bidang_id' => 'required|integer',
                 'mk_id' => 'required|integer',
@@ -122,53 +125,59 @@ class PelatihanController extends Controller
                 'nama_pelatihan' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
-                'kuota' => 'required|integer',
                 'lokasi' => 'required|string|max:255',
                 'periode' => 'required|string|max:50',
+                'kuota' => 'required|integer',
                 'biaya' => 'required|numeric|min:0',
-                'dosen_id' => 'required|integer',
-                'user_id' => 'required|integer',
+                // 'dosen_ids' => 'required|array|min:1|max:10',
+                // 'dosen_ids.*' => 'exists:m_dosen,dosen_id|distinct',
+
+
+                // 'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048', // Nullable file field
             ];
 
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
+                Log::error('Validation failed:', $validator->errors()->toArray());
                 return response()->json([
                     'status' => false,
                     'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(),
+                    'msgField' => $validator->errors(), // Pesan error validasi
                 ]);
             }
 
             try {
-            // Buat pelatihan baru
-            $pelatihan = PelatihanModel::create($request->all());
 
-            // Loop untuk menyimpan data pelatihan untuk setiap dosen_id
-            foreach ($request->dosen_id as $dosenId) {
-                // Ambil nama dosen terkait dari relasi
-                $dosen = DosenModel::with('user')->find($dosenId);
-                $dosenNama = $dosen && $dosen->user ? $dosen->user->name : 'Tidak diketahui';
+                // Create Pelatihan 
+                $pelatihan = PelatihanModel::create($request->except('file')); // Save all fields except 'file'
 
-                Log::info('Pelatihan berhasil dibuat oleh dosen:', [
-                    'nama_dosen' => $dosenNama,
-                    'pelatihan' => $pelatihan->toArray(),
-                ]);
+                // Log the created model
+                Log::info('Pelatihan created:', $pelatihan->toArray());
 
-                // Simpan ke tabel data_pelatihan untuk setiap dosen_id
+                // Create DataPelatihan record
                 DataPelatihanModel::create([
                     'pelatihan_id' => $pelatihan->pelatihan_id, // ID pelatihan yang baru saja disimpan
-                    'dosen_id' => $dosenId, // Dosen ID yang terpilih
-                    'surat_tugas_id' => $request->input('surat_tugas_id', null), // Sesuaikan input surat_tugas_id
-                    'keterangan' => 'mandiri', // Atur keterangan default
+                    'dosen_id' => $request->input('dosen_id', null), // Sesuaikan input dosen_id
+                    'keterangan' => 'Menunggu validasi', // Atur keterangan default
                     'status' => 'Proses', // Atur status default
                 ]);
-            }
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Pelatihan berhasil disimpan',
-            ]);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Pelatihan berhasil disimpan',
+                ]);
             } catch (\Exception $e) {
+                Log::error('Error saving pelatihan:', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'request_data' => $request->all()
+                ]);
+
+                $errorMessage = 'Terjadi kesalahan saat menyimpan data';
+                if (strpos($e->getMessage(), 'SQLSTATE') !== false) {
+                    $errorMessage .= ': Kesalahan database';
+                }
+
                 return response()->json([
                     'status' => false,
                     'message' => 'Terjadi kesalahan saat menyimpan data',
@@ -177,6 +186,7 @@ class PelatihanController extends Controller
             }
         }
 
+        // Jika bukan AJAX, redirect ke halaman utama
         return redirect('/pelatihan');
     }
 

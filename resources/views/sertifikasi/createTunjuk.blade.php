@@ -90,7 +90,7 @@
                     <label for="dosen_id">Anggota</label>
                     <select class="form-control" id="dosen_id" name="dosen_id" required>
                         <option value="">Pilih Anggota</option>
-                        @foreach ($dataP as $data)
+                        @foreach ($dataS as $data)
                             <option value="{{ $data->dosen_id }}">
                                 {{ $data->user ? $data->user->nama : 'Nama tidak tersedia' }}
                             </option>

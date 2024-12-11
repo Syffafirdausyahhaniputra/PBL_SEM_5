@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\DataSertifikasiModel;
 use App\Models\DataPelatihanModel;
 use Yajra\DataTables\Facades\DataTables;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\IOFactory;
+use Illuminate\Http\Response;
 
 class NotifikasiController extends Controller
 {
@@ -251,5 +254,62 @@ class NotifikasiController extends Controller
         $data = $dataSertifikasi->merge($dataPelatihan);
 
         return response()->json($data, 200);
+    }
+
+    public function export_ajax(Request $request)
+    {
+        // Retrieve the data you need from the request or session
+        $nama = $request->input('nama');
+        $bidang = $request->input('bidang');
+        $matkul = $request->input('matkul'); // array of mata kuliah objects
+        $vendor = $request->input('vendor');
+        $jenis = $request->input('jenis');
+        $level = $request->input('level');
+        $tanggal_acara = $request->input('tanggal_acara');
+        $berlaku_hingga = $request->input('berlaku_hingga');
+        $periode = $request->input('periode');
+
+        // Create a new PHPWord object
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+
+        // Add content to the Word document
+        $section->addText("Surat Tugas", ['bold' => true, 'size' => 16]);
+        $section->addText("Nama: $nama");
+        $section->addText("Bidang: $bidang");
+
+        if (!empty($matkul)) {
+            $section->addText("Mata Kuliah:");
+            foreach ($matkul as $mk) {
+                $section->addText("- " . $mk->nama);
+            }
+        }
+
+        $section->addText("Vendor: $vendor");
+
+        if (isset($jenis)) {
+            $section->addText("Jenis: $jenis");
+        }
+
+        if (isset($level)) {
+            $section->addText("Level: $level");
+        }
+
+        $section->addText("Tanggal Acara: $tanggal_acara");
+
+        if (isset($berlaku_hingga)) {
+            $section->addText("Berlaku Hingga: $berlaku_hingga");
+        }
+
+        $section->addText("Periode: $periode");
+
+        // Save the Word document as a .docx file
+        $fileName = 'surat_tugas_' . time() . '.docx';
+        $filePath = storage_path("app/public/$fileName");
+
+        $phpWord->save($filePath, 'Word2007');
+
+        // Return the file for download
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 }

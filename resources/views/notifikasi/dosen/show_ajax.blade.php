@@ -34,5 +34,6 @@
     </div>
     <div class="card-footer">
         <a href="{{ url('notifikasidosen') }}" class="btn btn-secondary">Back</a>
+        <a href="{{ url('/export_ajax') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Download surat tugas </a>
     </div>
 </div>

@@ -9,6 +9,7 @@
 
                 {{-- <a href="{{ url('/pelatihan/penunjukkan') }}" class="btn btn-warning">Tambah Penunjukkan</a>            </div> --}}
         </div>
+        </div>
         <div class="card-body">
             <!-- Pesan sukses/gagal -->
             @if (session('success'))

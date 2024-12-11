@@ -10,6 +10,8 @@ use App\Models\MatkulModel;
 use App\Models\VendorModel;
 use App\Models\DataPelatihanModel;
 use App\Models\DosenModel;
+use App\Models\GolonganModel;
+use App\Models\JabatanModel;
 use App\Models\JenisModel;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -45,7 +47,7 @@ class PelatihanController extends Controller
             'subtitle' => ' '
         ];
 
-        // Mengambil data pelatihan dengan relasi ke bidang dan jenis
+        // Mengambil data sertifikasi dengan relasi ke bidang dan jenis
         $pelatihan = PelatihanModel::with(['bidang', 'vendor'])->get();
 
         return view('pelatihan.index_dosen', [
@@ -92,6 +94,8 @@ class PelatihanController extends Controller
         $matkuls = MatkulModel::all();
         $vendors = VendorModel::all();
         $levels = LevelPelatihanModel::all();
+        $gols = GolonganModel::all();
+        $jabatans = JabatanModel::all();
 
         // Ambil data dosen beserta nama user
         $dataP = DosenModel::with('user')->get();
@@ -105,90 +109,89 @@ class PelatihanController extends Controller
             'vendors' => $vendors,
             'levels' => $levels,
             'dataP' => $dataP,
+            'gols' => $gols,
+            'jabatans' => $jabatans,
         ]);
     }
 
     public function storeTunjuk(Request $request)
     {
         Log::info('Received request data:', $request->all());
-
-
-        // Cek apakah request berupa AJAX
-        if ($request->ajax() || $request->wantsJson()) {
-            // Validasi input
-            $rules = [
-                'dosen_id' => 'required|exists:m_dosen,dosen_id',
-                'level_id' => 'required|integer',
-                'bidang_id' => 'required|integer',
-                'mk_id' => 'required|integer',
-                'vendor_id' => 'required|integer',
-                'nama_pelatihan' => 'required|string|max:255',
-                'tanggal' => 'required|date',
-                'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
-                'lokasi' => 'required|string|max:255',
-                'periode' => 'required|string|max:50',
-                'kuota' => 'required|integer',
-                'biaya' => 'required|numeric|min:0',
-                // 'dosen_ids' => 'required|array|min:1|max:10',
-                // 'dosen_ids.*' => 'exists:m_dosen,dosen_id|distinct',
-
-
-                // 'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048', // Nullable file field
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
-                Log::error('Validation failed:', $validator->errors()->toArray());
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(), // Pesan error validasi
-                ]);
-            }
-
-            try {
-
-                // Create Pelatihan 
-                $pelatihan = PelatihanModel::create($request->except('file')); // Save all fields except 'file'
-
-                // Log the created model
-                Log::info('Pelatihan created:', $pelatihan->toArray());
-
-                // Create DataPelatihan record
-                DataPelatihanModel::create([
-                    'pelatihan_id' => $pelatihan->pelatihan_id, // ID pelatihan yang baru saja disimpan
-                    'dosen_id' => $request->input('dosen_id', null), // Sesuaikan input dosen_id
-                    'keterangan' => 'Menunggu validasi', // Atur keterangan default
-                    'status' => 'Proses', // Atur status default
-                ]);
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Pelatihan berhasil disimpan',
-                ]);
-            } catch (\Exception $e) {
-                Log::error('Error saving pelatihan:', [
-                    'message' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all()
-                ]);
-
-                $errorMessage = 'Terjadi kesalahan saat menyimpan data';
-                if (strpos($e->getMessage(), 'SQLSTATE') !== false) {
-                    $errorMessage .= ': Kesalahan database';
-                }
-
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Terjadi kesalahan saat menyimpan data',
-                    'error' => $e->getMessage(),
-                ]);
-            }
+    
+        $rules = [
+            'level_id' => 'required|integer',
+            'bidang_id' => 'required|integer',
+            'mk_id' => 'required|integer',
+            'vendor_id' => 'required|integer',
+            'nama_pelatihan' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
+            'lokasi' => 'required|string|max:255',
+            'periode' => 'required|string|max:50',
+            'kuota' => 'required|integer',
+            'biaya' => 'required|numeric|min:0',
+            'dosen_id' => 'required|array|min:1|max:10', // Pastikan dosen_id adalah array
+        ];
+    
+        $validator = Validator::make($request->all(), $rules);
+    
+        if ($validator->fails()) {
+            Log::error('Validation failed:', $validator->errors()->toArray());
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi Gagal',
+                'msgField' => $validator->errors(),
+            ]);
         }
-
-        // Jika bukan AJAX, redirect ke halaman utama
-        return redirect('/pelatihan');
+    
+        try {
+            // Simpan data ke tabel t_pelatihan
+            $pelatihan = PelatihanModel::create([
+                'level_id' => $request->level_id,
+                'mk_id' => $request->mk_id,
+                'vendor_id' => $request->vendor_id,
+                'bidang_id' => $request->bidang_id,
+                'nama_pelatihan' => $request->nama_pelatihan,
+                'tanggal' => $request->tanggal,
+                'tanggal_akhir' => $request->tanggal_akhir,
+                'biaya' => $request->biaya,
+                'lokasi' => $request->lokasi,
+                'periode' => $request->periode,
+                'kuota' => $request->kuota,
+                'status' => 'Proses',
+                'keterangan' => 'Menunggu validasi',
+            ]);
+    
+            // Ambil ID dari pelatihan yang baru saja dibuat
+            $pelatihanId = $pelatihan->pelatihan_id;
+    
+            // Simpan relasi ke tabel t_data_pelatihan
+            foreach ($request->dosen_id as $dosenId) {
+                DataPelatihanModel::create([
+                    'pelatihan_id' => $pelatihanId,
+                    'dosen_id' => $dosenId,
+                ]);
+            }
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Pelatihan berhasil disimpan',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error saving pelatihan:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+            ]);
+    
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan data',
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
+    
 
     public function show_ajax(string $id)
 {
@@ -301,8 +304,16 @@ class PelatihanController extends Controller
                 return $row->pelatihan->tanggal ?? '-';
             })
             ->addColumn('status', function ($row) {
-                // Tampilkan tanggal pelatihan dari relasi pelatihan
-                return $row->data_pelatihan->pluck('status')?? '-';
+                // Ambil pelatihan_id dari $row
+                $pelatihanId = $row->pelatihan_id;
+            
+                // Query untuk mendapatkan semua status berdasarkan pelatihan_id
+                $statuses = DB::table('t_pelatihan')
+                    ->where('pelatihan_id', $pelatihanId)
+                    ->pluck('status');
+            
+                // Gabungkan status menjadi string, atau tampilkan '-' jika tidak ada
+                return $statuses->implode(', ') ?? '-';
             })
             ->addColumn('aksi', function ($row) {
                 // Tombol aksi
@@ -713,6 +724,7 @@ class PelatihanController extends Controller
                 return back()->with('error', 'Gagal mendownload file: ' . $e->getMessage());
             }
         }
+
         public function detail($id)
     {
         $pelatihan =PelatihanModel::with('bidang')->findOrFail($id);  
@@ -727,4 +739,5 @@ class PelatihanController extends Controller
             'breadcrumb' => $breadcrumb
         ]);
     }
+        
 }

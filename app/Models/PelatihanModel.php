@@ -32,6 +32,8 @@ class PelatihanModel extends Model implements JWTSubject
         'lokasi',
         'periode',
         'biaya',
+        'status',
+        'keterangan',
     ];
     
     public function pelatihan()

@@ -84,21 +84,32 @@
                             <input type="number" name="kuota" id="kuota" class="form-control" required>
                             <small id="error-kuota" class="error-text form-text text-danger"></small>
                         </div>
-
-                        <!-- Anggota -->
                         <div class="form-group">
-                            <label for="dosen_id">Anggota</label>
-                            <select class="form-control" id="dosen_id" name="dosen_id" required>
-                                <option value="">Pilih Anggota</option>
-                                @foreach ($dataP as $data)
-                                    <option value="{{ $data->dosen_id }}">
-                                        {{ $data->user ? $data->user->nama : 'Nama tidak tersedia' }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <label for="anggota">Anggota</label>
+                            <div id="anggota-container">
+                                <select class="form-control anggota-select" name="dosen_id[]" required>
+                                    <option value="">Pilih Anggota</option>
+                                    @foreach ($dataP as $data)
+                                        <option value="{{ $data->dosen_id }}">
+                                            {{ $data->user ? $data->user->nama : 'Nama tidak tersedia' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                <div class="form-group mt-2">
+                                    <label for="golongan_id">Golongan</label>
+                                    <input type="text" class="form-control" name="golongan_id[]"
+                                        placeholder="Masukkan Golongan">
+                                </div>
+
+                                <div class="form-group mt-2">
+                                    <label for="jabatan_id">Jabatan</label>
+                                    <input type="text" class="form-control" name="jabatan_id[]"
+                                        placeholder="Masukkan Jabatan">
+                                </div>
+                            </div>
                             <small id="error-dosen_id" class="error-text form-text text-danger"></small>
                         </div>
-
 
                         <!-- Lokasi -->
                         <div class="form-group">
@@ -130,8 +141,101 @@
         </form>
         <script>
             $(document).ready(function() {
+                $("#form_tambah").validate({
+                    rules: {
+                        nama_pelatihan: {
+                            required: true,
+                            minlength: 3,
+                            maxlength: 20
+                        },
+                        bidang_id: {
+                            required: true,
+                            number: true,
+
+                        },
+                        vendor_id: {
+                            required: true,
+                            number: true,
+
+                        },
+                        mk_id: {
+                            required: true,
+                            number: true,
+
+                        },
+                        level_id: {
+                            required: true,
+                            number: true,
+
+                        },
+                        tanggal: {
+                            required: true,
+
+                        },
+                        tanggal_akhir: {
+                            required: true,
+
+                        },
+                        kuota: {
+                            required: true,
+                            minlength: 3,
+                            maxlength: 20
+                        },
+                        dosen_id: {
+                            required: true,
+                            number: true,
+
+                        },
+                        lokasi: {
+                            required: true,
+                            minlength: 3,
+                            maxlength: 20
+                        },
+                        biaya: {
+                            required: true,
+                            minlength: 3,
+                            maxlength: 20
+                        },
+                        periode: {
+                            required: true,
+                            minlength: 3,
+                            maxlength: 20
+                        },
+                    }
+                })
+                // Ketika nilai kuota berubah
+                $('#kuota').on('input', function() {
+                    const kuota = parseInt($(this).val()) ||
+                    1; // Ambil nilai kuota (default 0 jika kosong atau invalid)
+                    const anggotaContainer = $('#anggota-container');
+
+                    // Bersihkan container sebelum ditambahkan ulang
+                    anggotaContainer.empty();
+
+                    if (kuota > 0) {
+                        // Tambahkan dropdown pemilihan anggota sebanyak kuota
+                        for (let i = 1; i <= kuota; i++) {
+                            const anggotaSelect = `
+                                <div class="mt-2">
+                                    <label>Anggota ${i}</label>
+                                    <select class="form-control anggota-select" name="dosen_id[]" required>
+                                        <option value="">Pilih Anggota</option>
+                                        @foreach ($dataP as $data)
+                                            <option value="{{ $data->dosen_id }}">
+                                                {{ $data->user ? $data->user->nama : 'Nama tidak tersedia' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>`;
+                            anggotaContainer.append(anggotaSelect);
+                        }
+                    }
+                });
+
+                // Handle pengiriman form
                 $('#form-tambah-pelatihan').on('submit', function(event) {
-                    event.preventDefault(); // Mencegah form dikirim langsung
+                    event.preventDefault(); // Mencegah pengiriman langsung
+
                     $.ajax({
                         url: this.action,
                         type: this.method,
@@ -144,6 +248,8 @@
                                     icon: 'success',
                                     title: 'Berhasil',
                                     text: response.message
+                                }).then(()=>{
+                                    window.location.href = "{{url('/pelatihan')}}";
                                 });
                                 $('#table-pelatihan').DataTable().ajax.reload();
                             } else {

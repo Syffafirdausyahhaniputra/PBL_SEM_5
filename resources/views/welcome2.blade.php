@@ -50,6 +50,7 @@
             @else
                 <ul class="list-group">
                     @foreach ($pelatihan as $item)
+                    <a href="{{ route('pelatihan.detail_pelatihan', ['id' => $item->pelatihan_id]) }}" class="text-decoration-none pelatihan-item">
                         <li class="list-group-item">
                             <strong>{{ $item->nama_pelatihan }}</strong>
                             <br>

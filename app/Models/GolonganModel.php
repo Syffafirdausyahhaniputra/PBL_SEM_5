@@ -20,5 +20,5 @@ class GolonganModel extends Model implements JWTSubject
 
     protected $table = 'm_golongan';
     protected $primaryKey = 'golongan_id';
-    protected $fillable = ['golongan_kode', 'golongan_nama', 'created_at', 'updated_at'];
+    protected $fillable = ['golongan_nama', 'created_at', 'updated_at'];
 }

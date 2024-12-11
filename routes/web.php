@@ -45,7 +45,7 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 // Group route yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
-    Route::get('/welcome2', [Welcome2Controller::class, 'index2']);
+    Route::get('/welcome2', [Welcome2Controller::class, 'index2']); ->name('welcome2.index2');
     Route::get('/list2', [BidangController::class, 'index2'])->name('bidang.detail');
 
     Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {

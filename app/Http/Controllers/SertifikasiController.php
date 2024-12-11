@@ -445,4 +445,18 @@ class SertifikasiController extends Controller
 
         return redirect('/');
     }
+    public function detail($id)
+    {
+        $sertifikasi = SertifikasiModel::with('bidang')->findOrFail($id);  
+        $bidang = $sertifikasi->bidang; 
+
+        $breadcrumb = (object) [
+            'title' => $sertifikasi->nama_sertif, // Sesuaikan dengan kolom yang benar
+            'subtitle' => $bidang ? $bidang->bidang_nama : 'N/A'
+        ];
+        return view('sertifikasi.detail_sertif', [
+            'sertifikasi' => $sertifikasi,
+            'breadcrumb' => $breadcrumb
+        ]);
+    }
 }

@@ -29,7 +29,8 @@
             @else
                 <ul class="list-group">
                     @foreach ($sertifikasi as $item)
-                        <li class="list-group-item">
+                    <a href="{{ route('sertifikasi.detail_sertif', ['id' => $item->sertif_id]) }}" class="text-decoration-none sertifikasi-item">
+                        <li class="list-group-item"> 
                             <strong>{{ $item->nama_sertif }}</strong>
                             <br>
                             Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}

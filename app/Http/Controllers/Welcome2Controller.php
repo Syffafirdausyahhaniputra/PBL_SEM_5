@@ -22,11 +22,11 @@ class Welcome2Controller extends Controller
 
     // Mendapatkan data sertifikasi dan pelatihan dengan relasi bidang
     $sertifikasi = SertifikasiModel::with('bidang')
-        ->select('nama_sertif', 'masa_berlaku', 'bidang_id')
+        ->select('sertif_id','nama_sertif', 'masa_berlaku', 'bidang_id')
         ->get();
 
     $pelatihan = PelatihanModel::with('bidang')
-        ->select('nama_pelatihan', 'vendor_id', 'bidang_id')
+        ->select('pelatihan_id','nama_pelatihan', 'vendor_id', 'bidang_id')
         ->get();
 
     $jumlahSertifikasiPelatihan = $sertifikasi->count() + $pelatihan->count();

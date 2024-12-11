@@ -257,5 +257,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update'); 
         Route::delete('/destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy'); 
         Route::get('/sertifikasi/{id}', [SertifikasiController::class, 'show'])->name('sertifikasi.show');
+        Route::get('/detail/{id}', [SertifikasiController::class, 'detail'])->name('sertifikasi.detail_sertif');
     });
 });

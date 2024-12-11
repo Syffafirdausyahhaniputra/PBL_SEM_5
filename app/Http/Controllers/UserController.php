@@ -103,7 +103,7 @@ class UserController extends Controller
             $user = UserModel::create($request->only(['role_id', 'username', 'nama', 'nip', 'email', 'password']));
 
             // Simpan data ke tabel m_dosen jika role_id adalah 3
-            if ($request->role_id == 3) {
+            if ($request->role_id == 3 || 2) {
                 DosenModel::create([
                     'user_id' => $user->user_id,
                 ]);
@@ -181,7 +181,7 @@ class UserController extends Controller
 
             if ($user) {
                 // Periksa apakah role_id adalah 3
-                if ($user->role_id == 3) {
+                if ($user->role_id == 3 || 2) {
                     // Hapus data di tabel m_dosen berdasarkan user_id
                     DosenModel::where('user_id', $user->user_id)->delete();
                 }
@@ -269,7 +269,7 @@ class UserController extends Controller
                         $insert[] = $insertData;
 
                         // Tambahkan ke tabel Dosen jika role_id adalah 3
-                        if ((int)$value['A'] === 3) {
+                        if ((int)$value['A'] === 3 || 2) {
                             $dosenInsert[] = [
                                 'username' => $value['B'], // Asumsikan ini dapat digunakan untuk mapping
                                 'created_at' => now(),

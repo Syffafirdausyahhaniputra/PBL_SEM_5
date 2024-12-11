@@ -239,6 +239,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dosen', [PelatihanController::class, 'indexForDosen'])->name('pelatihan.dosen.index');
         Route::post('/upload', [PelatihanController::class, 'uploadBukti'])->name ('pelatihan.dosen.upload');
         Route::get('/download-sertifikat/{pelatihan_id}', [PelatihanController::class, 'downloadSertifikat'])->name('pelatihan.downloadSertifikat');
+        Route::get('/detail/{id}', [PelatihanController::class, 'detail'])->name('pelatihan.detail_pelatihan');
     });
     
     
@@ -260,7 +261,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [SertifikasiController::class, 'delete_ajax']);
         Route::post('/upload', [SertifikasiController::class, 'uploadBukti'])->name ('sertifikasi.dosen.upload');
         Route::get('/download-sertifikat/{sertif_id}', [SertifikasiController::class, 'downloadSertifikat'])->name('sertifikasi.downloadSertifikat');
-        
         Route::get('/edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit'); 
         Route::put('/update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update'); 
         Route::delete('/destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy'); 

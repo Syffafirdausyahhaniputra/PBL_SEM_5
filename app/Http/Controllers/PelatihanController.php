@@ -45,7 +45,7 @@ class PelatihanController extends Controller
             'subtitle' => ' '
         ];
 
-        // Mengambil data sertifikasi dengan relasi ke bidang dan jenis
+        // Mengambil data pelatihan dengan relasi ke bidang dan jenis
         $pelatihan = PelatihanModel::with(['bidang', 'vendor'])->get();
 
         return view('pelatihan.index_dosen', [
@@ -713,5 +713,18 @@ class PelatihanController extends Controller
                 return back()->with('error', 'Gagal mendownload file: ' . $e->getMessage());
             }
         }
-        
+        public function detail($id)
+    {
+        $pelatihan =PelatihanModel::with('bidang')->findOrFail($id);  
+        $bidang = $pelatihan->bidang; 
+
+        $breadcrumb = (object) [
+            'title' => $pelatihan->nama_pelatihan, // Sesuaikan dengan kolom yang benar
+            'subtitle' => $bidang ? $bidang->bidang_nama : 'N/A'
+        ];
+        return view('pelatihan.detail_pelatihan', [
+            'pelatihan' => $pelatihan,
+            'breadcrumb' => $breadcrumb
+        ]);
+    }
 }

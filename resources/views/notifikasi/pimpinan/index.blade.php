@@ -16,7 +16,8 @@
             </div>
         </div>
     </div>
-    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('css')
@@ -81,26 +82,26 @@
 @push('js')
     <script>
         $(document).ready(function() {
-    // Fetch data dari server dan render sebagai card
-    $.ajax({
-        url: "{{ url('notifikasi/list') }}",
-        type: "POST",
-        dataType: "json",
-        success: function(data) {
-            var container = $('#card-container');
-            container.empty();
+            // Fetch data dari server dan render sebagai card
+            $.ajax({
+                url: "{{ url('notifikasi/list') }}",
+                type: "POST",
+                dataType: "json",
+                success: function(data) {
+                    var container = $('#card-container');
+                    container.empty();
 
-            // Urutkan data berdasarkan waktu terbaru (updated_at)
-            var sortedData = data.data.sort(function(a, b) {
-                return new Date(b.updated_at) - new Date(a.updated_at);
-            });
+                    // Urutkan data berdasarkan waktu terbaru (updated_at)
+                    var sortedData = data.data.sort(function(a, b) {
+                        return new Date(b.updated_at) - new Date(a.updated_at);
+                    });
 
-            sortedData.forEach(function(item) {
-                var statusClass = item.status === 'Selesai' ? 'badge-selesai' :
-                    'badge-proses';
+                    sortedData.forEach(function(item) {
+                        var statusClass = item.status === 'Selesai' ? 'badge-selesai' :
+                            'badge-proses';
 
-                // Buat template card dengan event click pada status
-                var card = `
+                        // Buat template card dengan event click pada status
+                        var card = `
                 <div class="data-card">
                     <div class="card-content">
                         <div class="card-title">${item.nama}</div>
@@ -110,31 +111,30 @@
                 </div>
             `;
 
-                container.append(card);
+                        container.append(card);
+                    });
+                }
+            });
+
+            // Event click untuk badge status dengan event delegation
+            $(document).on('click', '.badge-status', function() {
+                var id = $(this).data('id');
+                var type = $(this).data('type'); // Ambil type dari data-type
+
+                // Tentukan URL berdasarkan type
+                var url = type === 'sertifikasi' ?
+                    "{{ url('notifikasi/sertifikasi') }}/" + id + "/show_ajax" :
+                    "{{ url('notifikasi/pelatihan') }}/" + id + "/show_ajax";
+
+                // Gunakan modalAction untuk membuka modal
+                modalAction(url);
+            });
+        });
+
+        function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
             });
         }
-    });
-
-    // Event click untuk badge status dengan event delegation
-    $(document).on('click', '.badge-status', function() {
-        var id = $(this).data('id');
-        var type = $(this).data('type'); // Ambil type dari data-type
-
-        // Tentukan URL berdasarkan type
-        var url = type === 'sertifikasi' ?
-            "{{ url('notifikasi/sertifikasi') }}/" + id + "/show_ajax" :
-            "{{ url('notifikasi/pelatihan') }}/" + id + "/show_ajax";
-
-        // Gunakan modalAction untuk membuka modal
-        modalAction(url);
-    });
-});
-
-function modalAction(url = '') {
-    $('#myModal').load(url, function() {
-        $('#myModal').modal('show');
-    });
-}
-
     </script>
 @endpush

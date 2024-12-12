@@ -30,11 +30,7 @@
 
             @include('home.kategori')
 
-            @include('home.about_home')
-
         </div>
-
-        @include('home.footer_home')
 
     </div>
 

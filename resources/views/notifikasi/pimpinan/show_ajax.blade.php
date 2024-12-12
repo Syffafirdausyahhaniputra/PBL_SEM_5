@@ -39,18 +39,8 @@
                         <th class="text-right col-3">Bidang:</th>
                         <td class="col-9">{{ $bidang }}</td>
                     </tr>
-                    @if (!empty($matkul))
-                        <tr>
-                            <th class="text-right col-3">Mata Kuliah:</th>
-                            <td class="col-9">
-                                <ul>
-                                    @foreach ($matkul as $mk)
-                                        <li>{{ $mk->nama }}</li>
-                                    @endforeach
-                                </ul>
-                            </td>
-                        </tr>
-                    @endif
+                        <th class="text-right col-3">Mata Kuliah:</th>
+                        <td class="col-9">{{ $matkul }}</td>
                     <tr>
                         <th class="text-right col-3">Vendor:</th>
                         <td class="col-9">{{ $vendor }}</td>
@@ -85,6 +75,24 @@
                         <th class="text-right col-3">Keterangan:</th>
                         <td class="col-9">{{ $keterangan }}</td>
                     </tr>
+                    @if (!empty($dosen_list) && is_iterable($dosen_list))
+                        <tr>
+                            <th class="text-right col-3">Dosen:</th>
+                            <td class="col-9">
+                                <ul>
+                                    @foreach ($dosen_list as $dosen)
+                                        <li>{{ $dosen['nama_dosen'] }}</li>
+                                    @endforeach
+                                </ul>
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <th class="text-right col-3">Dosen:</th>
+                            <td class="col-9">Tidak ada data dosen.</td>
+                        </tr>
+                    @endif
+
                 </table>
             </div>
             <div class="modal-footer">

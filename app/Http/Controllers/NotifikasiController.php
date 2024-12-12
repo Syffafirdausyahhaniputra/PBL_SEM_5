@@ -31,36 +31,44 @@ class NotifikasiController extends Controller
     // Ambil data dalam bentuk json untuk datatables 
     public function list()
     {
+        // Ambil dan group data sertifikasi berdasarkan sertif_id
         $dataSertifikasi = DataSertifikasiModel::with('sertif')
             ->select('data_sertif_id as id', 'sertif_id', 'dosen_id', 'updated_at')
             ->get()
-            ->map(function ($item) {
+            ->groupBy('sertif_id') // Group data berdasarkan sertif_id
+            ->map(function ($groupedItems) {
+                $firstItem = $groupedItems->first(); // Ambil item pertama dalam grup
+
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->sertif->nama_sertif,
-                    'keterangan' => $item->sertif->keterangan,
-                    'status' => $item->sertif->status,
+                    'id' => $firstItem->sertif_id, // Gunakan sertif_id sebagai id
+                    'nama' => $firstItem->sertif->nama_sertif,
+                    'keterangan' => $firstItem->sertif->keterangan,
+                    'status' => $firstItem->sertif->status,
                     'type' => 'sertifikasi', // Tambahkan type sertifikasi
-                    'updated_at' => $item->sertif->updated_at
+                    'updated_at' => $groupedItems->max('updated_at'), // Ambil updated_at terbaru dalam grup
                 ];
             });
 
+        // Ambil dan group data pelatihan berdasarkan pelatihan_id
         $dataPelatihan = DataPelatihanModel::with('pelatihan')
             ->select('data_pelatihan_id as id', 'pelatihan_id', 'dosen_id', 'updated_at')
             ->get()
-            ->map(function ($item) {
+            ->groupBy('pelatihan_id') // Group data berdasarkan pelatihan_id
+            ->map(function ($groupedItems) {
+                $firstItem = $groupedItems->first(); // Ambil item pertama dalam grup
+
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->pelatihan->nama_pelatihan,
-                    'keterangan' => $item->pelatihan->keterangan,
-                    'status' => $item->pelatihan->status,
+                    'id' => $firstItem->pelatihan_id, // Gunakan pelatihan_id sebagai id
+                    'nama' => $firstItem->pelatihan->nama_pelatihan,
+                    'keterangan' => $firstItem->pelatihan->keterangan,
+                    'status' => $firstItem->pelatihan->status,
                     'type' => 'pelatihan', // Tambahkan type pelatihan
-                    'updated_at' => $item->pelatihan->updated_at
+                    'updated_at' => $groupedItems->max('updated_at'), // Ambil updated_at terbaru dalam grup
                 ];
             });
 
         // Gabungkan data sertifikasi dan pelatihan
-        $data = $dataSertifikasi->merge($dataPelatihan);
+        $data = $dataSertifikasi->values()->merge($dataPelatihan->values());
 
         // Urutkan berdasarkan updated_at
         $sortedData = $data->sortByDesc('updated_at')->values();
@@ -74,38 +82,83 @@ class NotifikasiController extends Controller
 
     public function showSertifikasiAjax($id)
     {
+        // Ambil data sertifikasi berdasarkan sertif_id
         $sertifikasi = DataSertifikasiModel::with(['sertif', 'sertif.bidang', 'sertif.matkul', 'sertif.vendor', 'sertif.jenis'])
-            ->findOrFail($id);
+            ->where('sertif_id', $id)
+            ->get();
+
+        if ($sertifikasi->isEmpty()) {
+            abort(404, 'Data sertifikasi tidak ditemukan.');
+        }
+
+        // Ambil data pertama untuk informasi umum sertifikasi
+        $firstItem = $sertifikasi->first();
+
+        // Ambil daftar dosen yang terkait dengan sertif_id
+        $dosenList = $sertifikasi->map(function ($item) {
+            return [
+                'id' => $item->dosen_id,
+                'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
+            ];
+        })->toArray();
+
+        if (!is_array($dosenList)) {
+            Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
+            $dosenList = []; // Atur default menjadi array kosong
+        };
 
         return view('notifikasi.pimpinan.show_ajax', [
-            'nama' => $sertifikasi->sertif->nama_sertif,
-            'bidang' => $sertifikasi->sertif->bidang->bidang_nama,
-            'matkul' => $sertifikasi->sertif->mk_nama,
-            'vendor' => $sertifikasi->sertif->vendor->vendor_nama,
-            'jenis' => $sertifikasi->sertif->jenis->jenis_nama,
-            'tanggal_acara' => $sertifikasi->sertif->tanggal,
-            'berlaku_hingga' => $sertifikasi->sertif->masa_berlaku,
-            'periode' => $sertifikasi->sertif->periode,
-            'keterangan' => $sertifikasi->sertif->keterangan
+            'nama' => $firstItem->sertif->nama_sertif,
+            'bidang' => $firstItem->sertif->bidang->bidang_nama,
+            'matkul' => $firstItem->sertif->matkul->mk_nama,
+            'vendor' => $firstItem->sertif->vendor->vendor_nama,
+            'jenis' => $firstItem->sertif->jenis->jenis_nama,
+            'tanggal_acara' => $firstItem->sertif->tanggal,
+            'berlaku_hingga' => $firstItem->sertif->masa_berlaku,
+            'periode' => $firstItem->sertif->periode,
+            'keterangan' => $firstItem->sertif->keterangan,
+            'dosen_list' => $dosenList,
         ]);
     }
 
     public function showPelatihanAjax($id)
     {
         $pelatihan = DataPelatihanModel::with(['pelatihan', 'pelatihan.bidang', 'pelatihan.matkul', 'pelatihan.vendor', 'pelatihan.level'])
-            ->findOrFail($id);
+            ->where('pelatihan_id', $id)
+            ->get();
+
+        if ($pelatihan->isEmpty()) {
+            abort(404, 'Data pelatihan tidak ditemukan.');
+        }
+
+        // Ambil data pertama untuk informasi umum pelatihan
+        $firstItem = $pelatihan->first();
+
+        $dosenList = $pelatihan->map(function ($item) {
+            return [
+                'id' => $item->dosen_id,
+                'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
+            ];
+        })->toArray();
+
+        if (!is_array($dosenList)) {
+            Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
+            $dosenList = []; // Atur default menjadi array kosong
+        };
+
 
         return view('notifikasi.pimpinan.show_ajax', [
-            'nama' => $pelatihan->pelatihan->nama_pelatihan,
-            'bidang' => $pelatihan->pelatihan->bidang->bidang_nama,
-            'matkul' => $pelatihan->pelatihan->mk_nama,
-            'vendor' => $pelatihan->pelatihan->vendor->vendor_nama,
-            'level' => $pelatihan->pelatihan->level->level_nama,
-            'tanggal_acara' => $pelatihan->pelatihan->tanggal,
-            'kuota' => $pelatihan->pelatihan->kuota,
-            'lokasi' => $pelatihan->pelatihan->lokasi,
-            'periode' => $pelatihan->pelatihan->periode,
-            'keterangan' => $pelatihan->pelatihan->keterangan
+            'nama' => $firstItem->pelatihan->nama_pelatihan,
+            'bidang' => $firstItem->pelatihan->bidang->bidang_nama,
+            'matkul' => $firstItem->pelatihan->mk_nama,
+            'vendor' => $firstItem->pelatihan->vendor->vendor_nama,
+            'level' => $firstItem->pelatihan->level->level_nama,
+            'tanggal_acara' => $firstItem->pelatihan->tanggal,
+            'kuota' => $firstItem->pelatihan->kuota,
+            'lokasi' => $firstItem->pelatihan->lokasi,
+            'periode' => $firstItem->pelatihan->periode,
+            'keterangan' => $firstItem->pelatihan->keterangan,
+            'dosen_list' => $dosenList,
         ]);
     }
 
@@ -162,39 +215,45 @@ class NotifikasiController extends Controller
     public function list2(Request $request)
     {
         $dataSertifikasi = DataSertifikasiModel::with('sertif')
-            ->select('data_sertif_id as id', 'keterangan', 'status', 'sertif_id', 'dosen_id')
+            ->select('data_sertif_id as id', 'sertif_id', 'dosen_id', 'updated_at')
             ->get()
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'nama' => $item->sertif->nama_sertif,
-                    'keterangan' => $item->keterangan,
-                    'status' => $item->status,
-                    'type' => 'sertifikasi' // Tambahkan type sertifikasi
+                    'keterangan' => $item->sertif->keterangan,
+                    'status' => $item->sertif->status,
+                    'type' => 'sertifikasi', // Tambahkan type sertifikasi
+                    'updated_at' => $item->sertif->updated_at
                 ];
             });
 
         $dataPelatihan = DataPelatihanModel::with('pelatihan')
-            ->select('data_pelatihan_id as id', 'keterangan', 'status', 'pelatihan_id', 'dosen_id')
+            ->select('data_pelatihan_id as id', 'pelatihan_id', 'dosen_id', 'updated_at')
             ->get()
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'nama' => $item->pelatihan->nama_pelatihan,
-                    'keterangan' => $item->keterangan,
-                    'status' => $item->status,
-                    'type' => 'pelatihan' // Tambahkan type pelatihan
+                    'keterangan' => $item->pelatihan->keterangan,
+                    'status' => $item->pelatihan->status,
+                    'type' => 'pelatihan', // Tambahkan type pelatihan
+                    'updated_at' => $item->pelatihan->updated_at
                 ];
             });
 
         // Gabungkan data sertifikasi dan pelatihan
         $data = $dataSertifikasi->merge($dataPelatihan);
 
-        return DataTables::of($data)
+        // Urutkan berdasarkan updated_at
+        $sortedData = $data->sortByDesc('updated_at')->values();
+
+        Log::info('Data setelah sorting:', $sortedData->toArray());
+
+        return DataTables::of($sortedData)
             ->addIndexColumn()
             ->make(true);
     }
-
 
     public function showSertifikasiAjax2($id)
     {
@@ -263,62 +322,5 @@ class NotifikasiController extends Controller
         $data = $dataSertifikasi->merge($dataPelatihan);
 
         return response()->json($data, 200);
-    }
-
-    public function export_ajax(Request $request)
-    {
-        // Retrieve the data you need from the request or session
-        $nama = $request->input('nama');
-        $bidang = $request->input('bidang');
-        $matkul = $request->input('matkul'); // array of mata kuliah objects
-        $vendor = $request->input('vendor');
-        $jenis = $request->input('jenis');
-        $level = $request->input('level');
-        $tanggal_acara = $request->input('tanggal_acara');
-        $berlaku_hingga = $request->input('berlaku_hingga');
-        $periode = $request->input('periode');
-
-        // Create a new PHPWord object
-        $phpWord = new PhpWord();
-        $section = $phpWord->addSection();
-
-        // Add content to the Word document
-        $section->addText("Surat Tugas", ['bold' => true, 'size' => 16]);
-        $section->addText("Nama: $nama");
-        $section->addText("Bidang: $bidang");
-
-        if (!empty($matkul)) {
-            $section->addText("Mata Kuliah:");
-            foreach ($matkul as $mk) {
-                $section->addText("- " . $mk->nama);
-            }
-        }
-
-        $section->addText("Vendor: $vendor");
-
-        if (isset($jenis)) {
-            $section->addText("Jenis: $jenis");
-        }
-
-        if (isset($level)) {
-            $section->addText("Level: $level");
-        }
-
-        $section->addText("Tanggal Acara: $tanggal_acara");
-
-        if (isset($berlaku_hingga)) {
-            $section->addText("Berlaku Hingga: $berlaku_hingga");
-        }
-
-        $section->addText("Periode: $periode");
-
-        // Save the Word document as a .docx file
-        $fileName = 'surat_tugas_' . time() . '.docx';
-        $filePath = storage_path("app/public/$fileName");
-
-        $phpWord->save($filePath, 'Word2007');
-
-        // Return the file for download
-        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 }

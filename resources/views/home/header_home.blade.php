@@ -5,7 +5,6 @@
     <nav class="navbar">
         <a href="#" data-text="Home" class="active">Home</a>
         <a href="#dosen" data-text="dosen">Dosen</a>
-        <a href="#about" data-text="About me">About Us</a>
         <a href="{{ url('login') }}" class="btn-login">Log In</a>
     </nav>
     <div class="hamburger-menu" id="hamburgerMenu">

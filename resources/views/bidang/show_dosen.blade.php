@@ -1,37 +1,37 @@
 @extends('layouts.template')
 
-@section('title', $bidang->bidang_nama)
+@section($breadcrumb)
 
 @section('content')
 <div class="container mt-4">
     <!-- Card List Section -->
     <div class="card-list">
-        @if ($bidang->dosenBidang->isNotEmpty())
-            @foreach ($bidang->dosenBidang as $dosenBidang)
-                <div class="card shadow-sm d-flex flex-row align-items-center p-3 mb-3 rounded">
+        @if ($dosen->isNotEmpty())
+            @foreach ($dosen as $dosenBidang)
+                <a 
+                    href="{{ route('informasi_dosen', ['id' => $bidang->bidang_id, 'id_dosen' => $dosenBidang->dosen2?->dosen_id]) }}" 
+                    class="card shadow-sm d-flex flex-row align-items-center p-3 mb-3 rounded text-decoration-none text-dark"
+                >
                     {{-- Menampilkan Avatar --}}
                     <img 
-                        src="{{ $dosenBidang->dosen2->user->avatar ? asset('avatars/'.$dosenBidang->dosen2->user->avatar) : asset('avatars/user.jpg') }}" 
-                        alt="Foto {{ $dosenBidang->dosen2->user->nama ?? 'Dosen' }}" 
+                        src="{{ $dosenBidang->dosen2?->user?->avatar ? asset('avatars/' . $dosenBidang->dosen2->user->avatar) : asset('avatars/user.jpg') }}"
+                        alt="Foto {{ $dosenBidang->dosen2?->user?->nama ?? 'Dosen' }}"
                         class="rounded-circle me-3"
                         style="width: 60px; height: 60px; object-fit: cover;"
                     >
                     {{-- Menampilkan Nama dan NIP --}}
                     <div>
-                        <h5 class="mb-0">{{ $dosenBidang->dosen2->user->nama ?? 'Nama tidak ditemukan' }}</h5>
-                        <small class="text-muted">NIP: {{ $dosenBidang->dosen2->user->nip ?? 'NIP tidak ditemukan' }}</small>
+                        <h5 class="mb-0">{{ $dosenBidang->dosen2?->user?->nama ?? 'Nama tidak ditemukan' }}</h5>
+                        <small class="text-muted">NIP: {{ $dosenBidang->dosen2?->user?->nip ?? 'NIP tidak ditemukan' }}</small>
                     </div>
-                </div>
+                </a>
             @endforeach
         @else
             <p class="no-data text-center">Tidak ada dosen yang terdaftar untuk bidang ini.</p>
         @endif
-    </div>
+    </div>    
 </div>
 @endsection
-
-
-
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/custom.css') }}">

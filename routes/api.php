@@ -90,7 +90,8 @@ Route::middleware('auth:api')->group(function () {
 
     Route::group(['prefix' => 'notifikasiPimpinan'], function () {
         Route::get('/list', [NotifikasiPimpinanController::class, 'list']);
-        Route::get('/show/{type}/{id}', [NotifikasiPimpinanController::class, 'show']);
+        Route::get('/show/sertifikasi/{id}', [NotifikasiPimpinanController::class, 'showSertifikasiApi']);
+        Route::get('/show/pelatihan/{id}', [NotifikasiPimpinanController::class, 'showPelatihanApi']);
         Route::put('/verify/{type}/{id}', [NotifikasiPimpinanController::class, 'verify']);
     });
 

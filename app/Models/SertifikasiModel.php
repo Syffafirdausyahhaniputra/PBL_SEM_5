@@ -40,6 +40,10 @@ class SertifikasiModel extends Model implements JWTSubject
     {
         return $this->hasMany(DataSertifikasiModel::class, 'sertif_id', 'sertif_id');
     }
+    public function sertifikasi()
+  {
+      return $this->belongsTo(SertifikasiModel::class, 'sertif_id', 'sertif_id');
+  }
     public function jenis()
     {
         return $this->belongsTo(JenisModel::class, 'jenis_id', 'jenis_id');

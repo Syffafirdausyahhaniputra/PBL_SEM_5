@@ -12,7 +12,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang Anda cari tidak ditemukan.
                 </div>
-                <a href="{{ url('/notifikasidosen') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/notifikasi') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
@@ -39,8 +39,10 @@
                         <th class="text-right col-3">Bidang:</th>
                         <td class="col-9">{{ $bidang }}</td>
                     </tr>
+                    <tr>
                         <th class="text-right col-3">Mata Kuliah:</th>
                         <td class="col-9">{{ $matkul }}</td>
+                    </tr>
                     <tr>
                         <th class="text-right col-3">Vendor:</th>
                         <td class="col-9">{{ $vendor }}</td>
@@ -75,24 +77,21 @@
                         <th class="text-right col-3">Keterangan:</th>
                         <td class="col-9">{{ $keterangan }}</td>
                     </tr>
-                    @if (!empty($dosen_list) && is_iterable($dosen_list))
+                    @if (isset($surat_tugas['file_url']))
                         <tr>
-                            <th class="text-right col-3">Dosen:</th>
+                            <th class="text-right col-3">Surat Tugas:</th>
                             <td class="col-9">
-                                <ul>
-                                    @foreach ($dosen_list as $dosen)
-                                        <li>{{ $dosen['nama_dosen'] }}</li>
-                                    @endforeach
-                                </ul>
+                                <a href="{{ $surat_tugas['file_url'] }}" target="_blank">
+                                    {{ $surat_tugas['nama_surat_tugas'] }}
+                                </a>
                             </td>
                         </tr>
                     @else
                         <tr>
-                            <th class="text-right col-3">Dosen:</th>
-                            <td class="col-9">Tidak ada data dosen.</td>
+                            <th class="text-right col-3">Surat Tugas:</th>
+                            <td class="col-9">Tidak ada surat tugas terkait.</td>
                         </tr>
                     @endif
-
                 </table>
             </div>
             <div class="modal-footer">

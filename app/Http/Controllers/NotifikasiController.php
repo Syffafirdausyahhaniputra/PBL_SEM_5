@@ -280,39 +280,33 @@ class NotifikasiController extends Controller
         // Ambil data sertifikasi berdasarkan sertif_id
         $sertifikasi = DataSertifikasiModel::with(['sertif', 'sertif.bidang', 'sertif.matkul', 'sertif.vendor', 'sertif.jenis'])
             ->where('data_sertif_id', $id)
-            ->get();
+            ->first(); // Gunakan first() untuk mendapatkan hanya satu data sertifikasi
 
-        if ($sertifikasi->isEmpty()) {
+        if (!$sertifikasi) {
             abort(404, 'Data sertifikasi tidak ditemukan.');
         }
 
-        // Ambil data pertama untuk informasi umum sertifikasi
-        $firstItem = $sertifikasi->first();
+        // Ambil surat tugas terkait dengan sertifikasi (hanya satu surat tugas)
+        $suratTugas = $sertifikasi->suratTugas; // Ambil data surat tugas pertama
 
-        // Ambil daftar dosen yang terkait dengan sertif_id
-        $dosenList = $sertifikasi->map(function ($item) {
-            return [
-                'id' => $item->dosen_id,
-                'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
-            ];
-        })->toArray();
-
-        if (!is_array($dosenList)) {
-            Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
-            $dosenList = []; // Atur default menjadi array kosong
-        };
+        // Persiapkan data surat tugas
+        $suratTugasData = [
+            'id' => $suratTugas->id ?? null,
+            'nama_surat_tugas' => $suratTugas->nama_surat_tugas ?? 'Tidak Diketahui',
+            'file_url' => $suratTugas ? asset('dokumen/surat_tugas/' . $suratTugas->id . '.pdf') : null, // URL file surat tugas
+        ];
 
         return view('notifikasi.dosen.show_ajax', [
-            'nama' => $firstItem->sertif->nama_sertif,
-            'bidang' => $firstItem->sertif->bidang->bidang_nama,
-            'matkul' => $firstItem->sertif->matkul->mk_nama,
-            'vendor' => $firstItem->sertif->vendor->vendor_nama,
-            'jenis' => $firstItem->sertif->jenis->jenis_nama,
-            'tanggal_acara' => $firstItem->sertif->tanggal,
-            'berlaku_hingga' => $firstItem->sertif->masa_berlaku,
-            'periode' => $firstItem->sertif->periode,
-            'keterangan' => $firstItem->sertif->keterangan,
-            'dosen_list' => $dosenList,
+            'nama' => $sertifikasi->sertif->nama_sertif,
+            'bidang' => $sertifikasi->sertif->bidang->bidang_nama,
+            'matkul' => $sertifikasi->sertif->matkul->mk_nama,
+            'vendor' => $sertifikasi->sertif->vendor->vendor_nama,
+            'jenis' => $sertifikasi->sertif->jenis->jenis_nama,
+            'tanggal_acara' => $sertifikasi->sertif->tanggal,
+            'berlaku_hingga' => $sertifikasi->sertif->masa_berlaku,
+            'periode' => $sertifikasi->sertif->periode,
+            'keterangan' => $sertifikasi->sertif->keterangan,
+            'surat_tugas' => $suratTugasData, // Hanya satu surat tugas
         ]);
     }
 
@@ -320,40 +314,33 @@ class NotifikasiController extends Controller
     {
         $pelatihan = DataPelatihanModel::with(['pelatihan', 'pelatihan.bidang', 'pelatihan.matkul', 'pelatihan.vendor', 'pelatihan.level'])
             ->where('data_pelatihan_id', $id)
-            ->get();
+            ->first(); // Gunakan first() untuk mendapatkan hanya satu data pelatihan
 
-        if ($pelatihan->isEmpty()) {
+        if (!$pelatihan) {
             abort(404, 'Data pelatihan tidak ditemukan.');
         }
 
-        // Ambil data pertama untuk informasi umum pelatihan
-        $firstItem = $pelatihan->first();
+        // Ambil surat tugas terkait pelatihan (hanya satu surat tugas)
+        $suratTugas = $pelatihan->suratTugas; // Ambil data surat tugas pertama
 
-        $dosenList = $pelatihan->map(function ($item) {
-            return [
-                'id' => $item->dosen_id,
-                'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
-            ];
-        })->toArray();
-
-        if (!is_array($dosenList)) {
-            Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
-            $dosenList = []; // Atur default menjadi array kosong
-        };
-
+        // Persiapkan data surat tugas
+        $suratTugasData = [
+            'id' => $suratTugas->id ?? null,
+            'nama_surat_tugas' => $suratTugas->nama_surat_tugas ?? 'Tidak Diketahui',
+            'file_url' => $suratTugas ? asset('surat_tugas/' . $suratTugas->id . '.pdf') : null, // URL file surat tugas
+        ];
 
         return view('notifikasi.dosen.show_ajax', [
-            'nama' => $firstItem->pelatihan->nama_pelatihan,
-            'bidang' => $firstItem->pelatihan->bidang->bidang_nama,
-            'matkul' => $firstItem->pelatihan->matkul->mk_nama,
-            'vendor' => $firstItem->pelatihan->vendor->vendor_nama,
-            'level' => $firstItem->pelatihan->level->level_nama,
-            'tanggal_acara' => $firstItem->pelatihan->tanggal,
-            'kuota' => $firstItem->pelatihan->kuota,
-            'lokasi' => $firstItem->pelatihan->lokasi,
-            'periode' => $firstItem->pelatihan->periode,
-            'keterangan' => $firstItem->pelatihan->keterangan,
-            'dosen_list' => $dosenList,
+            'nama' => $pelatihan->pelatihan->nama_pelatihan,
+            'bidang' => $pelatihan->pelatihan->bidang->bidang_nama,
+            'matkul' => $pelatihan->pelatihan->matkul->mk_nama,
+            'vendor' => $pelatihan->pelatihan->vendor->vendor_nama,
+            'level' => $pelatihan->pelatihan->level->level_nama,
+            'tanggal_acara' => $pelatihan->pelatihan->tanggal,
+            'berlaku_hingga' => $pelatihan->pelatihan->masa_berlaku,
+            'periode' => $pelatihan->pelatihan->periode,
+            'keterangan' => $pelatihan->pelatihan->keterangan,
+            'surat_tugas' => $suratTugasData, // Hanya satu surat tugas
         ]);
     }
 

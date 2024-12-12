@@ -9,6 +9,7 @@ use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class NotifikasiController extends Controller
 {
@@ -28,42 +29,48 @@ class NotifikasiController extends Controller
     }
 
     // Ambil data dalam bentuk json untuk datatables 
-    public function list(Request $request)
+    public function list()
     {
         $dataSertifikasi = DataSertifikasiModel::with('sertif')
-            ->select('data_sertif_id as id', 'keterangan', 'status', 'sertif_id', 'dosen_id')
+            ->select('data_sertif_id as id', 'sertif_id', 'dosen_id', 'updated_at')
             ->get()
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'nama' => $item->sertif->nama_sertif,
-                    'keterangan' => $item->keterangan,
-                    'status' => $item->status,
-                    'type' => 'sertifikasi' // Tambahkan type sertifikasi
+                    'keterangan' => $item->sertif->keterangan,
+                    'status' => $item->sertif->status,
+                    'type' => 'sertifikasi', // Tambahkan type sertifikasi
+                    'updated_at' => $item->sertif->updated_at
                 ];
             });
 
         $dataPelatihan = DataPelatihanModel::with('pelatihan')
-            ->select('data_pelatihan_id as id', 'keterangan', 'status', 'pelatihan_id', 'dosen_id')
+            ->select('data_pelatihan_id as id', 'pelatihan_id', 'dosen_id', 'updated_at')
             ->get()
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'nama' => $item->pelatihan->nama_pelatihan,
-                    'keterangan' => $item->keterangan,
-                    'status' => $item->status,
-                    'type' => 'pelatihan' // Tambahkan type pelatihan
+                    'keterangan' => $item->pelatihan->keterangan,
+                    'status' => $item->pelatihan->status,
+                    'type' => 'pelatihan', // Tambahkan type pelatihan
+                    'updated_at' => $item->pelatihan->updated_at
                 ];
             });
 
         // Gabungkan data sertifikasi dan pelatihan
         $data = $dataSertifikasi->merge($dataPelatihan);
 
-        return DataTables::of($data)
+        // Urutkan berdasarkan updated_at
+        $sortedData = $data->sortByDesc('updated_at')->values();
+
+        Log::info('Data setelah sorting:', $sortedData->toArray());
+
+        return DataTables::of($sortedData)
             ->addIndexColumn()
             ->make(true);
     }
-
 
     public function showSertifikasiAjax($id)
     {
@@ -76,9 +83,10 @@ class NotifikasiController extends Controller
             'matkul' => $sertifikasi->sertif->mk_nama,
             'vendor' => $sertifikasi->sertif->vendor->vendor_nama,
             'jenis' => $sertifikasi->sertif->jenis->jenis_nama,
-            'tanggal_acara' => $sertifikasi->tanggal,
-            'berlaku_hingga' => $sertifikasi->masa_berlaku,
-            'periode' => $sertifikasi->periode
+            'tanggal_acara' => $sertifikasi->sertif->tanggal,
+            'berlaku_hingga' => $sertifikasi->sertif->masa_berlaku,
+            'periode' => $sertifikasi->sertif->periode,
+            'keterangan' => $sertifikasi->sertif->keterangan
         ]);
     }
 
@@ -87,16 +95,17 @@ class NotifikasiController extends Controller
         $pelatihan = DataPelatihanModel::with(['pelatihan', 'pelatihan.bidang', 'pelatihan.matkul', 'pelatihan.vendor', 'pelatihan.level'])
             ->findOrFail($id);
 
-        return view('notifikasi.dosen.show_ajax', [
+        return view('notifikasi.pimpinan.show_ajax', [
             'nama' => $pelatihan->pelatihan->nama_pelatihan,
             'bidang' => $pelatihan->pelatihan->bidang->bidang_nama,
             'matkul' => $pelatihan->pelatihan->mk_nama,
             'vendor' => $pelatihan->pelatihan->vendor->vendor_nama,
             'level' => $pelatihan->pelatihan->level->level_nama,
-            'tanggal_acara' => $pelatihan->tanggal,
-            'kuota' => $pelatihan->kuota,
-            'lokasi' => $pelatihan->lokasi,
-            'periode' => $pelatihan->periode
+            'tanggal_acara' => $pelatihan->pelatihan->tanggal,
+            'kuota' => $pelatihan->pelatihan->kuota,
+            'lokasi' => $pelatihan->pelatihan->lokasi,
+            'periode' => $pelatihan->pelatihan->periode,
+            'keterangan' => $pelatihan->pelatihan->keterangan
         ]);
     }
 

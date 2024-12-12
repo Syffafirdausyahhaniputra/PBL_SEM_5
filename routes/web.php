@@ -191,16 +191,8 @@ Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'notifikasidosen', 'middleware' => 'authorize:DOSN'], function () {
         Route::get('/', [NotifikasiController::class, 'index2']);
         Route::post('/list', [NotifikasiController::class, 'list2']);
-        Route::get('/create_ajax', [NotifikasiController::class, 'create_ajax2']);
-        Route::post('/ajax', [NotifikasiController::class, 'store_ajax2']);
         Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjax2']);
         Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjax2']);
-
-        Route::get('/{id}/edit_ajax', [NotifikasiController::class, 'edit_ajax']);
-        Route::put('/{id}/update_ajax', [NotifikasiController::class, 'update_ajax']);
-        Route::get('/{id}/delete_ajax', [NotifikasiController::class, 'confirm_ajax']);
-        Route::delete('/{id}/delete_ajax', [NotifikasiController::class, 'delete_ajax']);
-        Route::delete('/{id}', [NotifikasiController::class, 'destroy']);
     });
 
     Route::group(['prefix' => 'notifikasi', 'middleware' => 'authorize:ADMN,LEAD'], function () {

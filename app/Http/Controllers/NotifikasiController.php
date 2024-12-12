@@ -85,7 +85,8 @@ class NotifikasiController extends Controller
             'jenis' => $sertifikasi->sertif->jenis->jenis_nama,
             'tanggal_acara' => $sertifikasi->sertif->tanggal,
             'berlaku_hingga' => $sertifikasi->sertif->masa_berlaku,
-            'periode' => $sertifikasi->sertif->periode
+            'periode' => $sertifikasi->sertif->periode,
+            'keterangan' => $sertifikasi->sertif->keterangan
         ]);
     }
 
@@ -103,7 +104,8 @@ class NotifikasiController extends Controller
             'tanggal_acara' => $pelatihan->pelatihan->tanggal,
             'kuota' => $pelatihan->pelatihan->kuota,
             'lokasi' => $pelatihan->pelatihan->lokasi,
-            'periode' => $pelatihan->pelatihan->periode
+            'periode' => $pelatihan->pelatihan->periode,
+            'keterangan' => $pelatihan->pelatihan->keterangan
         ]);
     }
 

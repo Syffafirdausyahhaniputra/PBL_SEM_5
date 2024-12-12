@@ -81,6 +81,10 @@
                         <th class="text-right col-3">Periode:</th>
                         <td class="col-9">{{ $periode }}</td>
                     </tr>
+                    <tr>
+                        <th class="text-right col-3">Keterangan:</th>
+                        <td class="col-9">{{ $keterangan }}</td>
+                    </tr>
                 </table>
             </div>
             <div class="modal-footer">

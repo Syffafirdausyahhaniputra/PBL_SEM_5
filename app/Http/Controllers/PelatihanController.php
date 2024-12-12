@@ -518,28 +518,24 @@ class PelatihanController extends Controller
     }
     
     public function store_ajax2(Request $request)
-{
-    // Get the currently authenticated user
-    $user = Auth::user();
-    // $user = DB::table('m_dosen')->where('user_id', $user->user_id)->first();
-
-    // If no user is logged in, return an error
-    if (!$user) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Pengguna tidak terautentikasi',
-        ]);
-    }
-
-    $request->merge(['dosen_id' => $user->dosen_id]);
-
-    Log::info('Received request data:', $request->all());
-
-    // Cek apakah request berupa AJAX
-    if ($request->ajax() || $request->wantsJson()) {
+    {
+        // Ambil user yang login
+        $dosen = Auth::user()->dosen->dosen_id;
+    
+        if (!$dosen) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data dosen tidak ditemukan untuk pengguna yang login.',
+            ]);
+        }
+    
+        // Tambahkan dosen_id ke dalam request
+        $request->merge(['dosen_id' => $dosen]);
+    
+        Log::info('Request data after adding dosen_id:', $request->all());
+    
         // Validasi input
         $rules = [
-            'dosen_id' => 'required|exists:m_dosen,dosen_id',
             'level_id' => 'required|integer',
             'bidang_id' => 'required|integer',
             'mk_id' => 'required|integer',
@@ -551,8 +547,9 @@ class PelatihanController extends Controller
             'periode' => 'required|string|max:50',
             'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048',
         ];
-
+    
         $validator = Validator::make($request->all(), $rules);
+    
         if ($validator->fails()) {
             Log::error('Validation failed:', $validator->errors()->toArray());
             return response()->json([
@@ -561,28 +558,27 @@ class PelatihanController extends Controller
                 'msgField' => $validator->errors(),
             ]);
         }
-
+    
         try {
-            // Tentukan direktori tujuan
+            // Tentukan direktori penyimpanan file
             $destinationPath = public_path('file_bukti_pel');
-
+    
             // Buat folder jika belum ada
             if (!File::exists($destinationPath)) {
                 File::makeDirectory($destinationPath, 0755, true, true);
             }
-
-            // Simpan file jika diunggah
+    
+            // Simpan file
             $filePath = null;
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                
+    
                 if ($file->isValid()) {
                     Log::info('File details:', [
                         'original_name' => $file->getClientOriginalName(),
                         'mime_type' => $file->getMimeType(),
                         'size' => $file->getSize(),
                     ]);
-
                     $fileName = time() . '_' . $file->getClientOriginalName();
                     $file->move($destinationPath, $fileName);
                     $filePath = $fileName;
@@ -600,39 +596,30 @@ class PelatihanController extends Controller
                     'message' => 'File tidak ditemukan dalam request.',
                 ]);
             }
-
-            // Get the dosen_id for the logged-in user
-            $dosen = DB::table('m_dosen')->where('user_id', $user->user_id)->first();
-            
-            if (!$dosen) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data dosen tidak ditemukan untuk pengguna yang login',
-                ]);
-            }
-
+    
+            // Siapkan data untuk tabel pelatihan
             $pelatihanData = $request->except('file');
-            $pelatihanData['dosen_id'] = $dosen->dosen_id; // Set dosen_id from logged-in user
-            $pelatihanData['keterangan'] = 'Menunggu Validasi';
-            $pelatihanData['status'] = 'Proses';
-            // $pelatihanData['kuota'] = '1';
-
-            // Buat record sertifikasi
+            $pelatihanData['dosen_id'] = $dosen; // Gunakan dosen_id dari relasi user_id
+            $pelatihanData['keterangan'] = 'Mandiri';
+            $pelatihanData['status'] = 'Selesai';
+            $pelatihanData['kuota'] = '1';
+    
+            // Buat record pelatihan
             $pelatihan = PelatihanModel::create($pelatihanData);
-
+    
             Log::info('Pelatihan created:', $pelatihan->toArray());
-
-            // Buat record DataPelatihan dan simpan hanya nama file di kolom sertifikat
+    
+            // Buat record DataPelatihan dengan file sertifikat
             DataPelatihanModel::create([
                 'pelatihan_id' => $pelatihan->pelatihan_id,
-                'dosen_id' => $dosen->dosen_id,
+                'dosen_id' => $dosen,
                 'surat_tugas_id' => $request->input('surat_tugas_id', null),
                 'sertifikat' => $filePath,
             ]);
-
+    
             return response()->json([
                 'status' => true,
-                'message' => 'Pelatihan berhasil disimpan',
+                'message' => 'Pelatihan berhasil disimpan.',
             ]);
         } catch (\Exception $e) {
             Log::error('Error saving pelatihan:', [
@@ -640,23 +627,23 @@ class PelatihanController extends Controller
                 'trace' => $e->getTraceAsString(),
                 'request_data' => $request->all(),
             ]);
-
-            $errorMessage = 'Terjadi kesalahan saat menyimpan data';
+    
+            $errorMessage = 'Terjadi kesalahan saat menyimpan data.';
             if (strpos($e->getMessage(), 'SQLSTATE') !== false) {
-                $errorMessage .= ': Kesalahan database';
+                $errorMessage .= ' Kesalahan database.';
             }
-
+    
             return response()->json([
                 'status' => false,
                 'message' => $errorMessage,
                 'error' => $e->getMessage(),
             ]);
         }
+        return redirect('/pelatihan/dosen');
     }
+    
 
-    // Jika bukan AJAX, redirect ke halaman utama
-    return redirect('/pelatihan/dosen');
-}
+
 
     public function edit_ajax($id)
     {

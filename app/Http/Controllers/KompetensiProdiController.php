@@ -109,8 +109,8 @@ class KompetensiProdiController extends Controller
                 return view('kompetensi.edit_ajax');
             })
             ->addColumn('aksi', function ($kompetensi_prodi) {
-                $btn  = '<button onclick="modalAction(\'' . url('/kompetensi/' . $kompetensi_prodi->prodi->prodi_kode .
-                    '/show_ajax') . '\')" class="btn btn-info btn-sm">
+                $btn  = '<button onclick="modalAction(\'' . url('/kompetensi/' . $kompetensi_prodi->prodi->prodi_id .
+                    '/show_ajax2') . '\')" class="btn btn-info btn-sm">
                     <i class="fas fa-eye"></i> Detail
                 </button> ';
                 return $btn;
@@ -282,7 +282,7 @@ class KompetensiProdiController extends Controller
                 ]);
             }
 
-            // Pastikan minimal ada satu bidang tersisa untuk `prodi_id`
+            // Pastikan minimal ada satu bidang tersisa untuk prodi_id
             $remainingCount = KompetensiProdiModel::where('prodi_id', $prodi_id)->count();
             if ($remainingCount < 1) {
                 DB::rollBack();
@@ -419,6 +419,50 @@ class KompetensiProdiController extends Controller
             }
 
             return view('kompetensi.show_ajax', [
+                'prodi' => $prodi,
+                'bidangList' => $bidangList,
+            ]);
+        } catch (\Exception $e) {
+            logger()->error("Error di show_ajax: " . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan server. Periksa log untuk detail.'
+            ], 500);
+        }
+    }
+
+    public function show_ajax2(string $prodi_id)
+    {
+        try {
+            // Cari prodi berdasarkan prodi_kode
+            $prodi = ProdiModel::where('prodi_id', $prodi_id)->first();
+
+            if (!$prodi) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Prodi tidak ditemukan'
+                ], 404);
+            }
+
+            // Debugging: Tampilkan ID prodi
+            logger()->info("Prodi ditemukan dengan ID: " . $prodi->prodi_id);
+
+            // Ambil data bidang yang terkait dengan prodi ini
+            $bidangList = KompetensiProdiModel::where('prodi_id', $prodi->prodi_id)
+                ->with('bidang')
+                ->get();
+
+            // Debugging: Tampilkan jumlah bidang yang ditemukan
+            logger()->info("Jumlah bidang ditemukan: " . $bidangList->count());
+
+            if ($bidangList->isEmpty()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada bidang terkait untuk prodi ini'
+                ], 404);
+            }
+
+            return view('kompetensi.show_ajax2', [
                 'prodi' => $prodi,
                 'bidangList' => $bidangList,
             ]);

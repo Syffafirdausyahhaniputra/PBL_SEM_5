@@ -8,6 +8,7 @@ use App\Models\DataSertifikasiModel;
 use App\Models\BidangModel;
 use App\Models\DosenModel;
 use App\Models\JenisModel;
+use App\Models\LevelPelatihanModel;
 use App\Models\MatkulModel;
 use App\Models\VendorModel;
 use Illuminate\Support\Facades\Log;
@@ -16,6 +17,9 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\SimpleType\Jc;
+
 
 class SertifikasiController extends Controller
 {
@@ -170,6 +174,7 @@ class SertifikasiController extends Controller
         $matkuls = MatkulModel::all();
         $vendors = VendorModel::all();
         $dataS = DataSertifikasiModel::all();
+        $levels = LevelPelatihanModel::all();
 
         // Ambil data dosen beserta nama user
         $dataP = DosenModel::with('user')->get();
@@ -181,7 +186,7 @@ class SertifikasiController extends Controller
             'jenis' => $jenis,
             'matkuls' => $matkuls,
             'vendors' => $vendors,
-            // 'levels' => $levels,
+            'levels' => $levels,
             'dataS' => $dataS,
         ]);
     }
@@ -727,5 +732,76 @@ class SertifikasiController extends Controller
             'sertifikasi' => $sertifikasi,
             'breadcrumb' => $breadcrumb
         ]);
+    }
+    public function export_ajax(Request $request, $sertif_id)
+    {
+        $sertifikasi = DB::table('t_sertifikasi')->where('sertif_id', $sertif_id)->first();
+    
+        if (!$sertifikasi || $sertifikasi->keterangan !== 'sudah divalidasi') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen belum bisa diunduh. Tunggu validasi.',
+            ]);
+        }
+    
+        $dosenList = DB::table('t_data_sertifikasi')
+        ->join('m_dosen', 'm_dosen.dosen_id', '=', 't_data_sertifikasi.dosen_id')
+        ->join('m_user', 'm_user.user_id', '=', 'm_dosen.user_id')
+        ->where('t_data_sertifikasi.sertif_id', $sertif_id)
+        ->select('m_user.nama as dosen_nama')
+        ->get();
+    
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+        $section->addText("Surat Tugas", ['bold' => true, 'size' => 16]);
+        $section->addText("Kepada");
+        $section->addText("Yth. Pembantu Direktur I Politeknik Negeri Malang");
+        $section->addTextBreak();
+
+        $section->addText("Dengan Hormat,");
+        $section->addTextBreak();
+
+        $section->addText("Sehubungan dengan pelaksanaan kegiatan \"" . $sertifikasi->nama_sertif . "\" D4 Sistem Informasi Bisnis yang diselenggarakan oleh Jurusan Teknologi Informasi pada bulan " . date('F Y', strtotime($sertifikasi->tanggal)) . ", mohon untuk dapat dibuatkan surat tugas kepada nama-nama di bawah ini:", ['size' => 12]);
+        $section->addTextBreak();
+
+        // Tabel Anggota
+        $styleTable = [
+            'borderSize' => 4,
+            'borderColor' => '000000',
+            'cellMargin' => 80
+        ];
+        $phpWord->addTableStyle('Daftar Dosen', $styleTable);
+        $table = $section->addTable('Daftar Dosen');
+
+        $table->addRow();
+        $table->addCell(500)->addText('No', ['bold' => true, 'size' => 10]);
+        $cell = $table->addCell(5000);
+        $textRun = $cell->addTextRun();
+        $textRun->addText('Nama', ['bold' => true]);
+        $textRun->addTextBreak();
+        $textRun->addText('NIP');
+
+        foreach ($dosenList as $index => $dosen) {
+            $table->addRow();
+            $table->addCell(500)->addText($index + 1);
+            $table->addCell(5000)->addText($dosen->dosen_nama);
+        }
+        $section->addTextBreak();
+
+        $section->addText("Demikian surat permohonan ini dibuat. Atas perhatian dan kerjasamanya, kami sampaikan terima kasih.", ['size' => 12]);
+
+    // Menambahkan tanda tangan dengan perataan kanan
+    $section->addTextBreak(2);
+    $section->addText("Malang, " . date('d F Y'), null, ['alignment' => Jc::END]);
+    $section->addText("Ketua Jurusan Teknologi Informasi,", null, ['alignment' => Jc::END]);
+    $section->addTextBreak(3);
+    $section->addText("Dr. Eng Rosa Andrie Asmara, S.T., M.T.", ['bold' => true], ['alignment' => Jc::END]);
+    $section->addText("NIP. 196602141990032002", null, ['alignment' => Jc::END]);
+
+        $fileName = 'surat_tugas_' . $sertifikasi->nama_sertif . '.docx';
+        $filePath = storage_path("app/public/$fileName");
+        $phpWord->save($filePath, 'Word2007');
+    
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 }

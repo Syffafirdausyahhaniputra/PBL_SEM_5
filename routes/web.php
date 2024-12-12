@@ -246,6 +246,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/upload', [PelatihanController::class, 'uploadBukti'])->name('pelatihan.dosen.upload');
         Route::get('/download-sertifikat/{pelatihan_id}', [PelatihanController::class, 'downloadSertifikat'])->name('pelatihan.downloadSertifikat');
         Route::get('/detail/{id}', [PelatihanController::class, 'detail'])->name('pelatihan.detail_pelatihan');
+        Route::get('/create_ajax2', [PelatihanController::class, 'create_ajax2'])->name('pelatihan.dosen.create_ajax'); // Menampilkan halaman form tambah pelatihan Ajax
+        Route::post('/create_ajax2', [PelatihanController::class, 'store_ajax2'])->name('pelatihan.dosen.store_ajax');;
+        Route::get('/export_ajax/{pelatihan_id}', [PelatihanController::class, 'export_ajax'])->name('pelatihan.export_ajax');// export excel
     });
 
 
@@ -272,5 +275,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
         Route::get('/sertifikasi/{id}', [SertifikasiController::class, 'show'])->name('sertifikasi.show');
         Route::get('/detail/{id}', [SertifikasiController::class, 'detail'])->name('sertifikasi.detail_sertif');
+        Route::get('/export_ajax/{sertif_id}', [SertifikasiController::class, 'export_ajax'])->name('sertifikasi.export_ajax');// export excel
     });
 });

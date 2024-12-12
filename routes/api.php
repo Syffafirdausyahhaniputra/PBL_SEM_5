@@ -62,6 +62,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/profiledosen', [ProfileDosenController::class, 'index']); // Menampilkan profil dosen
     Route::post('/profiledosen', [ProfileDosenController::class, 'update']); // Mengupdate profil dosen
 
+    Route::get('/profile', [ProfileController::class, 'index']); // Menampilkan profil dosen
+    Route::post('/profile', [ProfileController::class, 'update']); // Mengupdate profil dosen
+
     Route::group(['prefix' => 'sertifikasi'], function () {
         Route::get('/', [SertifikasiApiController::class, 'index']); // Menampilkan data dosen
         Route::post('create', [SertifikasiApiController::class, 'store']); // Menambahkan data dosen

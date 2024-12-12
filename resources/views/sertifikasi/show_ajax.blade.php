@@ -66,6 +66,21 @@
                         <th class="text-right col-3">Status :</th>
                         <td class="col-9">{{ $sertifikasi->status }}</td>
                     </tr>
+                    <tr>
+                    <th class="text-right col-3"> Draft Surat Tugas : </th>
+                    <td>
+                        @if($dataSertifikasi->sertifikasi->keterangan === 'sudah divalidasi')
+                            <button type="button" class="btn btn-sm btn-primary"
+                                    onclick="window.location.href='{{ route('sertifikasi.export_ajax', $dataSertifikasi->sertifikasi->sertif_id) }}'">
+                                Buat Draft Surat Tugas
+                            </button>
+                        @else
+                            <button type="button" class="btn btn-sm btn-secondary" disabled>
+                                Menunggu Validasi
+                            </button>
+                        @endif
+                    </td>
+                </tr>
                 </table>
             </div>
             <div class="modal-body"> 

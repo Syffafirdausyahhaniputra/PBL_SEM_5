@@ -7,8 +7,8 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
             aria-hidden="true">&times;</span></button>
     </div>
-    {{-- <div class="modal-body">
-        <!-- Dosen -->
+    <div class="modal-body">
+        {{-- <!-- Dosen -->
         <div class="form-group">
             <label>Dosen</label>
             <select name="dosen_id" class="form-control" id="dosen_id" required>

@@ -1,14 +1,14 @@
 <div id="modal-master" class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-<form action="{{ url('/sertifikasi/create_ajax') }}" method="POST" id="form-tambah-sertifikasi">
+<form action="{{ url('/sertifikasi/create_ajax2') }}" method="POST" id="form-tambah-sertifikasi">
     @csrf
     <div class="modal-header">
-        <h5 class="modal-title">Tambah Sertifikasi</h5>
+        <h5 class="modal-title">Tambah Data Sertifikasi</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
             aria-hidden="true">&times;</span></button>
     </div>
     <div class="modal-body">
-        <!-- Dosen -->
+        {{-- <!-- Dosen -->
         <div class="form-group">
             <label>Dosen</label>
             <select name="dosen_id" class="form-control" id="dosen_id" required>
@@ -18,7 +18,7 @@
                 @endforeach
             </select>
             <small id="error-dosen_id" class="error-text form-text text-danger"></small>
-        </div>
+        </div> --}}
 
         <!-- Nama Pelatihan -->
         <div class="form-group">
@@ -66,10 +66,10 @@
 
         <!-- Jenis -->
         <div class="form-group">
-            <label for="jenis_id">Jenis</label>
+            <label for="jenis_id">Jenis Sertifikasi</label>
             <select class="form-control" id="jenis_id" name="jenis_id" required>
-                <option value="">Pilih Jenis</option>
-                @foreach ($jenis as $jenis)
+                <option value="">Pilih Jenis Sertifikasi</option>
+                @foreach ($jeniss as $jenis)
                     <option value="{{ $jenis->jenis_id }}">{{ $jenis->jenis_nama }}</option>
                 @endforeach
             </select>
@@ -78,17 +78,24 @@
 
         <!-- Tanggal Mulai -->
         <div class="form-group">
-            <label for="tanggal">Tanggal</label>
+            <label for="tanggal">Tanggal Mulai</label>
             <input type="date" name="tanggal" id="tanggal" class="form-control" required>
             <small id="error-tanggal" class="error-text form-text text-danger"></small>
         </div>
 
-        <!-- Masa Berlaku -->
+        <!-- Tanggal Akhir -->
         <div class="form-group">
             <label for="masa_berlaku">Masa Berlaku</label>
             <input type="date" name="masa_berlaku" id="masa_berlaku" class="form-control" required>
             <small id="error-masa_berlaku" class="error-text form-text text-danger"></small>
         </div>
+
+        {{-- <!-- Lokasi -->
+        <div class="form-group">
+            <label for="lokasi">Lokasi</label>
+            <input type="text" name="lokasi" id="lokasi" class="form-control" required>
+            <small id="error-lokasi" class="error-text form-text text-danger"></small>
+        </div> --}}
 
         <!-- Periode -->
         <div class="form-group">

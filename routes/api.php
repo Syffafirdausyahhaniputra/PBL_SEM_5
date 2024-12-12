@@ -18,8 +18,9 @@ use App\Http\Controllers\API\NotifikasiPimpinanController;
 use App\Http\Controllers\API\ProfileDosenController;
 use App\Http\Controllers\Api\PlthnController;
 use App\Http\Controllers\API\BidangApiController;
+use App\Http\Controllers\API\JenisApiController;
 use App\Http\Controllers\API\MataKuliahApiController;
-
+use App\Http\Controllers\API\VendorApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,10 @@ Route::middleware('auth:api')->group(function () {
         Route::post('update/{id}', [SertifikasiApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
     });
 
+Route::get('jenis', [SertifikasiApiController::class, 'getJenis']);
+Route::get('bidang', [SertifikasiApiController::class, 'getBidang']);
+
+
     // Route untuk bidang
     Route::group(['prefix' => 'bidang'], function () {
         Route::get('/', [BidangApiController::class, 'index']); // Menampilkan data bidang
@@ -83,6 +88,22 @@ Route::middleware('auth:api')->group(function () {
         Route::post('create', [MataKuliahApiController::class, 'store']); // Menambahkan data mata kuliah
         Route::get('show/{id}', [MataKuliahApiController::class, 'show']); // Menampilkan data mata kuliah berdasarkan ID
         Route::post('update/{id}', [MataKuliahApiController::class, 'update']); // Mengupdate data mata kuliah berdasarkan ID
+    });
+
+    //Route untuk Jenis Sertifikasi
+    Route::group(['prefix' => 'jenis'], function () {
+        Route::get('/', [JenisApiController::class, 'index']); 
+        Route::post('create', [JenisApiController::class, 'store']);
+        Route::get('show/{id}', [JenisApiController::class, 'show']); 
+        Route::post('update/{id}', [JenisApiController::class, 'update']);
+    });
+
+    //Route untuk Vendor Sertifikasi
+    Route::group(['prefix' => 'vendor'], function () {
+        Route::get('/', [VendorApiController::class, 'index']); 
+        Route::post('create', [VendorApiController::class, 'store']);
+        Route::get('show/{id}', [VendorApiController::class, 'show']); 
+        Route::post('update/{id}', [VendorApiController::class, 'update']);
     });
 
     Route::group(['prefix' => 'notifikasiPimpinan'], function () {
@@ -108,10 +129,14 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update']); // Mengupdate profil dosen  
 });
 
-Route::group(['prefix' => 'sertifikasi'], function () {
-    Route::post('/store', [InputSertifController::class, 'store']); // Endpoint untuk menyimpan data
-    Route::get('/list', [InputSertifController::class, 'list']);   // Endpoint untuk mendapatkan daftar data
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('sertifikasi', [InputSertifController::class, 'index']);
+    Route::post('sertifikasi', [InputSertifController::class, 'store']);
+    Route::get('sertifikasi/{id}', [InputSertifController::class, 'show']);
+    Route::put('sertifikasi/{id}', [InputSertifController::class, 'update']);
+    Route::delete('sertifikasi/{id}', [InputSertifController::class, 'destroy']);
 });
+
 Route::get('/kompetensi', [App\Http\Controllers\Api\KompetensiController::class, 'index']);
 Route::post('/kompetensi/list', [App\Http\Controllers\Api\KompetensiController::class, 'list']);
 Route::get('/kompetensi/{prodi_kode}/show_ajax', [App\Http\Controllers\Api\KompetensiController::class, 'show_ajax']);
@@ -126,3 +151,6 @@ Route::group(['prefix' => 'plthn'], function () {
 
 Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
 Route::resource('pelatihan', PelatihanController::class);
+
+Route::post('/profil', [App\Http\Controllers\Api\ProfileController::class, 'index']);
+Route::get('/profil/{id}', [App\Http\Controllers\Api\ProfileController::class, 'show']);

@@ -52,7 +52,7 @@
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'nama_sertif', name: 'nama_sertif' },
                 { data: 'tanggal', name: 'tanggal' },
-                { data: 'nama_bidang', name: 'pnama_bidang' },
+                { data: 'nama_bidang', name: 'nama_bidang' },
                 { data: 'status', name: 'status' },
                 { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
             ]

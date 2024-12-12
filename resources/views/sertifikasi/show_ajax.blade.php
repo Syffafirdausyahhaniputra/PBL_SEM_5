@@ -64,7 +64,7 @@
                     </tr>
                     <tr>
                         <th class="text-right col-3">Status :</th>
-                        <td class="col-9">{{ $dataSertifikasi->status }}</td>
+                        <td class="col-9">{{ $sertifikasi->status }}</td>
                     </tr>
                 </table>
             </div>

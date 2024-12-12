@@ -101,7 +101,7 @@
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <input value="{{ $sertifikasi->data_sertifikasi->pluck('status') }}" type="text" name="status" id="status"
+                    <input value="{{ $sertifikasi->status }}" type="text" name="status" id="status"
                         class="form-control" required>
                     <small id="error-status" class="error-text form-text text-danger"></small>
                 </div>

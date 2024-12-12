@@ -324,7 +324,7 @@ class SertifikasiController extends Controller
                 return $row->sertifikasi->tanggal ?? '-';
             })
             ->addColumn('status', function ($row) {
-                return $row->data_sertifikasi->pluck('status')?? '-';
+                return $row->sertifikasi->status ?? '-';
             })
             ->addColumn('aksi', function ($row) {
                 $btn = '<button onclick="modalAction(\'' . url('/sertifikasi/' . $row->sertif_id . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
@@ -366,101 +366,101 @@ class SertifikasiController extends Controller
 
     }
 
-    public function store_ajax(Request $request)
-    {
-        Log::info('Received request data:', $request->all());
-        
-    
-        // Cek apakah request berupa AJAX
-        if ($request->ajax() || $request->wantsJson()) {
-            // Validasi input
-            $rules = [
-                'dosen_id' => 'required|exists:m_dosen,dosen_id',
-                'jenis_id' => 'required|integer',
-                'bidang_id' => 'required|integer',
-                'mk_id' => 'required|integer',
-                'vendor_id' => 'required|integer',
-                'nama_sertif' => 'required|string|max:255',
-                'tanggal' => 'required|date',
-                'masa_berlaku' => 'required|date|after_or_equal:tanggal',
-                'periode' => 'required|string|max:50',
-                'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048', // Nullable file field
-            ];
-    
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
-                Log::error('Validation failed:', $validator->errors()->toArray());
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(), // Pesan error validasi
-                ]);
-            }
-    
-            try {
-                // Tentukan direktori tujuan
-                $destinationPath = public_path('file_bukti_ser');
-    
-                // Buat folder jika belum ada
-                if (!File::exists($destinationPath)) {
-                    File::makeDirectory($destinationPath, 0755, true, true);
-                }
-    
-                // Simpan file jika diunggah
-                $filePath = null;
-                if ($request->hasFile('file')) {
-                    $file = $request->file('file');
-                    $fileName = time() . '_' . $file->getClientOriginalName(); // Nama file unik
-                    $file->move($destinationPath, $fileName); // Simpan ke folder public/file_bukti_pel
-    
-                    // Simpan nama file tanpa folder (hanya nama file)
-                    $filePath = $fileName;
-                }
-    
-                // Buat record Pelatihan
-                $sertifikasi = SertifikasiModel::create($request->except('file')); // Simpan semua data kecuali file
-    
-                // Log model yang dibuat
-                Log::info('Sertifikasi created:', $sertifikasi->toArray());
-    
-                // Buat record DataPelatihan dan simpan hanya nama file di kolom sertifikat
-                DataSertifikasiModel::create([
-                    'sertif_id' => $sertifikasi->sertif_id, // ID pelatihan yang baru disimpan
-                    'dosen_id' => $request->input('dosen_id', null),
-                    'surat_tugas_id' => $request->input('surat_tugas_id', null),
-                    'keterangan' => 'Mandiri',
-                    'status' => 'Proses',
-                    'sertifikat' => $filePath, // Menyimpan hanya nama file
-                ]);
-    
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Sertifikasi berhasil disimpan',
-                ]);
-    
-            } catch (\Exception $e) {
-                Log::error('Error saving sertifikasi:', [
-                    'message' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all(),
-                ]);
-    
-                $errorMessage = 'Terjadi kesalahan saat menyimpan data';
-                if (strpos($e->getMessage(), 'SQLSTATE') !== false) {
-                    $errorMessage .= ': Kesalahan database';
-                }
-    
-                return response()->json([
-                    'status' => false,
-                    'message' => $errorMessage,
-                    'error' => $e->getMessage(),
-                ]);
-            }
+
+   public function store_ajax(Request $request)
+{
+    Log::info('Received request data:', $request->all());
+
+    // Cek apakah request berupa AJAX
+    if ($request->ajax() || $request->wantsJson()) {
+        // Validasi input
+        $rules = [
+            'dosen_id' => 'required|exists:m_dosen,dosen_id',
+            'jenis_id' => 'required|integer',
+            'bidang_id' => 'required|integer',
+            'mk_id' => 'required|integer',
+            'vendor_id' => 'required|integer',
+            'nama_sertif' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'masa_berlaku' => 'required|date|after_or_equal:tanggal',
+            'periode' => 'required|string|max:50',
+            'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            Log::error('Validation failed:', $validator->errors()->toArray());
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi Gagal',
+                'msgField' => $validator->errors(),
+            ]);
         }
-    
-        // Jika bukan AJAX, redirect ke halaman utama
-        return redirect('/sertifikasi');
+
+        try {
+            // Tentukan direktori tujuan
+            $destinationPath = public_path('file_bukti_ser');
+
+            // Buat folder jika belum ada
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true, true);
+            }
+
+            // Simpan file jika diunggah
+            $filePath = null;
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move($destinationPath, $fileName);
+                $filePath = $fileName;
+            }
+
+            // Tambahkan nilai default untuk 'keterangan' dan 'status'
+            $sertifikasiData = $request->except('file');
+            $sertifikasiData['keterangan'] = 'Mandiri';
+            $sertifikasiData['status'] = 'Selesai';
+
+            // Buat record sertifikasi
+            $sertifikasi = SertifikasiModel::create($sertifikasiData);
+
+            // Log model yang dibuat
+            Log::info('Sertifikasi created:', $sertifikasi->toArray());
+
+            // Buat record DataSertifikasi dan simpan hanya nama file di kolom sertifikat
+            DataSertifikasiModel::create([
+                'sertif_id' => $sertifikasi->sertif_id,
+                'dosen_id' => $request->input('dosen_id', null),
+                'surat_tugas_id' => $request->input('surat_tugas_id', null),
+                'sertifikat' => $filePath,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Sertifikasi berhasil disimpan',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error saving sertifikasi:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+            ]);
+
+            $errorMessage = 'Terjadi kesalahan saat menyimpan data';
+            if (strpos($e->getMessage(), 'SQLSTATE') !== false) {
+                $errorMessage .= ': Kesalahan database';
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => $errorMessage,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
+
+    // Jika bukan AJAX, redirect ke halaman utama
+    return redirect('/sertifikasi');
+}
 
     public function edit_ajax($id)
     {

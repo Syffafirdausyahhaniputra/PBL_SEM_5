@@ -223,7 +223,7 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['prefix' => 'profileDosen'], function () {
         Route::get('/', [ProfileDosenController::class, 'index']);
-        Route::patch('/{id}', [ProfileDosenController::class, 'update']);
+        Route::patch('/{id}', [ProfileDosenController::class, 'update'])->name('profileDosen.update');
     });
 
     Route::prefix('pelatihan')->group(function () {

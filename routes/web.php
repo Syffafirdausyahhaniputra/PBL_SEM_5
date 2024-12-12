@@ -212,12 +212,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/{type}/{id}/show_ajax', [ValidasiController::class, 'show_ajax']);
     });
 
-    Route::group(['prefix' => 'validasiAdmin', 'middleware' => 'authorize:ADMN'], function () {
-        Route::get('/', [NotifikasiController::class, 'index']);
-        Route::post('/list', [NotifikasiController::class, 'list']);
-        Route::get('/{type}/{id}/show_ajax', [NotifikasiController::class, 'show_ajax']);
-    });
-
     Route::group(['prefix' => 'profile'], function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::patch('/{id}', [ProfileController::class, 'update'])->name('profile.update');

@@ -85,7 +85,7 @@ class ValidasiController extends Controller
             ->make(true);
     }
 
-//edit
+    //edit
     // public function show_ajax(string $type, string $id)
     // {
     //     if ($type === 'sertifikasi') {
@@ -138,22 +138,16 @@ class ValidasiController extends Controller
             $data = SertifikasiModel::with(['data_sertifikasi.dosen.user'])
                 ->where('sertif_id', $id)
                 ->first();
-        
+
             if ($data) {
-        
-                return response()->json([
-                    'status' => true,
-                    'validasi' => [
-                        'type' => 'sertifikasi',
-                        'nama' => $data->nama_sertif,
-                        'keterangan' => $data->keterangan,
-                        'status' => $data->status,
-                        'peserta' => $data->data_sertifikasi->map(function ($dosenData) {
-                            return [
-                                'nama' => $dosenData->dosen->user->nama
-                            ];
-                        })
-                    ]
+                return view('validasi.pimpinan.show_ajax', [
+                    'type' => 'sertifikasi',
+                    'nama' => $data->nama_sertif,
+                    'keterangan' => $data->keterangan,
+                    'status' => $data->status,
+                    'peserta' => $data->data_sertifikasi->map(function ($dosenData) {
+                        return ['nama' => $dosenData->dosen->user->nama];
+                    })->toArray(),
                 ]);
             }
         } else if ($type === 'pelatihan') {
@@ -161,34 +155,23 @@ class ValidasiController extends Controller
             $data = PelatihanModel::with(['data_pelatihan.dosen.user'])
                 ->where('pelatihan_id', $id)
                 ->first();
-        
+
             if ($data) {
-                // Ambil nama pelatihan
-                $namaPelatihan = $data->nama_pelatihan;
-        
-                return response()->json([
-                    'status' => true,
-                    'validasi' => [
-                        'type' => 'pelatihan',
-                        'nama' => $namaPelatihan,
-                        'keterangan' => $data->keterangan,
-                        'status' => $data->status,
-                        'peserta' => $data->data_pelatihan->map(function ($dosenData) {
-                            return [
-                                'nama' => $dosenData->dosen->user->nama
-                            ];
-                        })
-                    ]
+                return view('validasi.pimpinan.show_ajax', [
+                    'type' => 'pelatihan',
+                    'nama' => $data->nama_pelatihan,
+                    'keterangan' => $data->keterangan,
+                    'status' => $data->status,
+                    'peserta' => $data->data_pelatihan->map(function ($dosenData) {
+                        return ['nama' => $dosenData->dosen->user->nama];
+                    })->toArray(),
                 ]);
             }
         }
-        
-        // Jika tidak ada data yang ditemukan atau tipe tidak valid
-        return response()->json([
-            'status' => false,
-            'message' => 'Data tidak ditemukan atau tipe tidak valid.'
-        ]);
-        
-    }
 
+        // Jika tidak ada data yang ditemukan atau tipe tidak valid
+        return view('validasi.pimpinan.show_ajax', [
+            'error' => 'Data tidak ditemukan atau tipe tidak valid.',
+        ]);
+    }
 }

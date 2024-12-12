@@ -132,39 +132,63 @@ class ValidasiController extends Controller
     //     ]);
     // }
     public function show_ajax(string $type, string $id)
-{
-    if ($type === 'sertifikasi') {
-        // Ambil data sertifikasi dan relasi dengan dosen melalui tabel t_data_sertifikasi
-        $data = SertifikasiModel::with(['data_sertifikasi.dosen.user'])
-            ->where('sertif_id', $id)
-            ->first();
+    {
+        if ($type === 'sertifikasi') {
+            // Ambil data sertifikasi dan relasi dengan dosen melalui tabel t_data_sertifikasi
+            $data = SertifikasiModel::with(['data_sertifikasi.dosen.user'])
+                ->where('sertif_id', $id)
+                ->first();
         
-            
-        if ($data) {
-            // Ambil nama sertifikasi dari relasi data_sertifikasi, dengan memeriksa apakah ada data
-            $namaSertif = $data->data_sertifikasi->isNotEmpty() ? $data->data_sertifikasi->first()->nama_sertif : '';
-
-            return response()->json([
-                'status' => true,
-                'validasi' => [
-                    'type' => 'sertifikasi',
-                    'nama' => $namaSertif,
-                    'keterangan' => $data->keterangan,
-                    'status' => $data->status,
-                    'peserta' => $data->data_sertifikasi->map(function ($dosenData) {
-                        return [
-                            'nama' => $dosenData->dosen->user->nama
-                        ];
-                    })
-                ]
-            ]);
+            if ($data) {
+        
+                return response()->json([
+                    'status' => true,
+                    'validasi' => [
+                        'type' => 'sertifikasi',
+                        'nama' => $data->nama_sertif,
+                        'keterangan' => $data->keterangan,
+                        'status' => $data->status,
+                        'peserta' => $data->data_sertifikasi->map(function ($dosenData) {
+                            return [
+                                'nama' => $dosenData->dosen->user->nama
+                            ];
+                        })
+                    ]
+                ]);
+            }
+        } else if ($type === 'pelatihan') {
+            // Ambil data pelatihan dan relasi dengan dosen melalui tabel t_data_pelatihan
+            $data = PelatihanModel::with(['data_pelatihan.dosen.user'])
+                ->where('pelatihan_id', $id)
+                ->first();
+        
+            if ($data) {
+                // Ambil nama pelatihan
+                $namaPelatihan = $data->nama_pelatihan;
+        
+                return response()->json([
+                    'status' => true,
+                    'validasi' => [
+                        'type' => 'pelatihan',
+                        'nama' => $namaPelatihan,
+                        'keterangan' => $data->keterangan,
+                        'status' => $data->status,
+                        'peserta' => $data->data_pelatihan->map(function ($dosenData) {
+                            return [
+                                'nama' => $dosenData->dosen->user->nama
+                            ];
+                        })
+                    ]
+                ]);
+            }
         }
+        
+        // Jika tidak ada data yang ditemukan atau tipe tidak valid
+        return response()->json([
+            'status' => false,
+            'message' => 'Data tidak ditemukan atau tipe tidak valid.'
+        ]);
+        
     }
-
-    return response()->json([
-        'status' => false,
-        'message' => 'Data tidak ditemukan.'
-    ]);
-}
 
 }

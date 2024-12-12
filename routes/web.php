@@ -47,7 +47,6 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
     Route::get('/welcome2', [Welcome2Controller::class, 'index2'])->name('welcome2.index2');
-    Route::get('/list2', [BidangController::class, 'index2'])->name('bidang.detail');
 
     Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {
         Route::get('/', [UserController::class, 'index']);         // menampilkan halaman awal user
@@ -77,6 +76,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [BidangController::class, 'delete_ajax']); // Untuk menghapus data bidang Ajax
         Route::get('/import', [BidangController::class, 'import']);
         Route::post('/import_ajax', [BidangController::class, 'import_ajax']);
+        Route::get('/list2', [BidangController::class, 'index2'])->name('bidang.detail');
+        Route::get('/{id}/infoDosen/{id_dosen}', [BidangController::class, 'info_dosen'])->name('informasi_dosen');
+        Route::get('/{id}/detail_sertif/{id_dosen}/detail', [BidangController::class, 'detail_sertif'])->name('detail_sertif_dosen');
     });
 
     Route::group(['prefix' => 'role', 'middleware' => 'authorize:ADMN'], function () {
@@ -209,13 +211,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjax']);
         Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjax']);
     });
-    
+
     Route::group(['prefix' => 'validasi', 'middleware' => 'authorize:LEAD'], function () {
         Route::get('/', [ValidasiController::class, 'index']);
         Route::post('/list', [ValidasiController::class, 'list']);
         Route::get('/{type}/{id}/show_ajax', [ValidasiController::class, 'show_ajax']);
     });
-    
+
     Route::group(['prefix' => 'validasiAdmin', 'middleware' => 'authorize:ADMN'], function () {
         Route::get('/', [NotifikasiController::class, 'index']);
         Route::post('/list', [NotifikasiController::class, 'list']);
@@ -226,7 +228,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::patch('/{id}', [ProfileController::class, 'update'])->name('profile.update');
     });
-    
+
     Route::group(['prefix' => 'profileDosen'], function () {
         Route::get('/', [ProfileDosenController::class, 'index']);
         Route::patch('/{id}', [ProfileDosenController::class, 'update']);
@@ -242,40 +244,40 @@ Route::middleware('auth')->group(function () {
         Route::post('/create_ajax', [PelatihanController::class, 'store_ajax']);
         Route::get('/tunjuk', [PelatihanController::class, 'createtunjuk']);
         Route::post('/tunjuk/store', [PelatihanController::class, 'storeTunjuk'])->name('pelatihan.storeTunjuk');
-        Route::post('/ajax', [PelatihanController::class, 'store_ajax']);  
+        Route::post('/ajax', [PelatihanController::class, 'store_ajax']);
         Route::get('/{id}/edit_ajax', [PelatihanController::class, 'edit_ajax']);
         Route::put('/{id}/update_ajax', [PelatihanController::class, 'update_ajax']);
         Route::get('/{id}/show_ajax', [PelatihanController::class, 'show_ajax']);
         Route::get('/{id}/delete_ajax', [PelatihanController::class, 'confirm_ajax']);
         Route::delete('/{id}/delete_ajax', [PelatihanController::class, 'delete_ajax']);
         Route::get('/dosen', [PelatihanController::class, 'indexForDosen'])->name('pelatihan.dosen.index');
-        Route::post('/upload', [PelatihanController::class, 'uploadBukti'])->name ('pelatihan.dosen.upload');
+        Route::post('/upload', [PelatihanController::class, 'uploadBukti'])->name('pelatihan.dosen.upload');
         Route::get('/download-sertifikat/{pelatihan_id}', [PelatihanController::class, 'downloadSertifikat'])->name('pelatihan.downloadSertifikat');
         Route::get('/detail/{id}', [PelatihanController::class, 'detail'])->name('pelatihan.detail_pelatihan');
     });
-    
-    
+
+
     Route::prefix('sertifikasi')->group(function () {
-        Route::get('/', [SertifikasiController::class, 'index'])->name('sertifikasi.index'); 
+        Route::get('/', [SertifikasiController::class, 'index'])->name('sertifikasi.index');
         Route::get('/dosen', [SertifikasiController::class, 'indexForDosen'])->name('sertifikasi.dosen.index');
         Route::get('/dosen/create', [SertifikasiController::class, 'createForDosen'])->name('sertifikasi.dosen.create');
         Route::post('/dosen/store', [SertifikasiController::class, 'storeForDosen'])->name('sertifikasi.dosen.store');
-        Route::get('/tunjuk', [SertifikasiController::class, 'createtunjuk']); 
+        Route::get('/tunjuk', [SertifikasiController::class, 'createtunjuk']);
         Route::post('/tunjuk/store', [SertifikasiController::class, 'storeTunjuk'])->name('sertifikasi.storeTunjuk');
         Route::get('/list', [SertifikasiController::class, 'list'])->name('sertifikasi.list');
         Route::get('/create_ajax', [SertifikasiController::class, 'create_ajax']); // Menampilkan halaman form tambah pelatihan Ajax
         Route::post('/create_ajax', [SertifikasiController::class, 'store_ajax']);
-        Route::post('/ajax', [SertifikasiController::class, 'store_ajax']);  
+        Route::post('/ajax', [SertifikasiController::class, 'store_ajax']);
         Route::get('/{id}/edit_ajax', [SertifikasiController::class, 'edit_ajax']);
         Route::put('/{id}/update_ajax', [SertifikasiController::class, 'update_ajax']);
         Route::get('/{id}/show_ajax', [SertifikasiController::class, 'show_ajax']);
         Route::get('/{id}/delete_ajax', [SertifikasiController::class, 'confirm_ajax']);
         Route::delete('/{id}/delete_ajax', [SertifikasiController::class, 'delete_ajax']);
-        Route::post('/upload', [SertifikasiController::class, 'uploadBukti'])->name ('sertifikasi.dosen.upload');
+        Route::post('/upload', [SertifikasiController::class, 'uploadBukti'])->name('sertifikasi.dosen.upload');
         Route::get('/download-sertifikat/{sertif_id}', [SertifikasiController::class, 'downloadSertifikat'])->name('sertifikasi.downloadSertifikat');
-        Route::get('/edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit'); 
-        Route::put('/update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update'); 
-        Route::delete('/destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy'); 
+        Route::get('/edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit');
+        Route::put('/update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update');
+        Route::delete('/destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
         Route::get('/sertifikasi/{id}', [SertifikasiController::class, 'show'])->name('sertifikasi.show');
         Route::get('/detail/{id}', [SertifikasiController::class, 'detail'])->name('sertifikasi.detail_sertif');
     });

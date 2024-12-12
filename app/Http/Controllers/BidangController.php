@@ -10,6 +10,10 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\DataPelatihanModel;
+use App\Models\DataSertifikasiModel;
+use App\Models\SertifikasiModel;
+use Illuminate\Support\Facades\Log;
 
 class BidangController extends Controller
 {
@@ -74,7 +78,7 @@ class BidangController extends Controller
         $bidangs = DosenBidangModel::all();
         $breadcrumb = (object) [
             'title' => 'Daftar Dosen',
-            'subtitle'  => 'Daftar dosen di setiap bidang'
+            'subtitle'  => 'Halo..'
         ];
 
         $activeMenu = 'bidang'; // set menu yang sedang aktif
@@ -280,25 +284,110 @@ class BidangController extends Controller
 
     
     public function showDosenByBidang($id)
-    {
-                
-        // Ambil data bidang berdasarkan ID
-        $bidang = BidangModel::findOrFail($id);
+{
+    // Ambil data bidang berdasarkan ID
+    $bidang = BidangModel::findOrFail($id);
 
-        // Ambil daftar dosen berdasarkan bidang dengan relasi
-        $dosen = DosenBidangModel::where('bidang_id',$id);
-        //$dosen = $bidang->dosenBidang()->with('dosen.user')->get();
-    
-        $breadcrumb = (object) [
-            'title' => $bidang->bidang_nama,
-            'subtitle'  => 'List dosen bidang '. $bidang->bidang_nama
-        ];
+    // Ambil daftar dosen berdasarkan bidang dengan relasi
+    $dosen = DosenBidangModel::where('bidang_id', $id)
+                ->with('dosen2.user')
+                ->get();
 
-        // Tampilkan view dengan data dosen
-        return view('bidang.show_dosen', [
-            'bidang' => $bidang,
-            'dosen' => $dosen,
-            'breadcrumb' => $breadcrumb
-        ]);
-    }
+    $breadcrumb = (object) [
+        'title' => $bidang->bidang_nama,
+        'subtitle'  => 'List dosen bidang '. $bidang->bidang_nama
+    ];
+
+    // Tampilkan view dengan data dosen
+    return view('bidang.show_dosen', [
+        'bidang' => $bidang,
+        'dosen' => $dosen,
+        'breadcrumb' => $breadcrumb
+    ]);
+}
+
+public function info_dosen($id, $id_dosen)
+{
+    $bidang = BidangModel::findOrFail($id);
+
+    // Ambil data dosen spesifik berdasarkan bidang dan id_dosen
+    $dosen = DosenBidangModel::where('bidang_id', $id)
+                ->whereHas('dosen2', function ($query) use ($id_dosen) {
+                    $query->where('dosen_id', $id_dosen);
+                })
+                ->with('dosen2.user')
+                ->firstOrFail();
+
+    // Ambil data sertifikasi yang terkait dengan dosen dan bidang melalui relasi dosenBidang
+    $sertifikasi = DataSertifikasiModel::with('sertif','sertif.bidang.dosenBidang')
+                    ->where('dosen_id', $id_dosen)
+                    ->whereHas('sertif.bidang.dosenBidang', function ($query) use ($id, $id_dosen) {
+                        $query->where('bidang_id', $id)
+                              ->where('dosen_id', $id_dosen);
+                    })
+                    ->get();
+    Log::info($sertifikasi);
+
+    // Ambil data pelatihan yang terkait dengan dosen dan bidang melalui relasi dosenBidang
+    $pelatihan = DataPelatihanModel::with('pelatihan','pelatihan.bidang.dosenBidang')
+                    ->where('dosen_id', $id_dosen)
+                    ->whereHas('pelatihan.bidang.dosenBidang', function ($query) use ($id, $id_dosen) {
+                        $query->where('bidang_id', $id)
+                              ->where('dosen_id', $id_dosen);
+                    })
+                    ->get();
+
+    // Hitung jumlah sertifikasi dan pelatihan
+    $jumlahSertifikasiPelatihan = $sertifikasi->count() + $pelatihan->count();
+
+    $breadcrumb = (object) [
+        'title' => $bidang->bidang_nama,
+        'subtitle' => 'List Sertifikasi dan Pelatihan ' . $bidang->bidang_nama
+    ];
+
+    // Tampilkan view dengan data dosen
+    return view('bidang.informasi_dosen', [
+        'bidang' => $bidang,
+        'dosen' => $dosen,
+        'sertifikasi' => $sertifikasi,
+        'pelatihan' => $pelatihan,
+        'jumlahSertifikasiPelatihan' => $jumlahSertifikasiPelatihan,
+        'breadcrumb' => $breadcrumb
+    ]);
+}
+
+public function detail_sertif($id, $id_dosen)
+{
+    $dosenBidang = DosenBidangModel::where('bidang_id', $id)
+                ->whereHas('dosen2', function ($query) use ($id_dosen) {
+                    $query->where('dosen_id', $id_dosen);
+                })
+                ->with('dosen2.user')
+                ->firstOrFail();
+
+    // Ambil data sertifikasi berdasarkan bidang_id
+    $sertifikasi = SertifikasiModel::with('bidang')
+                    ->where('bidang_id', $id)
+                    ->firstOrFail(); // Ambil data pertama sesuai kondisi
+
+    // Ambil data bidang dari relasi
+    $bidang = $sertifikasi->bidang;
+
+    // Menyiapkan breadcrumb
+    $breadcrumb = (object) [
+        'title' => $sertifikasi->nama_sertif, // Sesuaikan dengan kolom yang benar
+        'subtitle' => $bidang ? $bidang->bidang_nama : 'N/A'
+    ];
+
+    // Tampilkan view dengan data sertifikasi dan breadcrumb
+    return view('bidang.detailSertif', [
+        'sertifikasi' => $sertifikasi,
+        'breadcrumb' => $breadcrumb,
+        'bidang' => $bidang,
+        'dosenBidang' => $dosenBidang
+    ]);
+}
+
+
+
 }

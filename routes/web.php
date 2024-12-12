@@ -79,6 +79,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/list2', [BidangController::class, 'index2'])->name('bidang.detail');
         Route::get('/{id}/infoDosen/{id_dosen}', [BidangController::class, 'info_dosen'])->name('informasi_dosen');
         Route::get('/{id}/detail_sertif/{id_dosen}/detail', [BidangController::class, 'detail_sertif'])->name('detail_sertif_dosen');
+        Route::get('/{id}/detail_pelatihan/{id_dosen}/detail', [BidangController::class, 'detail_pelatihan'])->name('detail_pelatihan_dosen');
+
     });
 
     Route::group(['prefix' => 'role', 'middleware' => 'authorize:ADMN'], function () {

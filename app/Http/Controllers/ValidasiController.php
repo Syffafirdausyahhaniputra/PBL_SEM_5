@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\DataPelatihanModel;
 use App\Models\DataSertifikasiModel;
+use App\Models\PelatihanModel;
+use App\Models\SertifikasiModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -33,16 +35,18 @@ class ValidasiController extends Controller
     {
         $statusFilter = $request->input('status');
 
-        $dataSertifikasi = DataSertifikasiModel::with('sertif')
-            ->select('data_sertif_id as id', 'keterangan', 'status', 'sertif_id', 'dosen_id')
-            ->when($statusFilter, function ($query) use ($statusFilter) {
-                $query->where('status', $statusFilter);
+        $dataSertifikasi = SertifikasiModel::with('data_sertifikasi')
+            ->select('sertif_id as id', 'nama_sertif', 'keterangan', 'status')
+            ->whereHas('data_sertifikasi', function ($query) use ($statusFilter) {
+                if ($statusFilter) {
+                    $query->where('status', $statusFilter);
+                }
             })
             ->get()
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'nama' => $item->sertif->nama_sertif,
+                    'nama' => $item->nama_sertif,
                     'keterangan' => $item->keterangan,
                     'status' => $item->status,
                     'type' => 'sertifikasi'
@@ -50,16 +54,18 @@ class ValidasiController extends Controller
             })
             ->toArray();
 
-        $dataPelatihan = DataPelatihanModel::with('pelatihan')
-            ->select('data_pelatihan_id as id', 'keterangan', 'status', 'pelatihan_id', 'dosen_id')
-            ->when($statusFilter, function ($query) use ($statusFilter) {
-                $query->where('status', $statusFilter);
+        $dataPelatihan = PelatihanModel::with('data_pelatihan')
+            ->select('pelatihan_id as id', 'nama_pelatihan', 'keterangan', 'status')
+            ->whereHas('data_pelatihan', function ($query) use ($statusFilter) {
+                if ($statusFilter) {
+                    $query->where('status', $statusFilter);
+                }
             })
             ->get()
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'nama' => $item->pelatihan->nama_pelatihan,
+                    'nama' => $item->nama_pelatihan,
                     'keterangan' => $item->keterangan,
                     'status' => $item->status,
                     'type' => 'pelatihan'
@@ -78,6 +84,7 @@ class ValidasiController extends Controller
             ->rawColumns(['aksi'])
             ->make(true);
     }
+
 
     public function show_ajax(string $id)
     {

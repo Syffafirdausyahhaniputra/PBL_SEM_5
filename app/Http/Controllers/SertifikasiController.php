@@ -8,14 +8,19 @@ use App\Models\DataSertifikasiModel;
 use App\Models\BidangModel;
 use App\Models\DosenModel;
 use App\Models\JenisModel;
+use App\Models\LevelPelatihanModel;
 use App\Models\MatkulModel;
 use App\Models\VendorModel;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\SimpleType\Jc;
+
 
 class SertifikasiController extends Controller
 {
@@ -170,6 +175,7 @@ class SertifikasiController extends Controller
         $matkuls = MatkulModel::all();
         $vendors = VendorModel::all();
         $dataS = DataSertifikasiModel::all();
+        $levels = LevelPelatihanModel::all();
 
         // Ambil data dosen beserta nama user
         $dataP = DosenModel::with('user')->get();
@@ -181,7 +187,7 @@ class SertifikasiController extends Controller
             'jenis' => $jenis,
             'matkuls' => $matkuls,
             'vendors' => $vendors,
-            // 'levels' => $levels,
+            'levels' => $levels,
             'dataS' => $dataS,
         ]);
     }
@@ -265,6 +271,162 @@ class SertifikasiController extends Controller
 
         // Jika bukan AJAX, redirect ke halaman utama
         return redirect('/sertifikasi');
+    }
+    public function create_ajax2()
+    {
+
+        $dosens = DB::table('m_dosen')
+            ->join('m_user', 'm_dosen.user_id', '=', 'm_user.user_id')
+            ->select('m_dosen.dosen_id', 'm_user.nama')
+            ->get();
+
+        $breadcrumb = (object) [
+            'title' => 'Sertifikasi Dosen',
+            'subtitle' => 'Tambah Sertifikasi'
+        ];
+
+        $bidangs = BidangModel::all();
+        $matkuls = MatkulModel::all(); // Ambil data mata kuliah
+        $vendors = VendorModel::all(); // Ambil data vendor
+        $levels = LevelPelatihanModel::all();
+        $jeniss = JenisModel::all();
+
+        return view('sertifikasi.create_ajax2', [
+            'activeMenu' => 'sertifikasi',
+            'breadcrumb' => $breadcrumb,
+            'bidangs' => $bidangs,
+            'dosens' => $dosens,
+            'matkuls' => $matkuls,
+            'vendors' => $vendors,
+            'jeniss' => $jeniss,
+        ]);
+        // return view('pelatihan.createTunjuk');
+
+    }
+    
+    public function store_ajax2(Request $request)
+    {
+        // Ambil user yang login
+        $dosen = Auth::user()->dosen->dosen_id;
+    
+        if (!$dosen) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data dosen tidak ditemukan untuk pengguna yang login.',
+            ]);
+        }
+    
+        // Tambahkan dosen_id ke dalam request
+        $request->merge(['dosen_id' => $dosen]);
+    
+        Log::info('Request data after adding dosen_id:', $request->all());
+    
+        // Validasi input
+        $rules = [
+            'jenis_id' => 'required|integer',
+            'bidang_id' => 'required|integer',
+            'mk_id' => 'required|integer',
+            'vendor_id' => 'required|integer',
+            'nama_sertif' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'masa_berlaku' => 'required|date|after_or_equal:tanggal',
+            // 'lokasi' => 'required|string|max:255',
+            'periode' => 'required|string|max:50',
+            'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048',
+        ];
+    
+        $validator = Validator::make($request->all(), $rules);
+    
+        if ($validator->fails()) {
+            Log::error('Validation failed:', $validator->errors()->toArray());
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi Gagal',
+                'msgField' => $validator->errors(),
+            ]);
+        }
+    
+        try {
+            // Tentukan direktori penyimpanan file
+            $destinationPath = public_path('file_bukti_ser');
+    
+            // Buat folder jika belum ada
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true, true);
+            }
+    
+            // Simpan file
+            $filePath = null;
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+    
+                if ($file->isValid()) {
+                    Log::info('File details:', [
+                        'original_name' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                    ]);
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $file->move($destinationPath, $fileName);
+                    $filePath = $fileName;
+                } else {
+                    Log::error('File is not valid.');
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'File tidak valid.',
+                    ]);
+                }
+            } else {
+                Log::error('File tidak ditemukan dalam request.');
+                return response()->json([
+                    'status' => false,
+                    'message' => 'File tidak ditemukan dalam request.',
+                ]);
+            }
+    
+            // Siapkan data untuk tabel pelatihan
+            $sertifikasiData = $request->except('file');
+            $sertifikasiData['dosen_id'] = $dosen; // Gunakan dosen_id dari relasi user_id
+            $sertifikasiData['keterangan'] = 'Mandiri';
+            $sertifikasiData['status'] = 'Selesai';
+          
+    
+            // Buat record pelatihan
+            $sertifikasi = SertifikasiModel::create($sertifikasiData);
+    
+            Log::info('Sertifikasi created:', $sertifikasi->toArray());
+    
+            // Buat record DataPelatihan dengan file sertifikat
+            DataSertifikasiModel::create([
+                'sertif_id' => $sertifikasi->sertif_id,
+                'dosen_id' => $dosen,
+                'surat_tugas_id' => $request->input('surat_tugas_id', null),
+                'sertifikat' => $filePath,
+            ]);
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'sertifikasi berhasil disimpan.',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error saving sertifikasi:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+            ]);
+    
+            $errorMessage = 'Terjadi kesalahan saat menyimpan data.';
+            if (strpos($e->getMessage(), 'SQLSTATE') !== false) {
+                $errorMessage .= ' Kesalahan database.';
+            }
+    
+            return response()->json([
+                'status' => false,
+                'message' => $errorMessage,
+                'error' => $e->getMessage(),
+            ]);
+        }
+        return redirect('/sertifikasi/dosen');
     }
 
     public function edit($id)
@@ -727,5 +889,76 @@ class SertifikasiController extends Controller
             'sertifikasi' => $sertifikasi,
             'breadcrumb' => $breadcrumb
         ]);
+    }
+    public function export_ajax(Request $request, $sertif_id)
+    {
+        $sertifikasi = DB::table('t_sertifikasi')->where('sertif_id', $sertif_id)->first();
+    
+        if (!$sertifikasi || $sertifikasi->keterangan !== 'sudah divalidasi') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen belum bisa diunduh. Tunggu validasi.',
+            ]);
+        }
+    
+        $dosenList = DB::table('t_data_sertifikasi')
+        ->join('m_dosen', 'm_dosen.dosen_id', '=', 't_data_sertifikasi.dosen_id')
+        ->join('m_user', 'm_user.user_id', '=', 'm_dosen.user_id')
+        ->where('t_data_sertifikasi.sertif_id', $sertif_id)
+        ->select('m_user.nama as dosen_nama')
+        ->get();
+    
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+        $section->addText("Surat Tugas", ['bold' => true, 'size' => 16]);
+        $section->addText("Kepada");
+        $section->addText("Yth. Pembantu Direktur I Politeknik Negeri Malang");
+        $section->addTextBreak();
+
+        $section->addText("Dengan Hormat,");
+        $section->addTextBreak();
+
+        $section->addText("Sehubungan dengan pelaksanaan kegiatan \"" . $sertifikasi->nama_sertif . "\" D4 Sistem Informasi Bisnis yang diselenggarakan oleh Jurusan Teknologi Informasi pada bulan " . date('F Y', strtotime($sertifikasi->tanggal)) . ", mohon untuk dapat dibuatkan surat tugas kepada nama-nama di bawah ini:", ['size' => 12]);
+        $section->addTextBreak();
+
+        // Tabel Anggota
+        $styleTable = [
+            'borderSize' => 4,
+            'borderColor' => '000000',
+            'cellMargin' => 80
+        ];
+        $phpWord->addTableStyle('Daftar Dosen', $styleTable);
+        $table = $section->addTable('Daftar Dosen');
+
+        $table->addRow();
+        $table->addCell(500)->addText('No', ['bold' => true, 'size' => 10]);
+        $cell = $table->addCell(5000);
+        $textRun = $cell->addTextRun();
+        $textRun->addText('Nama', ['bold' => true]);
+        $textRun->addTextBreak();
+        $textRun->addText('NIP');
+
+        foreach ($dosenList as $index => $dosen) {
+            $table->addRow();
+            $table->addCell(500)->addText($index + 1);
+            $table->addCell(5000)->addText($dosen->dosen_nama);
+        }
+        $section->addTextBreak();
+
+        $section->addText("Demikian surat permohonan ini dibuat. Atas perhatian dan kerjasamanya, kami sampaikan terima kasih.", ['size' => 12]);
+
+    // Menambahkan tanda tangan dengan perataan kanan
+    $section->addTextBreak(2);
+    $section->addText("Malang, " . date('d F Y'), null, ['alignment' => Jc::END]);
+    $section->addText("Ketua Jurusan Teknologi Informasi,", null, ['alignment' => Jc::END]);
+    $section->addTextBreak(3);
+    $section->addText("Dr. Eng Rosa Andrie Asmara, S.T., M.T.", ['bold' => true], ['alignment' => Jc::END]);
+    $section->addText("NIP. 196602141990032002", null, ['alignment' => Jc::END]);
+
+        $fileName = 'surat_tugas_' . $sertifikasi->nama_sertif . '.docx';
+        $filePath = storage_path("app/public/$fileName");
+        $phpWord->save($filePath, 'Word2007');
+    
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 }

@@ -40,11 +40,23 @@ class DosenModel extends Model implements JWTSubject
 
     public function jabatan()
     {
-        return $this->belongsTo(JabatanModel::class, 'Jabatan_id', 'Jabatan_id');
+        return $this->belongsTo(JabatanModel::class, 'jabatan_id', 'jabatan_id');
     }
 
     public function golongan()
     {
         return $this->belongsTo(GolonganModel::class, 'golongan_id', 'golongan_id');
     }
+    public function sertifikasi()
+    {
+        return $this->hasManyThrough(
+            SertifikasiModel::class,         // Model tujuan
+            DataSertifikasiModel::class,    // Model perantara
+            'dosen_id',                     // Foreign key pada DataSertifikasiModel
+            'sertif_id',                    // Foreign key pada SertifikasiModel
+            'dosen_id',                     // Primary key pada DosenModel
+            'sertif_id'                     // Primary key pada DataSertifikasiModel
+        );
+    }
+
 }

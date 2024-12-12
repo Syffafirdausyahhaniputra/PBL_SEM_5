@@ -96,6 +96,13 @@
                             <p>Manage Pelatihan</p>
                         </a>
                     </li>
+                    {{-- <li class="nav-item">
+                        <a href="{{ url('/rekomendasi') }}" class="nav-link {{ $activeMenu == 'rekomendasi' ? 'active' : '' }}">
+                            <i class="fas fa-lightbulb nav-icon"></i> <!-- Ikon baru -->
+                            <p>Manage Rekomendasi</p>
+                        </a>
+                    </li> --}}
+                    
                 </ul>
             </li>
             <!-- Profile -->

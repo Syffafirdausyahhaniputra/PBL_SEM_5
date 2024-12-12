@@ -12,6 +12,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DataPelatihanModel;
 use App\Models\DataSertifikasiModel;
+use App\Models\PelatihanModel;
 use App\Models\SertifikasiModel;
 use Illuminate\Support\Facades\Log;
 
@@ -388,6 +389,36 @@ public function detail_sertif($id, $id_dosen)
     ]);
 }
 
+public function detail_pelatihan($id, $id_dosen)
+{
+    $dosenBidang = DosenBidangModel::where('bidang_id', $id)
+                ->whereHas('dosen2', function ($query) use ($id_dosen) {
+                    $query->where('dosen_id', $id_dosen);
+                })
+                ->with('dosen2.user')
+                ->firstOrFail();
 
+    // Ambil data sertifikasi berdasarkan bidang_id
+    $pelatihan = PelatihanModel::with('bidang')
+                    ->where('bidang_id', $id)
+                    ->firstOrFail(); // Ambil data pertama sesuai kondisi
+
+    // Ambil data bidang dari relasi
+    $bidang = $pelatihan->bidang;
+
+    // Menyiapkan breadcrumb
+    $breadcrumb = (object) [
+        'title' => $pelatihan->nama_pelatihan, // Sesuaikan dengan kolom yang benar
+        'subtitle' => $bidang ? $bidang->bidang_nama : 'N/A'
+    ];
+
+    // Tampilkan view dengan data sertifikasi dan breadcrumb
+    return view('bidang.detailPelatihan', [
+        'pelatihan' => $pelatihan,
+        'breadcrumb' => $breadcrumb,
+        'bidang' => $bidang,
+        'dosenBidang' => $dosenBidang
+    ]);
+}
 
 }

@@ -28,6 +28,7 @@
                         <th>Bidang</th>
                         <th>Status</th>
                         <th>Aksi</th>
+                        {{-- <th>Surat Tugas</th> --}}
                     </tr>
                 </thead>
             </table>
@@ -57,7 +58,8 @@
                 { data: 'tanggal', name: 'tanggal' },
                 { data: 'nama_bidang', name: 'nama_bidang' },
                 { data: 'status', name: 'status' },
-                { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
+                { data: 'aksi', name: 'aksi', orderable: false, searchable: false },
+                // { data: 'download', name: 'download', orderable: false, searchable: false }, // Tambahkan kolom download
             ]
         });
     });

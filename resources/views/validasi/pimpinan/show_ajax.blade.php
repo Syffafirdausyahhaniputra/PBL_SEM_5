@@ -1,9 +1,6 @@
-@extends('layouts.template')
-
-<div class="modal fade" id="validasiModal" tabindex="-1" aria-labelledby="validasiModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+<div id="modal-master" class="modal-dialog modal-lg" jenis="document">
+    <div class="modal-content">
+        <div class="modal-header">
                 <h5 class="modal-title" id="validasiModalLabel">Detail Validasi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -15,7 +12,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" id="validasiButton">Validasi</button>
+                <button type="button" class="btn btn-primary" id="validasiButton" data-url="">Validasi</button>
             </div>
         </div>
     </div>
@@ -28,6 +25,7 @@
             url: url,
             method: 'GET',
             success: function(response) {
+                console.log(response); // Menampilkan respons dari server ke konsol browser
                 if (response.status) {
                     // Muat konten ke modal
                     let validasi = response.validasi;
@@ -60,20 +58,24 @@
                         </table>
                     `;
                     $('#detailValidasi').html(html);
-                    $('#validasiModal').modal('show');
+                    // Set data-url untuk tombol Validasi
+                    $('#validasiButton').data('url', url);
+                    $('#validasiModal').modal('show'); // Tampilkan modal
                 } else {
                     alert(response.message);
                 }
             },
-            error: function() {
+            error: function(xhr) {
+                console.log(xhr.responseText); // Menampilkan pesan error dari server ke konsol browser
                 alert('Terjadi kesalahan saat memuat data.');
             }
         });
     }
 
     // Pastikan tombol Validasi memanggil modalAction dengan URL yang benar
-    $(document).on('click', '#validasiButton', function() {
-        var url = $(this).data('url'); // Ambil URL dari data-url
+    $(document).on('click', '.btn-validasi', function() {
+        var url = $(this).data('url'); // Ambil URL dari data-url tombol
         modalAction(url); // Panggil modalAction dengan URL
     });
+
 </script>

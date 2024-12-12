@@ -2,11 +2,11 @@
 
 @section('content')
     <div class="card card-outline card-primary">
-        {{-- <div class="card-header">
-            <div class="card-tools">
-                <button onclick="modalAction('{{ url('/kompetensi_prodi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Kompetensi Prodi</i></button>
-            </div>
-        </div> --}}
+        <div class="card-header">
+            <!-- <div class="card-tools">
+                <button onclick="modalAction('{{ url('/kompetensi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Kompetensi Prodi</i></button>
+            </div> -->
+        </div>
         <div class="card-body">
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
@@ -22,7 +22,7 @@
                         <tr>
                             <th>No</th>
                             <th>Program Studi</th>
-                            <th>Aksi</th>
+                            <th>Bidang</th>
                         </tr>
                     </thead>
                 </table>
@@ -49,7 +49,7 @@
                 // serverSide: true, jika ingin menggunakan server side proses 
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('kompetensi_prodi/list2') }}",
+                    "url": "{{ url('kompetensi/list') }}",
                     "dataType": "json",
                     "type": "POST"
                 },

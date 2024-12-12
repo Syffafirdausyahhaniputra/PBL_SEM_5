@@ -51,12 +51,13 @@
         @else
             <ul class="list-group">
                 @foreach ($pelatihan as $item)
+                <a href="{{ route('detail_pelatihan_dosen', ['id' => $item->pelatihan->bidang_id, 'id_dosen' => $dosen->dosen2->dosen_id]) }}" class="text-decoration-none sertifikasi-item">
                     <li class="list-group-item">
                         <strong>{{ $item->pelatihan->nama_pelatihan }}</strong>
                         <br>
                         Bidang: {{ $item->pelatihan->bidang->bidang_nama ?? 'N/A' }}
                         <br>
-                        Penyelenggara: {{ $item->pelatihan->vendor->vendor_nama ?? 'N/A' }}
+                        Tanggal Akhir: {{ $item->pelatihan->tanggal_akhir ?? 'N/A' }}
                     </li>
                 @endforeach
             </ul>

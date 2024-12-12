@@ -79,6 +79,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/list2', [BidangController::class, 'index2'])->name('bidang.detail');
         Route::get('/{id}/infoDosen/{id_dosen}', [BidangController::class, 'info_dosen'])->name('informasi_dosen');
         Route::get('/{id}/detail_sertif/{id_dosen}/detail', [BidangController::class, 'detail_sertif'])->name('detail_sertif_dosen');
+        Route::get('/{id}/detail_pelatihan/{id_dosen}/detail', [BidangController::class, 'detail_pelatihan'])->name('detail_pelatihan_dosen');
+
     });
 
     Route::group(['prefix' => 'role', 'middleware' => 'authorize:ADMN'], function () {
@@ -193,8 +195,8 @@ Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'notifikasidosen', 'middleware' => 'authorize:DOSN'], function () {
         Route::get('/', [NotifikasiController::class, 'index2']);
         Route::post('/list', [NotifikasiController::class, 'list2']);
-        Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjax2']);
-        Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjax2']);
+        Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjaxDosen']);
+        Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjaxDosen']);
     });
 
     Route::group(['prefix' => 'notifikasi', 'middleware' => 'authorize:ADMN,LEAD'], function () {
@@ -208,12 +210,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ValidasiController::class, 'index']);
         Route::post('/list', [ValidasiController::class, 'list']);
         Route::get('/{type}/{id}/show_ajax', [ValidasiController::class, 'show_ajax']);
-    });
-
-    Route::group(['prefix' => 'validasiAdmin', 'middleware' => 'authorize:ADMN'], function () {
-        Route::get('/', [NotifikasiController::class, 'index']);
-        Route::post('/list', [NotifikasiController::class, 'list']);
-        Route::get('/{type}/{id}/show_ajax', [NotifikasiController::class, 'show_ajax']);
     });
 
     Route::group(['prefix' => 'profile'], function () {
@@ -246,6 +242,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/upload', [PelatihanController::class, 'uploadBukti'])->name('pelatihan.dosen.upload');
         Route::get('/download-sertifikat/{pelatihan_id}', [PelatihanController::class, 'downloadSertifikat'])->name('pelatihan.downloadSertifikat');
         Route::get('/detail/{id}', [PelatihanController::class, 'detail'])->name('pelatihan.detail_pelatihan');
+        Route::get('/create_ajax2', [PelatihanController::class, 'create_ajax2'])->name('pelatihan.dosen.create_ajax'); // Menampilkan halaman form tambah pelatihan Ajax
+        Route::post('/create_ajax2', [PelatihanController::class, 'store_ajax2'])->name('pelatihan.dosen.store_ajax');
+        Route::get('/export_ajax/{pelatihan_id}', [PelatihanController::class, 'export_ajax'])->name('pelatihan.export_ajax');// export excel
     });
 
 
@@ -272,5 +271,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
         Route::get('/sertifikasi/{id}', [SertifikasiController::class, 'show'])->name('sertifikasi.show');
         Route::get('/detail/{id}', [SertifikasiController::class, 'detail'])->name('sertifikasi.detail_sertif');
+        Route::get('/export_ajax/{sertif_id}', [SertifikasiController::class, 'export_ajax'])->name('sertifikasi.export_ajax');// export excel
+        Route::get('/create_ajax2', [SertifikasiController::class, 'create_ajax2'])->name('sertifikasi.dosen.create_ajax'); // Menampilkan halaman form tambah pelatihan Ajax
+        Route::post('/create_ajax2', [SertifikasiController::class, 'store_ajax2'])->name('sertifikasi.dosen.store_ajax');
     });
 });

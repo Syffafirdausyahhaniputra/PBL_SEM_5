@@ -26,13 +26,14 @@ class DataSertifikasiModel extends Model implements JWTSubject
 
   public function sertifikasi()
   {
-    return $this->belongsTo(SertifikasiModel::class, 'sertif_id', 'sertif_id'); // Kolom foreign key dan primary key
+      return $this->belongsTo(SertifikasiModel::class, 'sertif_id', 'sertif_id');
   }
 
   public function dosen()
   {
-    return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
+      return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
   }
+
   // Di dalam DataSertifikasiModel
   public function sertif()
   {

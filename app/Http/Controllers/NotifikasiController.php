@@ -9,6 +9,7 @@ use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class NotifikasiController extends Controller
@@ -150,7 +151,7 @@ class NotifikasiController extends Controller
         return view('notifikasi.pimpinan.show_ajax', [
             'nama' => $firstItem->pelatihan->nama_pelatihan,
             'bidang' => $firstItem->pelatihan->bidang->bidang_nama,
-            'matkul' => $firstItem->pelatihan->mk_nama,
+            'matkul' => $firstItem->pelatihan->matkul->mk_nama,
             'vendor' => $firstItem->pelatihan->vendor->vendor_nama,
             'level' => $firstItem->pelatihan->level->level_nama,
             'tanggal_acara' => $firstItem->pelatihan->tanggal,
@@ -203,7 +204,7 @@ class NotifikasiController extends Controller
             'subtitle'  => ' '
         ];
 
-        $activeMenu = 'notifikasi';
+        $activeMenu = 'notifikasidosen';
 
         return view('notifikasi.dosen.index', [
             'breadcrumb' => $breadcrumb,
@@ -214,7 +215,15 @@ class NotifikasiController extends Controller
     // Ambil data dalam bentuk json untuk datatables 
     public function list2(Request $request)
     {
+        // Ambil dosen_id dari user yang sedang login
+        $dosenId = Auth::user()->dosen->dosen_id; // Sesuaikan nama field jika berbeda
+
+        // Ambil data sertifikasi berdasarkan dosen_id dan keterangan 'Penunjukan'
         $dataSertifikasi = DataSertifikasiModel::with('sertif')
+            ->where('dosen_id', $dosenId)
+            ->whereHas('sertif', function ($query) {
+                $query->where('keterangan', 'Penunjukan');
+            })
             ->select('data_sertif_id as id', 'sertif_id', 'dosen_id', 'updated_at')
             ->get()
             ->map(function ($item) {
@@ -223,12 +232,17 @@ class NotifikasiController extends Controller
                     'nama' => $item->sertif->nama_sertif,
                     'keterangan' => $item->sertif->keterangan,
                     'status' => $item->sertif->status,
-                    'type' => 'sertifikasi', // Tambahkan type sertifikasi
-                    'updated_at' => $item->sertif->updated_at
+                    'type' => 'sertifikasi',
+                    'updated_at' => $item->updated_at
                 ];
             });
 
+        // Ambil data pelatihan berdasarkan dosen_id dan keterangan 'Penunjukan'
         $dataPelatihan = DataPelatihanModel::with('pelatihan')
+            ->where('dosen_id', $dosenId)
+            ->whereHas('pelatihan', function ($query) {
+                $query->where('keterangan', 'Penunjukan');
+            })
             ->select('data_pelatihan_id as id', 'pelatihan_id', 'dosen_id', 'updated_at')
             ->get()
             ->map(function ($item) {
@@ -237,56 +251,109 @@ class NotifikasiController extends Controller
                     'nama' => $item->pelatihan->nama_pelatihan,
                     'keterangan' => $item->pelatihan->keterangan,
                     'status' => $item->pelatihan->status,
-                    'type' => 'pelatihan', // Tambahkan type pelatihan
-                    'updated_at' => $item->pelatihan->updated_at
+                    'type' => 'pelatihan',
+                    'updated_at' => $item->updated_at
                 ];
             });
 
+        // Konversi menjadi koleksi dasar sebelum digabungkan
+        $dataSertifikasiBase = collect($dataSertifikasi)->toBase();
+        $dataPelatihanBase = collect($dataPelatihan)->toBase();
+
         // Gabungkan data sertifikasi dan pelatihan
-        $data = $dataSertifikasi->merge($dataPelatihan);
+        $data = $dataSertifikasiBase->merge($dataPelatihanBase);
 
         // Urutkan berdasarkan updated_at
         $sortedData = $data->sortByDesc('updated_at')->values();
 
+        // Log untuk debugging
         Log::info('Data setelah sorting:', $sortedData->toArray());
 
+        // Return data ke DataTables
         return DataTables::of($sortedData)
             ->addIndexColumn()
             ->make(true);
     }
 
-    public function showSertifikasiAjax2($id)
+    public function showSertifikasiAjaxDosen($id)
     {
+        // Ambil data sertifikasi berdasarkan sertif_id
         $sertifikasi = DataSertifikasiModel::with(['sertif', 'sertif.bidang', 'sertif.matkul', 'sertif.vendor', 'sertif.jenis'])
-            ->findOrFail($id);
+            ->where('data_sertif_id', $id)
+            ->get();
+
+        if ($sertifikasi->isEmpty()) {
+            abort(404, 'Data sertifikasi tidak ditemukan.');
+        }
+
+        // Ambil data pertama untuk informasi umum sertifikasi
+        $firstItem = $sertifikasi->first();
+
+        // Ambil daftar dosen yang terkait dengan sertif_id
+        $dosenList = $sertifikasi->map(function ($item) {
+            return [
+                'id' => $item->dosen_id,
+                'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
+            ];
+        })->toArray();
+
+        if (!is_array($dosenList)) {
+            Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
+            $dosenList = []; // Atur default menjadi array kosong
+        };
 
         return view('notifikasi.dosen.show_ajax', [
-            'nama' => $sertifikasi->sertif->nama_sertif,
-            'bidang' => $sertifikasi->sertif->bidang->bidang_nama,
-            'matkul' => $sertifikasi->sertif->mk_nama,
-            'vendor' => $sertifikasi->sertif->vendor->vendor_nama,
-            'jenis' => $sertifikasi->sertif->jenis->jenis_nama,
-            'tanggal_acara' => $sertifikasi->tanggal,
-            'berlaku_hingga' => $sertifikasi->masa_berlaku,
-            'periode' => $sertifikasi->periode
+            'nama' => $firstItem->sertif->nama_sertif,
+            'bidang' => $firstItem->sertif->bidang->bidang_nama,
+            'matkul' => $firstItem->sertif->matkul->mk_nama,
+            'vendor' => $firstItem->sertif->vendor->vendor_nama,
+            'jenis' => $firstItem->sertif->jenis->jenis_nama,
+            'tanggal_acara' => $firstItem->sertif->tanggal,
+            'berlaku_hingga' => $firstItem->sertif->masa_berlaku,
+            'periode' => $firstItem->sertif->periode,
+            'keterangan' => $firstItem->sertif->keterangan,
+            'dosen_list' => $dosenList,
         ]);
     }
 
-    public function showPelatihanAjax2($id)
+    public function showPelatihanAjaxDosen($id)
     {
         $pelatihan = DataPelatihanModel::with(['pelatihan', 'pelatihan.bidang', 'pelatihan.matkul', 'pelatihan.vendor', 'pelatihan.level'])
-            ->findOrFail($id);
+            ->where('data_pelatihan_id', $id)
+            ->get();
 
-        return view('notifikasi.show_ajax', [
-            'nama' => $pelatihan->pelatihan->nama_pelatihan,
-            'bidang' => $pelatihan->pelatihan->bidang->bidang_nama,
-            'matkul' => $pelatihan->pelatihan->mk_nama,
-            'vendor' => $pelatihan->pelatihan->vendor->vendor_nama,
-            'level' => $pelatihan->pelatihan->level->level_nama,
-            'tanggal_acara' => $pelatihan->tanggal,
-            'kuota' => $pelatihan->kuota,
-            'lokasi' => $pelatihan->lokasi,
-            'periode' => $pelatihan->periode
+        if ($pelatihan->isEmpty()) {
+            abort(404, 'Data pelatihan tidak ditemukan.');
+        }
+
+        // Ambil data pertama untuk informasi umum pelatihan
+        $firstItem = $pelatihan->first();
+
+        $dosenList = $pelatihan->map(function ($item) {
+            return [
+                'id' => $item->dosen_id,
+                'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
+            ];
+        })->toArray();
+
+        if (!is_array($dosenList)) {
+            Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
+            $dosenList = []; // Atur default menjadi array kosong
+        };
+
+
+        return view('notifikasi.dosen.show_ajax', [
+            'nama' => $firstItem->pelatihan->nama_pelatihan,
+            'bidang' => $firstItem->pelatihan->bidang->bidang_nama,
+            'matkul' => $firstItem->pelatihan->matkul->mk_nama,
+            'vendor' => $firstItem->pelatihan->vendor->vendor_nama,
+            'level' => $firstItem->pelatihan->level->level_nama,
+            'tanggal_acara' => $firstItem->pelatihan->tanggal,
+            'kuota' => $firstItem->pelatihan->kuota,
+            'lokasi' => $firstItem->pelatihan->lokasi,
+            'periode' => $firstItem->pelatihan->periode,
+            'keterangan' => $firstItem->pelatihan->keterangan,
+            'dosen_list' => $dosenList,
         ]);
     }
 

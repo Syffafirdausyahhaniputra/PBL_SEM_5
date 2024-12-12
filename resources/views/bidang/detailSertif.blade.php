@@ -21,8 +21,6 @@
                 <p><strong>Vendor:</strong> {{ $sertifikasi->vendor->vendor_nama ?? 'N/A' }}</p>
                 <p><strong>Tanggal:</strong> {{ $sertifikasi->tanggal ?? 'N/A' }}</p>
                 <p><strong>Masa Berlaku:</strong> {{ $sertifikasi->masa_berlaku ?? 'N/A' }}</p>
-                <p><strong>Tanggal Akhir:</strong> {{ $sertifikasi->tanggal_akhir ?? 'N/A' }}</p>
-                <p><strong>Biaya:</strong> Rp{{ number_format($sertifikasi->biaya, 0, ',', '.') ?? 'N/A' }}</p>
                 <p><strong>Periode:</strong> {{ $sertifikasi->periode ?? 'N/A' }}</p>
             </div>
             <div class="card-footer">

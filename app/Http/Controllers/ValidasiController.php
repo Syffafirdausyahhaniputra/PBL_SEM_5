@@ -85,7 +85,7 @@ class ValidasiController extends Controller
             ->make(true);
     }
 
-//syffa
+    //edit
     // public function show_ajax(string $type, string $id)
     // {
     //     if ($type === 'sertifikasi') {
@@ -134,49 +134,44 @@ class ValidasiController extends Controller
     public function show_ajax(string $type, string $id)
     {
         if ($type === 'sertifikasi') {
-            $data = SertifikasiModel::with('data_sertifikasi', 'dosen')
+            // Ambil data sertifikasi dan relasi dengan dosen melalui tabel t_data_sertifikasi
+            $data = SertifikasiModel::with(['data_sertifikasi.dosen.user'])
                 ->where('sertif_id', $id)
                 ->first();
-    
+
             if ($data) {
-                return response()->json([
-                    'status' => true,
-                    'validasi' => [
-                        'type' => 'sertifikasi',
-                        'nama' => $data->data_sertifikasi->nama_sertif,
-                        'keterangan' => $data->keterangan,
-                        'status' => $data->status,
-                        'peserta' => $data->dosen->map(function ($dosen) {
-                            return ['nama' => $dosen->nama];
-                        })
-                    ]
+                return view('validasi.pimpinan.show_ajax', [
+                    'type' => 'sertifikasi',
+                    'nama' => $data->nama_sertif,
+                    'keterangan' => $data->keterangan,
+                    'status' => $data->status,
+                    'peserta' => $data->data_sertifikasi->map(function ($dosenData) {
+                        return ['nama' => $dosenData->dosen->user->nama];
+                    })->toArray(),
                 ]);
             }
-        } elseif ($type === 'pelatihan') {
-            $data = PelatihanModel::with('data_pelatihan', 'dosen')
+        } else if ($type === 'pelatihan') {
+            // Ambil data pelatihan dan relasi dengan dosen melalui tabel t_data_pelatihan
+            $data = PelatihanModel::with(['data_pelatihan.dosen.user'])
                 ->where('pelatihan_id', $id)
                 ->first();
-    
+
             if ($data) {
-                return response()->json([
-                    'status' => true,
-                    'validasi' => [
-                        'type' => 'pelatihan',
-                        'nama' => $data->data_pelatihan->nama_pelatihan,
-                        'keterangan' => $data->keterangan,
-                        'status' => $data->status,
-                        'peserta' => $data->dosen->map(function ($dosen) {
-                            return ['nama' => $dosen->nama];
-                        })
-                    ]
+                return view('validasi.pimpinan.show_ajax', [
+                    'type' => 'pelatihan',
+                    'nama' => $data->nama_pelatihan,
+                    'keterangan' => $data->keterangan,
+                    'status' => $data->status,
+                    'peserta' => $data->data_pelatihan->map(function ($dosenData) {
+                        return ['nama' => $dosenData->dosen->user->nama];
+                    })->toArray(),
                 ]);
             }
         }
-    
-        return response()->json([
-            'status' => false,
-            'message' => 'Data tidak ditemukan.'
+
+        // Jika tidak ada data yang ditemukan atau tipe tidak valid
+        return view('validasi.pimpinan.show_ajax', [
+            'error' => 'Data tidak ditemukan atau tipe tidak valid.',
         ]);
     }
-    
 }

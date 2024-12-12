@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\PlthnController;
 use App\Http\Controllers\API\BidangApiController;
 use App\Http\Controllers\API\JenisApiController;
 use App\Http\Controllers\API\MataKuliahApiController;
+use App\Http\Controllers\API\NotifikasiDosenController;
 use App\Http\Controllers\API\VendorApiController;
 
 /*
@@ -114,6 +115,12 @@ Route::get('bidang', [SertifikasiApiController::class, 'getBidang']);
         Route::get('/show/sertifikasi/{id}', [NotifikasiPimpinanController::class, 'showSertifikasiApi']);
         Route::get('/show/pelatihan/{id}', [NotifikasiPimpinanController::class, 'showPelatihanApi']);
         Route::put('/verify/{type}/{id}', [NotifikasiPimpinanController::class, 'verify']);
+    });
+    
+    Route::group(['prefix' => 'notifikasiDosen'], function () {
+        Route::get('/list', [NotifikasiDosenController::class, 'list']);
+        Route::get('/show/sertifikasi/{id}', [NotifikasiDosenController::class, 'showSertifikasiApi']);
+        Route::get('/show/pelatihan/{id}', [NotifikasiDosenController::class, 'showPelatihanApi']);
     });
 
     Route::group(['prefix' => 'pelatihan'], function () {

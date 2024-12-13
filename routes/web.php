@@ -245,6 +245,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/create_ajax2', [PelatihanController::class, 'create_ajax2'])->name('pelatihan.dosen.create_ajax'); // Menampilkan halaman form tambah pelatihan Ajax
         Route::post('/create_ajax2', [PelatihanController::class, 'store_ajax2'])->name('pelatihan.dosen.store_ajax');
         Route::get('/export_ajax/{pelatihan_id}', [PelatihanController::class, 'export_ajax'])->name('pelatihan.export_ajax');// export excel
+        Route::post('/uploadsurat', [PelatihanController::class, 'uploadSurat'])->name('pelatihan.upload');
+        Route::get('/surat-tugas/download/{suratTugasId}', [PelatihanController::class, 'downloadSuratTugas'])->name('surat-tugas.download');
     });
 
 

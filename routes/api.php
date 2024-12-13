@@ -165,3 +165,6 @@ Route::resource('pelatihan', PelatihanController::class);
 
 Route::post('/profil', [App\Http\Controllers\Api\ProfileController::class, 'index']);
 Route::get('/profil/{id}', [App\Http\Controllers\Api\ProfileController::class, 'show']);
+
+Route::get('/pelatihan/dropdown', [PlthnController::class, 'dropdown']);
+Route::post('/pelatihan/store', [PlthnController::class, 'store'])->name('pelatihan.store');

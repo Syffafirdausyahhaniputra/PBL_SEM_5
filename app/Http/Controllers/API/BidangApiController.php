@@ -28,26 +28,26 @@ class BidangApiController extends Controller
         ]);
     }
 
-    public function showDosenByBidang($id)
-{
-    // Ambil data bidang berdasarkan ID
-    $bidang = BidangModel::findOrFail($id);
+    public function show($id) //show bidang by dosen
+    {
+        // Ambil data bidang berdasarkan ID
+        $bidang = BidangModel::findOrFail($id);
 
-    // Ambil daftar dosen berdasarkan bidang dengan relasi
-    $dosen = DosenBidangModel::where('bidang_id', $id)
-                ->with('dosen2.user')
-                ->get();
+        // Ambil daftar dosen berdasarkan bidang dengan relasi
+        $dosen = DosenBidangModel::where('bidang_id', $id)
+            ->with('dosen2.user')
+            ->get();
 
-    $breadcrumb = (object) [
-        'title' => $bidang->bidang_nama,
-        'subtitle'  => 'List dosen bidang '. $bidang->bidang_nama
-    ];
+        $breadcrumb = (object) [
+            'title' => $bidang->bidang_nama,
+            'subtitle' => 'List dosen bidang ' . $bidang->bidang_nama
+        ];
 
-    // Tampilkan data dosen
-    return response()->json([
-        'status' => 'success',
-        'bidang' => $bidang,
-        'dosen' => $dosen,
-    ]);
-}
+        // Tampilkan data dosen
+        return response()->json([
+            'status' => 'success',
+            'bidang' => $bidang,
+            'dosen' => $dosen,
+        ]);
+    }
 }

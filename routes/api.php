@@ -74,8 +74,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('update/{id}', [SertifikasiApiController::class, 'update']); // Mengupdate data dosen berdasarkan ID
     });
 
-Route::get('jenis', [SertifikasiApiController::class, 'getJenis']);
-Route::get('bidang', [SertifikasiApiController::class, 'getBidang']);
+    Route::get('jenis', [SertifikasiApiController::class, 'getJenis']);
+    Route::get('bidang', [SertifikasiApiController::class, 'getBidang']);
 
 
     // Route untuk bidang
@@ -84,6 +84,7 @@ Route::get('bidang', [SertifikasiApiController::class, 'getBidang']);
         Route::post('create', [BidangApiController::class, 'store']); // Menambahkan data bidang
         Route::get('show/{id}', [BidangApiController::class, 'show']); // Menampilkan data bidang berdasarkan ID
         Route::post('update/{id}', [BidangApiController::class, 'update']); // Mengupdate data bidang berdasarkan ID
+        Route::get('infodosen/{id}/{id_dosen}', [BidangApiController::class, 'showDosen']);
     });
 
     // Route untuk mata kuliah
@@ -96,17 +97,17 @@ Route::get('bidang', [SertifikasiApiController::class, 'getBidang']);
 
     //Route untuk Jenis Sertifikasi
     Route::group(['prefix' => 'jenis'], function () {
-        Route::get('/', [JenisApiController::class, 'index']); 
+        Route::get('/', [JenisApiController::class, 'index']);
         Route::post('create', [JenisApiController::class, 'store']);
-        Route::get('show/{id}', [JenisApiController::class, 'show']); 
+        Route::get('show/{id}', [JenisApiController::class, 'show']);
         Route::post('update/{id}', [JenisApiController::class, 'update']);
     });
 
     //Route untuk Vendor Sertifikasi
     Route::group(['prefix' => 'vendor'], function () {
-        Route::get('/', [VendorApiController::class, 'index']); 
+        Route::get('/', [VendorApiController::class, 'index']);
         Route::post('create', [VendorApiController::class, 'store']);
-        Route::get('show/{id}', [VendorApiController::class, 'show']); 
+        Route::get('show/{id}', [VendorApiController::class, 'show']);
         Route::post('update/{id}', [VendorApiController::class, 'update']);
     });
 
@@ -116,7 +117,7 @@ Route::get('bidang', [SertifikasiApiController::class, 'getBidang']);
         Route::get('/show/pelatihan/{id}', [NotifikasiPimpinanController::class, 'showPelatihanApi']);
         Route::put('/verify/{type}/{id}', [NotifikasiPimpinanController::class, 'verify']);
     });
-    
+
     Route::group(['prefix' => 'notifikasiDosen'], function () {
         Route::get('/list', [NotifikasiDosenController::class, 'list']);
         Route::get('/show/sertifikasi/{id}', [NotifikasiDosenController::class, 'showSertifikasiApi']);

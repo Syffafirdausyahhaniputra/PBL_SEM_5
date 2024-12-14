@@ -90,7 +90,7 @@ Route::get('bidang', [SertifikasiApiController::class, 'getBidang']);
     Route::group(['prefix' => 'matakuliah'], function () {
         Route::get('/', [MataKuliahApiController::class, 'index']); // Menampilkan data mata kuliah
         Route::post('create', [MataKuliahApiController::class, 'store']); // Menambahkan data mata kuliah
-        Route::get('show/{id}', [MataKuliahApiController::class, 'show']); // Menampilkan data mata kuliah berdasarkan ID
+        Route::get('show/{id}', [MataKuliahApiController::class, 'showDosenByBidang']); // Menampilkan data mata kuliah berdasarkan ID
         Route::post('update/{id}', [MataKuliahApiController::class, 'update']); // Mengupdate data mata kuliah berdasarkan ID
     });
 

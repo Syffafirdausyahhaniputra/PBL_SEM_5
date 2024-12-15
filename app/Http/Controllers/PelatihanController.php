@@ -1105,4 +1105,206 @@ class PelatihanController extends Controller
             ]);
         }
     }
+
+      // function upload surat tugas
+      public function upload(Request $request)
+      {
+          try {
+              // Validasi file yang diupload dengan pesan error khusus
+              $validator = Validator::make($request->all(), [
+                  'file' => [
+                      'required',
+                      'file',
+                      function ($attribute, $value, $fail) {
+                          // Cek ekstensi file
+                          $allowedExtensions = ['pdf', 'doc', 'docx'];
+                          $extension = $value->getClientOriginalExtension();
+                          if (!in_array(strtolower($extension), $allowedExtensions)) {
+                              $fail('Tipe file tidak diizinkan. Hanya file PDF, DOC, dan DOCX, yang diperbolehkan.');
+                          }
+  
+                          // Cek ukuran file (2MB = 2048 KB)
+                          $maxFileSize = 2048; // dalam KB
+                          $fileSize = $value->getSize() / 1024; // konversi ke KB
+                          if ($fileSize > $maxFileSize) {
+                              $fail('Ukuran file terlalu besar. Maksimal 2 MB.');
+                          }
+                      },
+                  ],
+                  'id_pelatihan' => 'required|exists:t_pelatihan,id_pelatihan',
+              ]);
+  
+              // Jika validasi gagal, lempar exception
+              if ($validator->fails()) {
+                  throw new ValidationException($validator);
+              }
+  
+              // Periksa apakah file ada
+              if ($request->hasFile('file')) {
+                  $file = $request->file('file');
+  
+                  // Buat nama file unik
+                  $filename = time() . '_' . $file->getClientOriginalName();
+  
+                  // Simpan file di direktori 'public/dokumen'
+                  $path = $file->storeAs('dokumen', $filename, 'public');
+  
+                  // Buat record dokumen di database
+                  $dokumen = DataPelatihanModel::create([
+                      'id_pelatihan' => $request->id_kegiatan,
+                      'surat_tugas_id' => $file->getClientOriginalName(),
+                      'jenis_dokumen' => 'surat tugas',
+                      'file_path' => $path,
+                      'progress' => 0, // Progress awal
+                  ]);
+  
+                  // Kembalikan respon sukses dengan SweetAlert
+                  return back()->with('swal', [
+                      'title' => 'Berhasil!',
+                      'text' => 'File berhasil diupload.',
+                      'icon' => 'success'
+                  ]);
+              }
+  
+              // Jika tidak ada file
+              return back()->with('swal', [
+                  'title' => 'Gagal!',
+                  'text' => 'Tidak ada file yang diupload.',
+                  'icon' => 'error'
+              ]);
+          } catch (ValidationException $e) {
+              // Tangani kesalahan validasi dengan SweetAlert
+              $errors = $e->validator->errors()->all();
+              return back()->with('swal', [
+                  'title' => 'Validasi Gagal!',
+                  'text' => implode('\n', $errors),
+                  'icon' => 'error'
+              ]);
+          } catch (\Exception $e) {
+              // Tangani kesalahan umum dengan SweetAlert
+              return back()->with('swal', [
+                  'title' => 'Gagal!',
+                  'text' => 'Gagal mengupload file: ' . $e->getMessage(),
+                  'icon' => 'error'
+              ]);
+          }
+      }
+
+      public function upload_(Request $request)
+    {
+        Log::info('Received request data:', $request->all());
+
+        // Cek apakah request berupa AJAX
+        if ($request->ajax() || $request->wantsJson()) {
+            // Validasi input
+            $rules = [
+                'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                Log::error('Validation failed:', $validator->errors()->toArray());
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            try {
+                // Tentukan direktori tujuan
+                $destinationPath = public_path('dokumen');
+
+                // Buat folder jika belum ada
+                if (!File::exists($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true, true);
+                }
+
+                // Simpan file jika diunggah
+                $filePath = null;
+                if ($request->hasFile('file')) {
+                    $file = $request->file('file');
+
+                    if ($file->isValid()) {
+                        Log::info('File details:', [
+                            'original_name' => $file->getClientOriginalName(),
+                            'mime_type' => $file->getMimeType(),
+                            'size' => $file->getSize(),
+                        ]);
+
+                        $fileName = time() . '_' . $file->getClientOriginalName();
+                        $file->move($destinationPath, $fileName);
+                        $filePath = $fileName;
+                    } else {
+                        Log::error('File is not valid.');
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'File tidak valid.',
+                        ]);
+                    }
+                } else {
+                    Log::error('File tidak ditemukan dalam request.');
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'File tidak ditemukan dalam request.',
+                    ]);
+                }
+
+                
+                $surat_tugas_data ['nama_surat'] = $filePath;
+                $surat_tugas_data ['nomor_surat'] = 'null';
+                $surat_tugas_data ['status'] = 'Proses';
+
+
+                // $surat_tugas_data = $request->except('file');
+
+                // $pelatihanData['keterangan'] = 'Menunggu Validasi';
+                // $pelatihanData['status'] = 'Proses';
+                // $pelatihanData['kuota'] = '1';
+                
+
+                // Buat record sertifikasi
+                $surat_tugas = SuratTugasModel::create($surat_tugas_data);
+                // SuratTugasModel::create([
+                //     'nama_surat' => $filePath,
+
+                // ]);
+
+                Log::info('Surat Tugas created:', $surat_tugas->toArray());
+
+                // Buat record DataPelatihan dan simpan hanya nama file di kolom sertifikat
+                DataPelatihanModel::create([
+                    // 'surat_tugas_id' => $surat_tugas->surat_tugas_id,
+                    'dosen_id' => $request->input('dosen_id', null),
+                    'surat_tugas_id' => $surat_tugas->surat_tugas_id,
+                ]);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Surat Tugas berhasil disimpan',
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Error saving pelatihan:', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'request_data' => $request->all(),
+                ]);
+
+                $errorMessage = 'Terjadi kesalahan saat menyimpan data';
+                if (strpos($e->getMessage(), 'SQLSTATE') !== false) {
+                    $errorMessage .= ': Kesalahan database';
+                }
+
+                return response()->json([
+                    'status' => false,
+                    'message' => $errorMessage,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Jika bukan AJAX, redirect ke halaman utama
+        return redirect('/pelatihan');
+    }
+
 }

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\PelatihanController;
+use App\Http\Controllers\Api\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\API\SertifikasiController;
 use App\Http\Controllers\API\InputSertifController;
@@ -35,8 +35,9 @@ use App\Http\Controllers\API\VendorApiController;
 */
 
 Route::get('/pelatihan', [PelatihanController::class, 'list']);
+Route::get('/pelatihan/dropdown', [PelatihanController::class, 'dropdown']);
+Route::post('/pelatihan/store', [PelatihanController::class, 'store'])->name('pelatihan.store');
 Route::get('create', [PelatihanController::class, 'create'])->name('pelatihan.create');
-Route::post('store', [PelatihanController::class, 'store'])->name('pelatihan.store');
 Route::get('edit/{id}', [PelatihanController::class, 'edit'])->name('pelatihan.edit');
 Route::put('update/{id}', [PelatihanController::class, 'update'])->name('pelatihan.update');
 Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy');
@@ -153,19 +154,19 @@ Route::get('/kompetensi', [App\Http\Controllers\Api\KompetensiController::class,
 Route::post('/kompetensi/list', [App\Http\Controllers\Api\KompetensiController::class, 'list']);
 Route::get('/kompetensi/{prodi_kode}/show_ajax', [App\Http\Controllers\Api\KompetensiController::class, 'show_ajax']);
 
-Route::group(['prefix' => 'plthn'], function () {
-    Route::get('/', [PlthnController::class, 'index']); // Menampilkan daftar pelatihan
-    Route::get('/dropdown', [PlthnController::class, 'getDropdownOptions']); // Dropdown data
-    Route::post('/create', [PlthnController::class, 'store']); // Menambahkan pelatihan baru
-});
+// Route::group(['prefix' => 'plthn'], function () {
+//     Route::get('/', [PlthnController::class, 'index']); // Menampilkan daftar pelatihan
+//     Route::get('/dropdown', [PlthnController::class, 'getDropdownOptions']); // Dropdown data
+//     Route::post('/create', [PlthnController::class, 'store']); // Menambahkan pelatihan baru
+// });
 
 
 
-Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
-Route::resource('pelatihan', PelatihanController::class);
+// Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
+// Route::resource('pelatihan', PelatihanController::class);
 
 Route::post('/profil', [App\Http\Controllers\Api\ProfileController::class, 'index']);
 Route::get('/profil/{id}', [App\Http\Controllers\Api\ProfileController::class, 'show']);
 
-Route::get('/pelatihan/dropdown', [PlthnController::class, 'dropdown']);
-Route::post('/pelatihan/store', [PlthnController::class, 'store'])->name('pelatihan.store');
+// Route::get('/pelatihan/dropdown', [PlthnController::class, 'dropdown']);
+// Route::post('/pelatihan/store', [PlthnController::class, 'store'])->name('pelatihan.store');

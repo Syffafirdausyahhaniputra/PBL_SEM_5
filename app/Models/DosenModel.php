@@ -22,7 +22,7 @@ class DosenModel extends Model implements JWTSubject
 
     protected $table = 'm_dosen';
     protected $primaryKey = 'dosen_id';
-    protected $fillable = ['user_id', 'jabatan_id', 'golongan_id', 'created_at', 'updated_at'];
+    protected $fillable = ['user_id', 'jabatan_id', 'golongan_id','pangkat_id', 'created_at', 'updated_at'];
 
     public function user()
     {
@@ -46,6 +46,10 @@ class DosenModel extends Model implements JWTSubject
     public function golongan()
     {
         return $this->belongsTo(GolonganModel::class, 'golongan_id', 'golongan_id');
+    }
+    public function pangkat()
+    {
+        return $this->belongsTo(PangkatModel::class, 'pangkat_id', 'pangkat_id');
     }
     public function sertifikasi()
     {

@@ -182,9 +182,9 @@
 
             editBtn.innerText = isEdit ? 'Batal' : 'Edit';
             document.getElementById('save-cancel-group').classList.toggle('d-none', !isEdit);
-            document.querySelectorAll('.password-group').forEach(el => {
-                el.classList.toggle('d-none', !isEdit);
-            });
+            // Show or hide password fields
+            document.getElementById('old-password-group').classList.toggle('d-none', !isEdit);
+            document.getElementById('new-password-group').classList.toggle('d-none', !isEdit);
 
             // Reset form when canceling
             if (!isEdit && originalFormData) {
@@ -198,7 +198,7 @@
             
             // Reset basic inputs
             for (let pair of formData.entries()) {
-                const input = form.querySelector(`[name="${pair[0]}"]`);
+                const input = form.querySelector([name="${pair[0]}"]);
                 if (input) {
                     input.value = pair[1];
                 }
@@ -352,6 +352,10 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             originalFormData = new FormData(document.getElementById('profile-form'));
+
+            // Ensure password fields are hidden initially
+            document.getElementById('old-password-group').classList.add('d-none');
+            document.getElementById('new-password-group').classList.add('d-none');
         });
     </script>
 @endsection

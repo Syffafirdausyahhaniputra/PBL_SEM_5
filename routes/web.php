@@ -150,7 +150,7 @@ Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'kompetensi', 'middleware' => 'authorize:LEAD'], function () {
         Route::get('/', [KompetensiProdiController::class, 'index2']);         // menampilkan halaman awal matkul
         Route::post('/list', [KompetensiProdiController::class, 'list2']);     // menampilkan data matkul dalam bentuk json untuk datatables
-        Route::get('/{prodi_kode}/show_ajax', [KompetensiProdiController::class, 'show_ajax']);
+        Route::get('/{prodi_kode}/show_ajax2', [KompetensiProdiController::class, 'show_ajax2']);
     });
 
     Route::group(['prefix' => 'jenis', 'middleware' => 'authorize:ADMN'], function () {
@@ -245,7 +245,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/create_ajax2', [PelatihanController::class, 'create_ajax2'])->name('pelatihan.dosen.create_ajax'); // Menampilkan halaman form tambah pelatihan Ajax
         Route::post('/create_ajax2', [PelatihanController::class, 'store_ajax2'])->name('pelatihan.dosen.store_ajax');
         Route::get('/export_ajax/{pelatihan_id}', [PelatihanController::class, 'export_ajax'])->name('pelatihan.export_ajax');// export excel
-        Route::post('/uploadsurat', [PelatihanController::class, 'uploadSurat'])->name('pelatihan.upload');
+        Route::post('/uploadsurat', [PelatihanController::class, 'upload_'])->name('pelatihan.upload');
         Route::get('/surat-tugas/download/{suratTugasId}', [PelatihanController::class, 'downloadSuratTugas'])->name('surat-tugas.download');
     });
 
@@ -276,5 +276,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/export_ajax/{sertif_id}', [SertifikasiController::class, 'export_ajax'])->name('sertifikasi.export_ajax');// export excel
         Route::get('/create_ajax2', [SertifikasiController::class, 'create_ajax2'])->name('sertifikasi.dosen.create_ajax'); // Menampilkan halaman form tambah pelatihan Ajax
         Route::post('/create_ajax2', [SertifikasiController::class, 'store_ajax2'])->name('sertifikasi.dosen.store_ajax');
+        Route::post('/uploadsurat', [SertifikasiController::class, 'uploadSurat'])->name('sertifikasi.upload');
     });
 });

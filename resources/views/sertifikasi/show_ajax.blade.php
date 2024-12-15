@@ -16,7 +16,7 @@
         </div>
     </div>
 @else
-    <div id="modal-master" class="modal-dialog modal-md" role="document">
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Detail Data Sertifikasi</h5>
@@ -80,6 +80,22 @@
                             </button>
                         @endif
                     </td>
+                    <tr>
+                    <th class="text-right col-3">Upload Surat Tugas :</th>
+                        <td>
+                        <form id="uploadForm" action="{{ route('sertifikasi.upload') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="sertif_id" value="{{ $dataSertifikasi->sertif_id }}">
+                                <input type="hidden" name="dosen_id" value="{{ $dataSertifikasi->dosen_id }}">
+
+                                <div class="form-group">
+                                    <input type="file" class="form-control" id="file" name="file" required>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Upload Surat Tugas</button>
+                            </form>
+
+                        </td>
                 </tr>
                 </table>
             </div>
@@ -114,3 +130,46 @@
     </div>
 </div>
 @endforelse
+<script>
+    $(document).ready(function() {
+        // Saat form upload disubmit
+        $('#uploadForm').submit(function(event) {
+            event.preventDefault(); // Mencegah form submit biasa
+
+            var formData = new FormData(this); // Mengambil data form termasuk file
+
+            $.ajax({
+                url: $(this).attr('action'),  // Menggunakan URL yang ada di form action
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.status) {
+                        $('#myModal').modal('hide'); 
+                            Swal.fire({ 
+                                icon: 'success', 
+                                title: 'Berhasil', 
+                                text: response.message 
+                            }); 
+                            dataSertifikasi.ajax.reload(); 
+                    } else {
+                        $('.error-text').text(''); 
+                            $.each(response.msgField, function(prefix, val) { 
+                                $('#error-'+prefix).text(val[0]); 
+                            }); 
+                            Swal.fire({ 
+                                icon: 'error', 
+                                title: 'Terjadi Kesalahan', 
+                                text: response.message 
+                            }); 
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Terjadi kesalahan saat mengupload file.');
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>

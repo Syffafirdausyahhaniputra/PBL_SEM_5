@@ -16,7 +16,7 @@ class PlthnController extends Controller
 {
     
 
-public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'level_id' => 'required|exists:m_level_pelatihan,level_id',
@@ -93,5 +93,6 @@ public function store(Request $request)
             'bidangs' => $bidangs,
             'matkuls' => $matkuls
         ]);
+    
     }
 }

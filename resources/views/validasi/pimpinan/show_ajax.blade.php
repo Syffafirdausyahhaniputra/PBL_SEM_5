@@ -60,7 +60,7 @@
                     $('#detailValidasi').html(html);
                     // Set data-url untuk tombol Validasi
                     $('#validasiButton').data('url', url);
-                    $('#validasiModal').modal('show'); // Tampilkan modal
+                    $('#Modal-master').modal('show'); // Tampilkan modal
                 } else {
                     alert(response.message);
                 }

@@ -50,7 +50,7 @@ Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifika
 Route::put('update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update');
 Route::delete('destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
 
-Route::post('/login', LoginController::class)->name('login');
+Route::post('/login', LoginController::class, 'login');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

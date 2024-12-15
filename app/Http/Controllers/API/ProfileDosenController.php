@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\DosenBidangModel;
+use App\Models\DosenMatkulModel;
 use App\Models\DosenModel;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
@@ -29,6 +31,11 @@ class ProfileDosenController extends Controller
                 ], 404);
             }
 
+            $dosenBidang = DosenBidangModel::where('dosen_id', $dosen->dosen_id)->pluck('bidang_id');
+            $dosenMatkul = DosenMatkulModel::where('dosen_id', $dosen->dosen_id)->pluck('mk_id');
+
+
+
             // Ambil data role melalui relasi User
             $role = $dosen->user->role;
             return response()->json([
@@ -39,8 +46,11 @@ class ProfileDosenController extends Controller
                     'username' => $dosen->user->username,
                     'nip' => $dosen->user->nip,
                     'role' => $role->role_nama,  // Menambahkan role
-                    'bidang' => $dosen->bidang_id,
-                    'matkul' => $dosen->mk_id,
+                    'bidang' => $dosenBidang,
+                    'jabatan' => $dosen->jabatan_id,
+                    'golongan' => $dosen->golongan_id,
+                    'pangkat' => $dosen->pangkat_id,
+                    'matkul' => $dosenMatkul,
                     'avatar' => $dosen->user->avatar ? asset('avatars/' . $dosen->user->avatar) : asset('avatars/user.jpg')
                 ]
             ]);
@@ -74,12 +84,18 @@ class ProfileDosenController extends Controller
                 'username' => 'required|string|min:3|unique:m_user,username,' . $user->user_id . ',user_id',
                 'nama' => 'required|string|max:100',
                 'nip' => 'required|string|max:50',
-                'bidang_id' => 'nullable|exists:m_bidang,bidang_id',
-                'mk_id' => 'nullable|exists:m_matkul,mk_id',
+                'bidang' => 'nullable|array',
+                'bidang.*' => 'nullable|exists:m_bidang,bidang_id',
+                'matakuliah' => 'nullable|array',
+                'matakuliah.*' => 'nullable|exists:m_matkul,mk_id',
+                'jabatan' => 'nullable|exists:m_jabatan,jabatan_id',
+                'golongan' => 'nullable|exists:m_golongan,golongan_id',
+                'pangkat' => 'nullable|exists:m_pangkat,pangkat_id',
                 'old_password' => 'nullable|string',
                 'password' => 'nullable|min:5',
                 'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
+
 
 
             // Cek perubahan data
@@ -91,8 +107,29 @@ class ProfileDosenController extends Controller
             $user->nip = $request->nip;
 
             // Update data dosen
-            $dosen->bidang_id = $request->bidang_id;
-            $dosen->mk_id = $request->mk_id;
+            // $dosen->bidang_id = $request->bidang_id;
+            // $dosen->mk_id = $request->mk_id;
+            $dosen->jabatan_id = $request->jabatan;
+            $dosen->golongan_id = $request->golongan;
+            $dosen->pangkat_id = $request->pangkat;
+
+            DosenBidangModel::where('dosen_id', $dosen->dosen_id)->delete();
+            foreach ($request->bidang as $bidang => $value) {
+                $newDosenBidang = new DosenBidangModel();
+                $newDosenBidang->dosen_id = $dosen->dosen_id;
+                $newDosenBidang->bidang_id = $value;
+                $newDosenBidang->save();
+
+            }
+
+            DosenMatkulModel::where('dosen_id', $dosen->dosen_id)->delete();
+            foreach ($request->matakuliah as $mk => $value) {
+                $newDosenMatkul = new DosenMatkulModel();
+                $newDosenMatkul->dosen_id = $dosen->dosen_id;
+                $newDosenMatkul->mk_id = $value;
+                $newDosenMatkul->save();
+            }
+
 
             // Handle password update
             if ($request->filled('old_password')) {
@@ -104,6 +141,9 @@ class ProfileDosenController extends Controller
                 }
                 $user->password = Hash::make($request->password);
             }
+
+            $dosenBidang = DosenBidangModel::where('dosen_id', $dosen->dosen_id)->get();
+            $dosenMatkul = DosenMatkulModel::where('dosen_id', $dosen->dosen_id)->get();
 
             // Handle avatar upload
             if ($request->hasFile('avatar')) {
@@ -131,8 +171,9 @@ class ProfileDosenController extends Controller
                 $user->nip != $request->nip ||
                 $request->hasFile('avatar') ||
                 $request->filled('old_password') ||
-                $dosen->bidang_id != $request->bidang_id ||
-                $dosen->mk_id != $request->mk_id
+                $dosen->pangkat_id != $request->pangkat ||
+                $dosen->jabatan_id != $request->jabatan ||
+                $dosen->golongan_id != $request->golongan
             ) {
                 $isChanged = true;
             }
@@ -151,8 +192,11 @@ class ProfileDosenController extends Controller
                     'nama' => $user->nama,
                     'username' => $user->username,
                     'nip' => $user->nip,
-                    'bidang' => $dosen->bidang ? $dosen->bidang->bidang_nama : null,
-                    'matkul' => $dosen->matkul ? $dosen->matkul->mk_nama : null,
+                    'jabatan' => $dosen->jabatan_id,
+                    'golongan' => $dosen->golongan_id,
+                    'pangkat' => $dosen->pangkat_id,
+                    'bidang' => $dosenBidang,
+                    'matkul' => $dosenMatkul,
                     'avatar' => $user->avatar ? asset('avatars/' . $user->avatar) : asset('avatars/user.jpg')
                 ]
             ]);

@@ -18,9 +18,12 @@ use App\Http\Controllers\API\NotifikasiPimpinanController;
 use App\Http\Controllers\API\ProfileDosenController;
 use App\Http\Controllers\Api\PlthnController;
 use App\Http\Controllers\API\BidangApiController;
+use App\Http\Controllers\API\GolonganApiController;
+use App\Http\Controllers\API\JabatanApiController;
 use App\Http\Controllers\API\JenisApiController;
 use App\Http\Controllers\API\MataKuliahApiController;
 use App\Http\Controllers\API\NotifikasiDosenController;
+use App\Http\Controllers\API\PangkatApiController;
 use App\Http\Controllers\API\VendorApiController;
 
 /*
@@ -86,6 +89,27 @@ Route::middleware('auth:api')->group(function () {
         Route::get('show/{id}', [BidangApiController::class, 'show']); // Menampilkan data bidang berdasarkan ID
         Route::post('update/{id}', [BidangApiController::class, 'update']); // Mengupdate data bidang berdasarkan ID
         Route::get('infodosen/{id}/{id_dosen}', [BidangApiController::class, 'showDosen']);
+    });
+
+    Route::group(['prefix' => 'golongan'], function () {
+        Route::get('/', [GolonganApiController::class, 'index']);
+        Route::post('create', [GolonganApiController::class, 'store']);
+        Route::get('show/{id}', [GolonganApiController::class, 'show']);
+        Route::post('update/{id}', [GolonganApiController::class, 'update']);
+    });
+
+    Route::group(['prefix' => 'pangkat'], function () {
+        Route::get('/', [PangkatApiController::class, 'index']);
+        Route::post('create', [PangkatApiController::class, 'store']);
+        Route::get('show/{id}', [PangkatApiController::class, 'show']);
+        Route::post('update/{id}', [PangkatApiController::class, 'update']);
+    });
+
+    Route::group(['prefix' => 'jabatan'], function () {
+        Route::get('/', [JabatanApiController::class, 'index']);
+        Route::post('create', [JabatanApiController::class, 'store']);
+        Route::get('show/{id}', [JabatanApiController::class, 'show']);
+        Route::post('update/{id}', [JabatanApiController::class, 'update']);
     });
 
     // Route untuk mata kuliah

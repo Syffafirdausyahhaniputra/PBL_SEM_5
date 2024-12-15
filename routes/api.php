@@ -1,30 +1,28 @@
 <?php
 
-use App\Http\Controllers\API\PelatihanApiController;
+use App\Http\Controllers\Api\PelatihanApiController;
 use App\Http\Controllers\Api\Dashboard2Controller;
 use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\API\SertifikasiApiController;
+use App\Http\Controllers\Api\SertifikasiApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RiwayatController;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Api\PelatihanController;
 use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\API\SertifikasiController;
-use App\Http\Controllers\API\InputSertifController;
+use App\Http\Controllers\Api\SertifikasiController;
+use App\Http\Controllers\Api\InputSertifController;
 use App\Http\Controllers\Api\DosenController;
-use App\Http\Controllers\Api\LoginController as ApiLoginController;
-use App\Http\Controllers\API\NotifikasiPimpinanController;
-use App\Http\Controllers\API\ProfileDosenController;
+use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\Api\NotifikasiPimpinanController;
+use App\Http\Controllers\Api\ProfileDosenController;
 use App\Http\Controllers\Api\PlthnController;
-use App\Http\Controllers\API\BidangApiController;
-use App\Http\Controllers\API\GolonganApiController;
-use App\Http\Controllers\API\JabatanApiController;
-use App\Http\Controllers\API\JenisApiController;
-use App\Http\Controllers\API\MataKuliahApiController;
-use App\Http\Controllers\API\NotifikasiDosenController;
-use App\Http\Controllers\API\PangkatApiController;
-use App\Http\Controllers\API\VendorApiController;
+use App\Http\Controllers\Api\BidangApiController;
+use App\Http\Controllers\Api\GolonganApiController;
+use App\Http\Controllers\Api\JabatanApiController;
+use App\Http\Controllers\Api\JenisApiController;
+use App\Http\Controllers\Api\MataKuliahApiController;
+use App\Http\Controllers\Api\NotifikasiDosenController;
+use App\Http\Controllers\Api\PangkatApiController;
+use App\Http\Controllers\Api\VendorApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,7 +50,7 @@ Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifika
 Route::put('update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update');
 Route::delete('destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
 
-Route::post('/login', ApiLoginController::class)->name('login');
+Route::post('/login', LoginController::class)->name('login');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

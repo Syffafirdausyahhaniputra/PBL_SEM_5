@@ -17,7 +17,7 @@
         </div>
     </div>
 @else
-    <div id="modal-master" class="modal-dialog modal-md" role="document">
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Detail Data Pelatihan</h5>
@@ -74,7 +74,7 @@
                         <td class="col-9">{{ $dataPelatihan->status }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3"> Draft Surat Tugas : </th>
+                        <th class="text-right col-3">Draft Surat Tugas :</th>
                         <td>
                             @if ($dataPelatihan->pelatihan->keterangan === 'sudah divalidasi')
                                 <button type="button" class="btn btn-sm btn-primary"
@@ -85,44 +85,25 @@
                                 <button type="button" class="btn btn-sm btn-secondary" disabled>
                                     Menunggu Validasi
                                 </button>
-
-
-                                <!-- Formulir Upload File -->
-                                {{-- <form action="{{ route('pelatihan.upload', $dataPelatihan->pelatihan_id) }}" method="POST"
-                                    enctype="multipart/form-data">
-                                    @csrf --}}
-                                    <!-- Form fields akan ada di sini -->
-
-                                    {{-- <div class="form-group">
-                                        <label for="file">Upload Surat:</label>
-                                        <input type="file" class="form-control" id="file" name="file" required> --}}
-                                        {{-- <a href="{{ route('pelatihan.upload', $dataPelatihan->pelatihan_id) }}"> --}}
-
-                                        <!-- Validasi error -->
-                                        {{-- @error('file')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">Kirim</button>
-                                            <button type="button" data-dismiss="modal"
-                                                class="btn btn-secondary">Batal</button>
-                                        </div>
-                                    </div> --}}
-                                    <form id="uploadForm" action="{{ route('pelatihan.upload') }}" method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        <input type="hidden" name="pelatihan_id" value="{{ $pelatihan->id }}">
-                                        <input type="hidden" name="dosen_id" value="{{ auth()->user()->dosen_id }}">
-                                        
-                                        <div class="form-group">
-                                            <label for="file">Upload Surat Tugas</label>
-                                            <input type="file" class="form-control" id="file" name="file" required>
-                                        </div>
-                                        
-                                        <button type="submit" class="btn btn-primary">Upload Surat Tugas</button>
-                                    </form>
-                                    
-                                {{-- </form> --}}
                             @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Upload Surat Tugas :</th>
+                        <td>
+                        <form id="uploadForm" action="{{ route('pelatihan.upload') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="pelatihan_id" value="{{ $dataPelatihan->pelatihan_id }}">
+                                <input type="hidden" name="dosen_id" value="{{ $dataPelatihan->dosen_id }}">
+
+                                <div class="form-group">
+                                    <label for="file">Upload Surat Tugas</label>
+                                    <input type="file" class="form-control" id="file" name="file" required>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Upload Surat Tugas</button>
+                            </form>
+
                         </td>
                     </tr>
                 </table>

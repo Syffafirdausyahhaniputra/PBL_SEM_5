@@ -9,6 +9,7 @@ use App\Models\BidangModel;
 use App\Models\DosenModel;
 use App\Models\JenisModel;
 use App\Models\LevelPelatihanModel;
+use App\Models\SuratTugasModel;
 use App\Models\MatkulModel;
 use App\Models\VendorModel;
 use Illuminate\Support\Facades\Auth;
@@ -239,7 +240,7 @@ class SertifikasiController extends Controller
 
                 // Create DataSertifikasi record
                 DataSertifikasiModel::create([
-                    'sertifikasi_id' => $sertifikasi->sertifikasi_id, // ID sertifikasi yang baru saja disimpan
+                    'sertif_id' => $sertifikasi->sertif_id, // ID sertifikasi yang baru saja disimpan
                     'dosen_id' => $request->input('dosen_id', null), // Sesuaikan input dosen_id
                     'keterangan' => 'Menunggu validasi', // Atur keterangan default
                     'status' => 'Proses', // Atur status default
@@ -960,5 +961,87 @@ class SertifikasiController extends Controller
         $phpWord->save($filePath, 'Word2007');
     
         return response()->download($filePath)->deleteFileAfterSend(true);
+    }
+
+    public function uploadSurat(Request $request)
+    {
+        Log::info('Received upload request:', $request->all());
+
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048',
+            'sertif_id' => 'required|integer',
+            'dosen_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            Log::error('Validation failed:', $validator->errors()->toArray());
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi Gagal',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        try {
+            // Direktori tujuan penyimpanan file
+            $destinationPath = public_path('dokumen/surat_tugas');
+
+            // Buat folder jika belum ada
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true, true);
+            }
+
+            // Simpan file
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+
+                if ($file->isValid()) {
+                    // Generate nama file unik
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $file->move($destinationPath, $fileName);
+
+                    Log::info('File uploaded successfully:', ['file_name' => $fileName]);
+
+                    $nomorSurat = 'sertifikasi_' . $request->sertif_id;
+
+                    // Simpan ke tabel m_surat_tugas
+                    $suratTugas = SuratTugasModel::create([
+                        'nama_surat' => $fileName,
+                        'nomor_surat' => $nomorSurat, // Nomor surat otomatis
+                        'status' => 'Proses',
+                    ]);
+
+                    Log::info('Surat Tugas created:', $suratTugas->toArray());
+
+                    // Update tabel data_pelatihan
+                    DataSertifikasiModel::where('sertif_id', $request->sertif_id)
+                        ->update(['surat_tugas_id' => $suratTugas->surat_tugas_id]);
+
+                    Log::info('Data Sertifikasi updated with surat_tugas_id.');
+
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Surat Tugas berhasil diupload dan disimpan.',
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'File tidak valid atau gagal diunggah.',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error during upload:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan data.',
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

@@ -276,5 +276,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/export_ajax/{sertif_id}', [SertifikasiController::class, 'export_ajax'])->name('sertifikasi.export_ajax');// export excel
         Route::get('/create_ajax2', [SertifikasiController::class, 'create_ajax2'])->name('sertifikasi.dosen.create_ajax'); // Menampilkan halaman form tambah pelatihan Ajax
         Route::post('/create_ajax2', [SertifikasiController::class, 'store_ajax2'])->name('sertifikasi.dosen.store_ajax');
+        Route::post('/uploadsurat', [SertifikasiController::class, 'uploadSurat'])->name('sertifikasi.upload');
     });
 });

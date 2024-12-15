@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\PelatihanApiController;
 use App\Http\Controllers\Api\Dashboard2Controller;
 use App\Http\Controllers\Api\DashboardController;
@@ -49,7 +50,7 @@ Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifika
 Route::put('update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update');
 Route::delete('destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
 
-Route::get('/login', App\Http\Controllers\Api\LoginController::class);
+Route::get('/login', [LoginController::class, 'login']);
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

@@ -11,7 +11,6 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SertifikasiController;
 use App\Http\Controllers\Api\InputSertifController;
 use App\Http\Controllers\Api\DosenController;
-use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\NotifikasiPimpinanController;
 use App\Http\Controllers\Api\ProfileDosenController;
 use App\Http\Controllers\Api\PlthnController;
@@ -50,7 +49,7 @@ Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifika
 Route::put('update/{id}', [SertifikasiController::class, 'update'])->name('sertifikasi.update');
 Route::delete('destroy/{id}', [SertifikasiController::class, 'destroy'])->name('sertifikasi.destroy');
 
-Route::post('/login', LoginController::class)->name('login');
+Route::get('/login', App\Http\Controllers\Api\LoginController::class);
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

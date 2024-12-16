@@ -185,7 +185,7 @@ class PelatihanController extends Controller
                 'periode' => $request->periode,
                 'kuota' => $request->kuota,
                 'status' => 'Proses',
-                'keterangan' => 'Menunggu validasi',
+                'keterangan' => 'Menunggu Validasi',
             ]);
 
             // Ambil ID dari pelatihan yang baru saja dibuat

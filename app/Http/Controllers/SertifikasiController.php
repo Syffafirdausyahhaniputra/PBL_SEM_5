@@ -259,7 +259,7 @@ class SertifikasiController extends Controller
                     'biaya' => $request->biaya,
                     'periode' => $request->periode,
                     'status' => 'Proses',
-                    'keterangan' => 'Menunggu validasi',
+                    'keterangan' => 'Menunggu Validasi',
                 ]);
 
                 // Ambil ID dari sertifikasi yang baru saja dibuat

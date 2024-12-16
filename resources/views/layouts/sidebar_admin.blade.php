@@ -14,12 +14,6 @@
                     <p>Notifikasi</p>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{{ url('/validasiAdmin') }}" class="nav-link {{ $activeMenu == 'validasiAdmin' ? 'active' : '' }} ">
-                    <i class="nav-icon fas fa-check"></i>
-                    <p>Validasi</p>
-                </a>
-            </li>
             <!-- Manage Dropdown -->
             <li class="nav-item has-treeview {{ in_array($activeMenu, ['user', 'role', 'vendor', 'bidang', 'matkul', 'prodi', 'kompetensi_prodi', 'jenis', 'level', 'sertifikasi', 'pelatihan']) ? 'menu-open' : '' }}">
                 <a href="#" class="nav-link {{ in_array($activeMenu, ['user', 'role', 'vendor', 'bidang', 'matkul', 'prodi', 'kompetensi_prodi', 'jenis', 'level', 'sertifikasi', 'pelatihan']) ? 'active' : '' }}">

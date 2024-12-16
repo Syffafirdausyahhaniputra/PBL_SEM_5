@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 16, 2024 at 03:40 AM
+-- Generation Time: Dec 16, 2024 at 04:34 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -675,23 +675,23 @@ CREATE TABLE `m_user` (
 --
 
 INSERT INTO `m_user` (`user_id`, `role_id`, `username`, `nama`, `nip`, `avatar`, `password`, `email`, `created_at`, `updated_at`) VALUES
-(1, 1, 'admin1', 'administrator', '1234567891', '1734301139WhatsAppImage2024-10-23at16.32.33_bf74374d.jpg', '$2y$12$xpMk6Iroffl7klOxNPflEuX1rlQOAVISLVk5iq7EFkwhh/hNS1s0q', 'administrator@gmail.com', '2024-11-07 23:22:21', '2024-12-15 15:18:59'),
+(1, 1, 'admin1', 'administrator', '1234567891', '1734355381logo_poltek.png', '$2y$12$xpMk6Iroffl7klOxNPflEuX1rlQOAVISLVk5iq7EFkwhh/hNS1s0q', 'administrator@gmail.com', '2024-11-07 23:22:21', '2024-12-16 06:23:01'),
 (2, 2, 'lead01', 'Syffa F', '1234567899', '1733796354a1.jpg', '$2y$12$jbSg3KiNxOyL1/ceO9VUvu1iwsE3lQKxkKXRc./q0ysxxNqHIXETu', 'syffafirdausyah@gmail.com', '2024-11-08 00:50:53', '2024-12-12 04:56:38'),
-(3, 3, 'dosen01', 'Muhammad Taufiq Abdus Salam', '0303030303', '1733199508dosen01.jpg', '$2y$12$PZD3kr8MnveiujhhR9JnIuiqaKQJic5qpfa6DoVHiYdNv7G0BmYH.', 'dosen1@gmail.com', '2024-11-10 06:53:35', '2024-12-15 19:52:53'),
-(4, 3, 'dosen02', 'Solikhin', '0404040404', NULL, '$2y$12$z1JULD9nwrnC7RK5Vn4IK.cQQ.QAEeOd2xETpsclmCJLjSY3UbHDu', NULL, '2024-11-10 06:55:29', '2024-11-16 20:24:52'),
-(5, 3, 'dosen03', 'Suhatta', '2626262626', NULL, '$2y$12$qsP/FgclNDa2MGXoVVTDCeJUFywsmM/H9k/wU.8ozI5RqBf29f15.', NULL, '2024-11-16 20:24:33', '2024-11-16 20:24:33'),
-(6, 3, 'dosen04', 'M. Isroqi Gelby F.', '1818181818', NULL, '$2y$12$1IIikdW7lOu5X1W.2C5jUuC0rrD.vdyjM1mfSOHwBtGPUWrR9U286', NULL, '2024-11-16 20:37:01', NULL),
-(167, 3, 'Ade Ismail ', 'Ade Ismail, S.Kom., M.TI', '404079101', NULL, '$2y$12$X8eCwvTFlBHSYK7/KKWUo.bDxr//dZq3z5aU4nnykixH0OsRBUgv6', NULL, '2024-12-03 04:31:36', NULL),
-(168, 3, 'Agung Nugroho Pramud', 'Agung Nugroho Pramudhita, S.T., M.T.', '10028903', NULL, '$2y$12$G7.UjYkFPDvkeSTYjzezCO2TC.B5JgzMpYO5Uo5y8WFRB0NBG98AS', NULL, '2024-12-03 04:31:36', NULL),
-(169, 3, 'Ahmadi Yuli Ananta', 'Ahmadi Yuli Ananta, ST., M.M.', '5078102', NULL, '$2y$12$jD.Cw85vZBMpBeBRZuNK2uuvB7pb86SmR2TDqV2fZ6AlPxd7C3926', NULL, '2024-12-03 04:31:36', NULL),
-(170, 3, 'Annisa Puspa Kirana', 'Annisa Puspa Kirana, S.Kom., M.Kom', '23018906', NULL, '$2y$12$tpT4WKowqnNwhZu9PALMMOERFTRveCPSb6nERnQxx2eIfUkVleQpq', NULL, '2024-12-03 04:31:36', NULL),
-(171, 3, 'Annisa Taufika Firda', 'Annisa Taufika Firdausi, ST., MT.', '14128704', NULL, '$2y$12$nmwcbJyrEYOZr8MiuxGM..bxeQJPuOaDYfw6AdK4bCYVi63wq7lxa', NULL, '2024-12-03 04:31:36', NULL),
-(172, 3, 'Anugrah Nur Rahmanto', 'Anugrah Nur Rahmanto, S.Sn., M.Ds.', '30129101', NULL, '$2y$12$qeI7wm6LeKmRNgvtwmOvnu50/1IR6uNzfPws9W332ar.bn5sKDur.', NULL, '2024-12-03 04:31:37', NULL),
-(173, 3, 'Ariadi Retno Ririd', 'Ariadi Retno Ririd, S.Kom., M.Kom.', '10088101', NULL, '$2y$12$ktYOaVWghL.R3ar/9qMAjeXJOCWsf76uWgaYU.0nYUzfR.uRiGyMa', NULL, '2024-12-03 04:31:37', NULL),
-(174, 3, 'Arie Rachmad Syulist', 'Arie Rachmad Syulistyo, S.Kom., M.Kom', '24088701', NULL, '$2y$12$72JsIsl9DT2fDBN48Spkne.rI0WIfBItZ5WCjamyB8CatSZM0zvaC', NULL, '2024-12-03 04:31:37', NULL),
-(175, 3, 'Arief Prasetyo', 'Arief Prasetyo, S.Kom., M.Kom.', '13037905', NULL, '$2y$12$lZYled//Dvdw7sPnTiNJKu2dv8mlGrfMxXc6hVm0HYKRr96pyX6oa', NULL, '2024-12-03 04:31:37', NULL),
-(176, 3, 'Astrifidha Rahma Ama', 'Astrifidha Rahma Amalia,S.Pd., M.Pd.', '21059405', NULL, '$2y$12$aqTED4x5eTa4ik2xanFq5eMORY.WJf.Fr/lPGbnjBiMx/Mw3K5ENu', NULL, '2024-12-03 04:31:37', NULL),
-(177, 3, 'Atiqah Nurul Asri', 'Atiqah Nurul Asri, S.Pd., M.Pd.', '25067607', NULL, '$2y$12$NyHjZbwG5ktgAV0fnDfDYODPA/FnhzFttdIcOJTGkzPjSXNUdBCda', NULL, '2024-12-03 04:31:38', NULL),
+(3, 3, 'dosen01', 'Muhammad Taufiq Abdus Salam', '0303030303', '1734333847logo_poltek.png', '$2y$12$PZD3kr8MnveiujhhR9JnIuiqaKQJic5qpfa6DoVHiYdNv7G0BmYH.', 'dosen1@gmail.com', '2024-11-10 06:53:35', '2024-12-16 00:24:07'),
+(4, 3, 'dosen02', 'Solikhin', '0404040404', NULL, '$2y$12$z1JULD9nwrnC7RK5Vn4IK.cQQ.QAEeOd2xETpsclmCJLjSY3UbHDu', 'dosen02@gmail.com', '2024-11-10 06:55:29', '2024-11-16 20:24:52'),
+(5, 3, 'dosen03', 'Suhatta', '2626262626', NULL, '$2y$12$qsP/FgclNDa2MGXoVVTDCeJUFywsmM/H9k/wU.8ozI5RqBf29f15.', 'dosen03@gmail.com', '2024-11-16 20:24:33', '2024-11-16 20:24:33'),
+(6, 3, 'dosen04', 'M. Isroqi Gelby F.', '1818181818', NULL, '$2y$12$1IIikdW7lOu5X1W.2C5jUuC0rrD.vdyjM1mfSOHwBtGPUWrR9U286', 'dosen04@gmail.com', '2024-11-16 20:37:01', '2024-12-16 12:58:27'),
+(167, 3, 'Ade Ismail ', 'Ade Ismail, S.Kom., M.TI', '404079101', NULL, '$2y$12$X8eCwvTFlBHSYK7/KKWUo.bDxr//dZq3z5aU4nnykixH0OsRBUgv6', 'AdeIsmail@gmail.com', '2024-12-03 04:31:36', '2024-12-16 12:58:27'),
+(168, 3, 'Agung Nugroho', 'Agung Nugroho Pramudhita, S.T., M.T.', '10028903', NULL, '$2y$12$G7.UjYkFPDvkeSTYjzezCO2TC.B5JgzMpYO5Uo5y8WFRB0NBG98AS', 'AgungNugrohoP@gmail.com', '2024-12-03 04:31:36', '2024-12-16 12:58:27'),
+(169, 3, 'Ahmadi Yuli Ananta', 'Ahmadi Yuli Ananta, ST., M.M.', '5078102', NULL, '$2y$12$jD.Cw85vZBMpBeBRZuNK2uuvB7pb86SmR2TDqV2fZ6AlPxd7C3926', 'AhmadiYuliA@gmail.com', '2024-12-03 04:31:36', '2024-12-16 12:58:27'),
+(170, 3, 'Annisa Puspa Kirana', 'Annisa Puspa Kirana, S.Kom., M.Kom', '23018906', NULL, '$2y$12$tpT4WKowqnNwhZu9PALMMOERFTRveCPSb6nERnQxx2eIfUkVleQpq', 'AnnisaPuspaK@gmail.com', '2024-12-03 04:31:36', '2024-12-16 12:58:27'),
+(171, 3, 'Annisa Taufika Firda', 'Annisa Taufika Firdausi, ST., MT.', '14128704', NULL, '$2y$12$nmwcbJyrEYOZr8MiuxGM..bxeQJPuOaDYfw6AdK4bCYVi63wq7lxa', 'AnnisaTaufikaF@gmail.com', '2024-12-03 04:31:36', '2024-12-16 12:58:27'),
+(172, 3, 'Anugrah Nur Rahmanto', 'Anugrah Nur Rahmanto, S.Sn., M.Ds.', '30129101', NULL, '$2y$12$qeI7wm6LeKmRNgvtwmOvnu50/1IR6uNzfPws9W332ar.bn5sKDur.', 'AnugrahNurR@gmail.com', '2024-12-03 04:31:37', '2024-12-16 12:58:27'),
+(173, 3, 'Ariadi Retno Ririd', 'Ariadi Retno Ririd, S.Kom., M.Kom.', '10088101', NULL, '$2y$12$ktYOaVWghL.R3ar/9qMAjeXJOCWsf76uWgaYU.0nYUzfR.uRiGyMa', 'AriadiRetnoR@gmail.com', '2024-12-03 04:31:37', '2024-12-16 12:58:27'),
+(174, 3, 'Arie Rachmad Syulist', 'Arie Rachmad Syulistyo, S.Kom., M.Kom', '24088701', NULL, '$2y$12$72JsIsl9DT2fDBN48Spkne.rI0WIfBItZ5WCjamyB8CatSZM0zvaC', 'ArieRachmadS@gmail.com', '2024-12-03 04:31:37', '2024-12-16 12:58:27'),
+(175, 3, 'Arief Prasetyo', 'Arief Prasetyo, S.Kom., M.Kom.', '', NULL, '$2y$12$lZYled//Dvdw7sPnTiNJKu2dv8mlGrfMxXc6hVm0HYKRr96pyX6oa', 'AriefPrasetyo@gmail.com', '2024-12-03 04:31:37', '2024-12-16 13:11:14'),
+(176, 3, 'Astrifidha Rahma Ama', 'Astrifidha Rahma Amalia,S.Pd., M.Pd.', '21059405', NULL, '$2y$12$aqTED4x5eTa4ik2xanFq5eMORY.WJf.Fr/lPGbnjBiMx/Mw3K5ENu', 'AstrifidhaRahmaA@gmail.com', '2024-12-03 04:31:37', '2024-12-16 13:11:14'),
+(177, 3, 'Atiqah Nurul Asri', 'Atiqah Nurul Asri, S.Pd., M.Pd.', '25067607', NULL, '$2y$12$NyHjZbwG5ktgAV0fnDfDYODPA/FnhzFttdIcOJTGkzPjSXNUdBCda', 'AtiqahNurulA@gmail.com', '2024-12-03 04:31:38', '2024-12-16 13:11:14'),
 (178, 3, 'Bagas Satya Dian Nug', 'Bagas Satya Dian Nugraha, ST., MT.', '16069009', NULL, '$2y$12$cEkrPFPwOeEa9r2cfKjJ0eTQU2LEihyJUyqu4AeXBEbV82yN8zTXy', NULL, '2024-12-03 04:31:38', NULL),
 (179, 3, 'Banni Satria Andoko ', 'Banni Satria Andoko, S. Kom., M.MSI., Dr. Eng.', '9088107', NULL, '$2y$12$WLjjtLVBljhEf6bOYWd02OFgrmQKhOlj3OwJjXm/nXGWNwlj7Gm5O', NULL, '2024-12-03 04:31:38', NULL),
 (180, 3, 'Budi Harijanto ', 'Budi Harijanto, ST., M.MKom.', '5016211', NULL, '$2y$12$qyuVI0matv0.46NBn/.85u71qU.s2wMWCPdD8vlgVgJkgTcQTIUTS', NULL, '2024-12-03 04:31:38', NULL),
@@ -891,7 +891,10 @@ INSERT INTO `t_data_sertifikasi` (`data_sertif_id`, `sertif_id`, `dosen_id`, `su
 (5, 5, 1, NULL, '1734039838_Maritza Ulfa Huriyah_Notulen Industri_Kecbis.pdf', '2024-12-12 14:43:58', '2024-12-12 14:43:58'),
 (6, 6, 1, NULL, '1734183780_Manual Book Mobile (1).pdf', '2024-12-14 06:43:00', '2024-12-14 06:43:00'),
 (7, 7, 1, NULL, '1734183781_Manual Book Mobile (1).pdf', '2024-12-14 06:43:01', '2024-12-14 06:43:01'),
-(8, 8, 1, NULL, '1734183902_Manual Book Mobile (1).pdf', '2024-12-14 06:45:02', '2024-12-14 06:45:02');
+(8, 8, 1, NULL, '1734183902_Manual Book Mobile (1).pdf', '2024-12-14 06:45:02', '2024-12-14 06:45:02'),
+(9, 9, 1, NULL, '1734324767_Politeknik Negeri Malang.pdf', '2024-12-15 21:52:47', '2024-12-15 21:52:47'),
+(10, 10, 57, NULL, NULL, '2024-12-16 08:01:43', '2024-12-16 08:01:43'),
+(11, 10, 15, NULL, NULL, '2024-12-16 08:01:43', '2024-12-16 08:01:43');
 
 -- --------------------------------------------------------
 
@@ -905,13 +908,13 @@ CREATE TABLE `t_pelatihan` (
   `bidang_id` bigint UNSIGNED NOT NULL,
   `mk_id` bigint UNSIGNED NOT NULL,
   `vendor_id` bigint UNSIGNED NOT NULL,
-  `nama_pelatihan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_pelatihan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `biaya` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tanggal` date NOT NULL,
+  `tanggal` date DEFAULT NULL,
   `tanggal_akhir` date DEFAULT NULL,
-  `kuota` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `lokasi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `periode` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kuota` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lokasi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `periode` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `keterangan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -953,12 +956,12 @@ CREATE TABLE `t_sertifikasi` (
   `bidang_id` bigint UNSIGNED NOT NULL,
   `mk_id` bigint UNSIGNED NOT NULL,
   `vendor_id` bigint UNSIGNED NOT NULL,
-  `nama_sertif` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_sertif` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `biaya` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tanggal` date NOT NULL,
+  `tanggal` date DEFAULT NULL,
   `tanggal_akhir` date DEFAULT NULL,
-  `masa_berlaku` date NOT NULL,
-  `periode` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `masa_berlaku` date DEFAULT NULL,
+  `periode` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `keterangan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -977,7 +980,9 @@ INSERT INTO `t_sertifikasi` (`sertif_id`, `jenis_id`, `bidang_id`, `mk_id`, `ven
 (5, 1, 6, 12, 1, 'hbjd', NULL, '2024-12-12', NULL, '2024-12-20', '213', 'Selesai', 'Mandiri', '2024-12-12 14:43:58', '2024-12-12 14:43:58'),
 (6, 1, 3, 12, 1, 'aaaaaaaaaa', NULL, '2024-12-09', NULL, '2024-12-17', '2024', 'Selesai', 'Mandiri', '2024-12-14 06:43:00', '2024-12-14 06:43:00'),
 (7, 1, 3, 12, 1, 'aaaaaaaaaa', NULL, '2024-12-09', NULL, '2024-12-17', '2024', 'Selesai', 'Mandiri', '2024-12-14 06:43:01', '2024-12-14 06:43:01'),
-(8, 1, 2, 13, 1, 'jhjn', NULL, '2024-12-26', NULL, '2024-12-31', '2022', 'Selesai', 'Mandiri', '2024-12-14 06:45:02', '2024-12-14 06:45:02');
+(8, 1, 2, 13, 1, 'jhjn', NULL, '2024-12-26', NULL, '2024-12-31', '2022', 'Selesai', 'Mandiri', '2024-12-14 06:45:02', '2024-12-14 06:45:02'),
+(9, 1, 9, 8, 1, 'abcd', NULL, '2024-12-16', NULL, '2024-12-21', '2024', 'Selesai', 'Mandiri', '2024-12-15 21:52:47', '2024-12-15 21:52:47'),
+(10, 1, 1, 2, 1, 'poiuy', '40000000', '2024-12-03', NULL, NULL, '2024', 'Proses', 'Menunggu validasi', '2024-12-16 08:01:43', '2024-12-16 08:01:43');
 
 --
 -- Indexes for dumped tables
@@ -1297,7 +1302,7 @@ ALTER TABLE `t_data_pelatihan`
 -- AUTO_INCREMENT for table `t_data_sertifikasi`
 --
 ALTER TABLE `t_data_sertifikasi`
-  MODIFY `data_sertif_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `data_sertif_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `t_pelatihan`
@@ -1309,7 +1314,7 @@ ALTER TABLE `t_pelatihan`
 -- AUTO_INCREMENT for table `t_sertifikasi`
 --
 ALTER TABLE `t_sertifikasi`
-  MODIFY `sertif_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `sertif_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables

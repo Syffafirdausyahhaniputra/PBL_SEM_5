@@ -291,9 +291,9 @@ class NotifikasiController extends Controller
 
         // Persiapkan data surat tugas
         $suratTugasData = [
-            'id' => $suratTugas->id ?? null,
-            'nama_surat_tugas' => $suratTugas->nama_surat_tugas ?? 'Tidak Diketahui',
-            'file_url' => $suratTugas ? asset('dokumen/surat_tugas/' . $suratTugas->id . '.pdf') : null, // URL file surat tugas
+            'id' => $suratTugas->surat_tugas_id ?? null,
+            'nama_surat_tugas' => $suratTugas->nama_surat ?? 'Tidak Diketahui',
+            'file_url' => $suratTugas ? asset('dokumen/surat_tugas/' . $suratTugas->nama_surat) : null, // URL file surat tugas
         ];
 
         return view('notifikasi.dosen.show_ajax', [

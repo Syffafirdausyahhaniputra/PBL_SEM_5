@@ -81,8 +81,8 @@
                         <tr>
                             <th class="text-right col-3">Surat Tugas:</th>
                             <td class="col-9">
-                                <a href="{{ $surat_tugas['file_url'] }}" target="_blank">
-                                    {{ $surat_tugas['nama_surat_tugas'] }}
+                                <a href="{{ $surat_tugas['file_url'] }}" target="_blank" class="btn btn-warning">
+                                    Download Surat Tugas
                                 </a>
                             </td>
                         </tr>

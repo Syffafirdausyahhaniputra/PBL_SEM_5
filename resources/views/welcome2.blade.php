@@ -2,17 +2,12 @@
 @section('content')
         <!-- Data and Profile Section -->
         <div class="d-flex flex-row">
-            <!-- Chart Card -->
-            <div class="card p-4 me-4" style="flex: 3; max-height: 300px; margin-right: 15px;">
-                <div class="d-flex flex-column justify-content-around" style="flex: 2; margin-right: 10px; margin-bottom: 50px;"">
-                    <div class="d-flex flex-column justify-content-around" style="flex: 2; margin-right: 10px; margin-bottom: 50px;">
-                        <div class="text-center">
-                            <h1 class="fw-bold">{{ $jumlahSertifikasiPelatihan }}</h1>
-                            <h2> Sertifikasi dan Pelatihan</h2>
-                        </div>
-                    </div>
+            <div class="card p-4 me-4 d-flex justify-content-center align-items-center" style="flex: 3; max-height: 300px; margin-right: 15px;">
+                <div class="text-center">
+                    <h1 class="fw-bold">{{ $jumlahSertifikasiPelatihan }}</h1>
+                    <h2>Sertifikasi dan Pelatihan</h2>
                 </div>
-            </div>
+            </div>            
             <!-- Profile Card -->
             <div class="card p-4 text-center d-flex align-items-center justify-content-center" style="flex: 1; color: black; max-height: 300px;">
                 <h2 class="fw-bold">Profil</h2>

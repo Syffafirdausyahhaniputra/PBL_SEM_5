@@ -91,22 +91,15 @@
                                     <option value="">Pilih Anggota</option>
                                     @foreach ($dataP as $data)
                                         <option value="{{ $data->dosen_id }}">
-                                            {{ $data->user ? $data->user->nama : 'Nama tidak tersedia' }}
+                                            {{ $data->user->nama }}
+                                            @if ($data->is_in_process)
+                                                (Sedang Proses Sertifikasi)
+                                            @elseif($data->match_bidang || $data->match_matkul)
+                                                (Rekomendasi)
+                                            @endif
                                         </option>
                                     @endforeach
                                 </select>
-
-                                <div class="form-group mt-2">
-                                    <label for="golongan_id">Golongan</label>
-                                    <input type="text" class="form-control" name="golongan_id[]"
-                                        placeholder="Masukkan Golongan">
-                                </div>
-
-                                <div class="form-group mt-2">
-                                    <label for="jabatan_id">Jabatan</label>
-                                    <input type="text" class="form-control" name="jabatan_id[]"
-                                        placeholder="Masukkan Jabatan">
-                                </div>
                             </div>
                             <small id="error-dosen_id" class="error-text form-text text-danger"></small>
                         </div>
@@ -151,30 +144,24 @@
                         bidang_id: {
                             required: true,
                             number: true,
-
                         },
                         vendor_id: {
                             required: true,
                             number: true,
-
                         },
                         mk_id: {
                             required: true,
                             number: true,
-
                         },
                         level_id: {
                             required: true,
                             number: true,
-
                         },
                         tanggal: {
                             required: true,
-
                         },
                         tanggal_akhir: {
                             required: true,
-
                         },
                         kuota: {
                             required: true,
@@ -184,7 +171,6 @@
                         dosen_id: {
                             required: true,
                             number: true,
-
                         },
                         lokasi: {
                             required: true,
@@ -206,7 +192,7 @@
                 // Ketika nilai kuota berubah
                 $('#kuota').on('input', function() {
                     const kuota = parseInt($(this).val()) ||
-                    1; // Ambil nilai kuota (default 0 jika kosong atau invalid)
+                        1; // Ambil nilai kuota (default 0 jika kosong atau invalid)
                     const anggotaContainer = $('#anggota-container');
 
                     // Bersihkan container sebelum ditambahkan ulang
@@ -248,8 +234,8 @@
                                     icon: 'success',
                                     title: 'Berhasil',
                                     text: response.message
-                                }).then(()=>{
-                                    window.location.href = "{{url('/pelatihan')}}";
+                                }).then(() => {
+                                    window.location.href = "{{ url('/pelatihan') }}";
                                 });
                                 $('#table-pelatihan').DataTable().ajax.reload();
                             } else {

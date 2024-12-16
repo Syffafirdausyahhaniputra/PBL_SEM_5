@@ -99,11 +99,32 @@ class PelatihanController extends Controller
         $matkuls = MatkulModel::all();
         $vendors = VendorModel::all();
         $levels = LevelPelatihanModel::all();
-        $gols = GolonganModel::all();
-        $jabatans = JabatanModel::all();
+
+        // Ambil bidang_id dan mk_id dari request (jika ada)
+        $bidangId = request('bidang_id');
+        $matkulId = request('mk_id');
 
         // Ambil data dosen beserta nama user
-        $dataP = DosenModel::with('user')->get();
+        $dataP = DosenModel::with('user')
+            ->leftJoin('t_data_sertifikasi', 'm_dosen.dosen_id', '=', 't_data_sertifikasi.dosen_id')
+            ->leftJoin('t_sertifikasi', 't_data_sertifikasi.sertif_id', '=', 't_sertifikasi.sertif_id')
+            ->select('m_dosen.*')  // Select m_dosen columns
+            ->distinct()  // Ensures no duplicates for dosen_id
+            ->selectRaw("CASE WHEN t_sertifikasi.status = 'Proses' THEN 1 ELSE 0 END as is_in_process")
+            ->selectRaw("EXISTS (
+            SELECT 1 
+            FROM m_dosen_bidang 
+            WHERE m_dosen.dosen_id = m_dosen_bidang.dosen_id 
+            AND m_dosen_bidang.bidang_id = ? 
+        ) as match_bidang", [$bidangId])  // Using positional binding here
+            ->selectRaw("EXISTS (
+            SELECT 1 
+            FROM m_dosen_matkul 
+            WHERE m_dosen.dosen_id = m_dosen_matkul.dosen_id 
+            AND m_dosen_matkul.mk_id = ? 
+        ) as match_matkul", [$matkulId])  // Using positional binding here
+            ->orderByRaw('is_in_process ASC, match_bidang DESC, match_matkul DESC')
+            ->get();
 
         return view('pelatihan.createTunjuk', [
             'activeMenu' => 'pelatihan',
@@ -114,8 +135,6 @@ class PelatihanController extends Controller
             'vendors' => $vendors,
             'levels' => $levels,
             'dataP' => $dataP,
-            'gols' => $gols,
-            'jabatans' => $jabatans,
         ]);
     }
 
@@ -1004,79 +1023,79 @@ class PelatihanController extends Controller
     }
 
     public function uploadSurat(Request $request)
-{
-    try {
-        // Validasi input
-        $validator = Validator::make($request->all(), [
-            'nomor_surat' => 'required|unique:m_surat_tugas,nomor_surat',
-            'file' => [
-                'required',
-                'file',
-                // Validasi ekstensi dan ukuran file
-            ],
-            'pelatihan_id' => 'required|exists:t_kegiatan,pelatihan_id',
-            'dosen_id' => 'required|exists:m_dosen,dosen_id',
-        ]);
+    {
+        try {
+            // Validasi input
+            $validator = Validator::make($request->all(), [
+                'nomor_surat' => 'required|unique:m_surat_tugas,nomor_surat',
+                'file' => [
+                    'required',
+                    'file',
+                    // Validasi ekstensi dan ukuran file
+                ],
+                'pelatihan_id' => 'required|exists:t_kegiatan,pelatihan_id',
+                'dosen_id' => 'required|exists:m_dosen,dosen_id',
+            ]);
 
-        // Jika validasi gagal, lempar exception
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
+            // Jika validasi gagal, lempar exception
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            // Mulai transaksi database
+            DB::beginTransaction();
+
+            // Proses upload file surat tugas
+            $fileSuratTugas = $request->file('file');
+            $filenameSuratTugas = time() . '_surat_' . $fileSuratTugas->getClientOriginalName();
+            $pathSuratTugas = $fileSuratTugas->storeAs('dokumen/surat_tugas', $filenameSuratTugas, 'public');
+
+            // Simpan data surat tugas
+            $suratTugas = SuratTugasModel::create([
+                'nomor_surat' => $request->nomor_surat,
+                'nama_surat' => $filenameSuratTugas, // Simpan nama file di kolom nama_surat
+                'status' => 'Diterima', // Set status surat tugas menjadi "Diterima"
+            ]);
+
+            // Simpan data pelatihan
+            $dataPelatihan = DataPelatihanModel::create([
+                'pelatihan_id' => $request->pelatihan_id,
+                'dosen_id' => $request->dosen_id,
+                'surat_tugas_id' => $suratTugas->surat_tugas_id,
+            ]);
+
+            // Commit transaksi
+            DB::commit();
+
+            // Kembalikan respon sukses dengan SweetAlert
+            return back()->with('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Surat tugas dan data pelatihan berhasil disimpan.',
+                'icon' => 'success'
+            ]);
+        } catch (ValidationException $e) {
+            // Rollback transaksi jika validasi gagal
+            DB::rollBack();
+
+            // Tangani kesalahan validasi dengan SweetAlert
+            $errors = $e->validator->errors()->all();
+            return back()->with('swal', [
+                'title' => 'Validasi Gagal!',
+                'text' => implode('\n', $errors),
+                'icon' => 'error'
+            ]);
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollBack();
+
+            // Tangani kesalahan umum dengan SweetAlert
+            return back()->with('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Gagal menyimpan surat tugas: ' . $e->getMessage(),
+                'icon' => 'error'
+            ]);
         }
-
-        // Mulai transaksi database
-        DB::beginTransaction();
-
-        // Proses upload file surat tugas
-        $fileSuratTugas = $request->file('file');
-        $filenameSuratTugas = time() . '_surat_' . $fileSuratTugas->getClientOriginalName();
-        $pathSuratTugas = $fileSuratTugas->storeAs('dokumen/surat_tugas', $filenameSuratTugas, 'public');
-
-        // Simpan data surat tugas
-        $suratTugas = SuratTugasModel::create([
-            'nomor_surat' => $request->nomor_surat,
-            'nama_surat' => $filenameSuratTugas, // Simpan nama file di kolom nama_surat
-            'status' => 'Diterima', // Set status surat tugas menjadi "Diterima"
-        ]);
-
-        // Simpan data pelatihan
-        $dataPelatihan = DataPelatihanModel::create([
-            'pelatihan_id' => $request->pelatihan_id,
-            'dosen_id' => $request->dosen_id,
-            'surat_tugas_id' => $suratTugas->surat_tugas_id,
-        ]);
-
-        // Commit transaksi
-        DB::commit();
-
-        // Kembalikan respon sukses dengan SweetAlert
-        return back()->with('swal', [
-            'title' => 'Berhasil!',
-            'text' => 'Surat tugas dan data pelatihan berhasil disimpan.',
-            'icon' => 'success'
-        ]);
-    } catch (ValidationException $e) {
-        // Rollback transaksi jika validasi gagal
-        DB::rollBack();
-
-        // Tangani kesalahan validasi dengan SweetAlert
-        $errors = $e->validator->errors()->all();
-        return back()->with('swal', [
-            'title' => 'Validasi Gagal!',
-            'text' => implode('\n', $errors),
-            'icon' => 'error'
-        ]);
-    } catch (\Exception $e) {
-        // Rollback transaksi jika terjadi kesalahan
-        DB::rollBack();
-
-        // Tangani kesalahan umum dengan SweetAlert
-        return back()->with('swal', [
-            'title' => 'Gagal!',
-            'text' => 'Gagal menyimpan surat tugas: ' . $e->getMessage(),
-            'icon' => 'error'
-        ]);
     }
-}
 
     // Tambahan method untuk download surat tugas
     public function downloadSuratTugas($suratTugasId)
@@ -1106,88 +1125,88 @@ class PelatihanController extends Controller
         }
     }
 
-      public function upload_(Request $request)
-      {
-          Log::info('Received upload request:', $request->all());
-  
-          // Validasi input
-          $validator = Validator::make($request->all(), [
-              'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048',
-              'pelatihan_id' => 'required|integer',
-              'dosen_id' => 'required|integer',
-          ]);
-  
-          if ($validator->fails()) {
-              Log::error('Validation failed:', $validator->errors()->toArray());
-              return response()->json([
-                  'status' => false,
-                  'message' => 'Validasi Gagal',
-                  'errors' => $validator->errors(),
-              ]);
-          }
-  
-          try {
-              // Direktori tujuan penyimpanan file
-              $destinationPath = public_path('dokumen/surat_tugas');
-  
-              // Buat folder jika belum ada
-              if (!File::exists($destinationPath)) {
-                  File::makeDirectory($destinationPath, 0755, true, true);
-              }
-  
-              // Simpan file
-              if ($request->hasFile('file')) {
-                  $file = $request->file('file');
-  
-                  if ($file->isValid()) {
-                      // Generate nama file unik
-                      $fileName = time() . '_' . $file->getClientOriginalName();
-                      $file->move($destinationPath, $fileName);
-  
-                      Log::info('File uploaded successfully:', ['file_name' => $fileName]);
-  
-                      // Format nomor_surat: pelatihan_(pelatihan_id)
-                      $nomorSurat = 'pelatihan_' . $request->pelatihan_id;
-  
-                      // Simpan ke tabel m_surat_tugas
-                      $suratTugas = SuratTugasModel::create([
-                          'nama_surat' => $fileName,
-                          'nomor_surat' => $nomorSurat, // Nomor surat otomatis
-                          'status' => 'Proses',
-                      ]);
-  
-                      Log::info('Surat Tugas created:', $suratTugas->toArray());
-  
-                      // Update tabel data_pelatihan
-                      DataPelatihanModel::where('pelatihan_id', $request->pelatihan_id)
-                          ->update(['surat_tugas_id' => $suratTugas->surat_tugas_id]);
-                    
-                      Log::info('Data Pelatihan updated with surat_tugas_id.');
-  
-                      PelatihanModel::where('pelatihan_id', $request->pelatihan_id)
-                      ->update(['keterangan'=> 'Penunjukkan']);
-                      return response()->json([
-                          'status' => true,
-                          'message' => 'Surat Tugas berhasil diupload dan disimpan.',
-                      ]);
-                  }
-              }
-  
-              return response()->json([
-                  'status' => false,
-                  'message' => 'File tidak valid atau gagal diunggah.',
-              ]);
-          } catch (\Exception $e) {
-              Log::error('Error during upload:', [
-                  'message' => $e->getMessage(),
-                  'trace' => $e->getTraceAsString(),
-              ]);
-  
-              return response()->json([
-                  'status' => false,
-                  'message' => 'Terjadi kesalahan saat menyimpan data.',
-                  'error' => $e->getMessage(),
-              ]);
-          }
-      }
+    public function upload_(Request $request)
+    {
+        Log::info('Received upload request:', $request->all());
+
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048',
+            'pelatihan_id' => 'required|integer',
+            'dosen_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            Log::error('Validation failed:', $validator->errors()->toArray());
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi Gagal',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        try {
+            // Direktori tujuan penyimpanan file
+            $destinationPath = public_path('dokumen/surat_tugas');
+
+            // Buat folder jika belum ada
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true, true);
+            }
+
+            // Simpan file
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+
+                if ($file->isValid()) {
+                    // Generate nama file unik
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $file->move($destinationPath, $fileName);
+
+                    Log::info('File uploaded successfully:', ['file_name' => $fileName]);
+
+                    // Format nomor_surat: pelatihan_(pelatihan_id)
+                    $nomorSurat = 'pelatihan_' . $request->pelatihan_id;
+
+                    // Simpan ke tabel m_surat_tugas
+                    $suratTugas = SuratTugasModel::create([
+                        'nama_surat' => $fileName,
+                        'nomor_surat' => $nomorSurat, // Nomor surat otomatis
+                        'status' => 'Proses',
+                    ]);
+
+                    Log::info('Surat Tugas created:', $suratTugas->toArray());
+
+                    // Update tabel data_pelatihan
+                    DataPelatihanModel::where('pelatihan_id', $request->pelatihan_id)
+                        ->update(['surat_tugas_id' => $suratTugas->surat_tugas_id]);
+
+                    Log::info('Data Pelatihan updated with surat_tugas_id.');
+
+                    PelatihanModel::where('pelatihan_id', $request->pelatihan_id)
+                        ->update(['keterangan' => 'Penunjukkan']);
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Surat Tugas berhasil diupload dan disimpan.',
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'File tidak valid atau gagal diunggah.',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error during upload:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan data.',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 }

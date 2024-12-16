@@ -10,10 +10,9 @@
             <div class="modal-body">
                 <!-- Nama sertifikasi -->
                 <div class="form-group">
-                    <label for="nama_sertifikasi">Nama Sertifikasi</label>
-                    <input type="text" name="nama_sertifikasi" id="nama_sertifikasi" class="form-control"
-                        required>
-                    <small id="error-nama_sertifikasi" class="error-text form-text text-danger"></small>
+                    <label for="nama_sertif">Nama Sertifikasi</label>
+                    <input type="text" name="nama_sertif" id="nama_sertif" class="form-control" required>
+                    <small id="error-nama_sertif" class="error-text form-text text-danger"></small>
                 </div>
 
                 <!-- Bidang -->
@@ -52,16 +51,16 @@
                     <small id="error-vendor_id" class="error-text form-text text-danger"></small>
                 </div>
 
-                <!-- Level -->
+                <!-- Jenis -->
                 <div class="form-group">
-                    <label for="level_id">Level</label>
-                    <select class="form-control" id="level_id" name="level_id" required>
-                        <option value="">Pilih Level</option>
-                        @foreach ($levels as $level)
-                            <option value="{{ $level->level_id }}">{{ $level->level_nama }}</option>
+                    <label for="jenis_id">Jenis</label>
+                    <select class="form-control" id="jenis_id" name="jenis_id" required>
+                        <option value="">Pilih Jenis</option>
+                        @foreach ($jenis as $j)
+                            <option value="{{ $j->jenis_id }}">{{ $j->jenis_nama }}</option>
                         @endforeach
                     </select>
-                    <small id="error-level_id" class="error-text form-text text-danger"></small>
+                    <small id="error-jenis_id" class="error-text form-text text-danger"></small>
                 </div>
 
                 <!-- Tanggal Mulai -->
@@ -73,9 +72,9 @@
 
                 <!-- Tanggal Akhir -->
                 <div class="form-group">
-                    <label for="masa_berlaku">Masa Berlaku</label>
-                    <input type="date" name="masa_berlaku" id="masa_berlaku" class="form-control" required>
-                    <small id="error-masa_berlaku" class="error-text form-text text-danger"></small>
+                    <label for="tanggal_akhir">Tanggal Akhir</label>
+                    <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" required>
+                    <small id="error-tanggal_akhir" class="error-text form-text text-danger"></small>
                 </div>
 
                 <!-- Kuota -->
@@ -91,24 +90,17 @@
                             <option value="">Pilih Anggota</option>
                             @foreach ($dataS as $data)
                                 <option value="{{ $data->dosen_id }}">
-                                    {{ $data->user ? $data->user->nama : 'Nama tidak tersedia' }}
+                                    {{ $data->user->nama }}
+                                    @if ($data->is_in_process)
+                                        (Sedang Proses Sertifikasi)
+                                    @elseif($data->match_bidang || $data->match_matkul)
+                                        (Rekomendasi)
+                                    @endif
                                 </option>
                             @endforeach
                         </select>
-
-                        {{-- <div class="form-group mt-2">
-                            <label for="golongan_id">Golongan</label>
-                            <input type="text" class="form-control" name="golongan_id[]"
-                                placeholder="Masukkan Golongan">
-                        </div>
-
-                        <div class="form-group mt-2">
-                            <label for="jabatan_id">Jabatan</label>
-                            <input type="text" class="form-control" name="jabatan_id[]"
-                                placeholder="Masukkan Jabatan">
-                        </div>
                     </div>
-                    <small id="error-dosen_id" class="error-text form-text text-danger"></small> --}}
+                    <small id="error-dosen_id" class="error-text form-text text-danger"></small>
                 </div>
 
                 <!-- Biaya -->
@@ -136,7 +128,7 @@
     $(document).ready(function() {
         $("#form_tambah").validate({
             rules: {
-                nama_sertifikasi: {
+                nama_sertif: {
                     required: true,
                     minlength: 3,
                     maxlength: 20
@@ -144,30 +136,24 @@
                 bidang_id: {
                     required: true,
                     number: true,
-
                 },
                 vendor_id: {
                     required: true,
                     number: true,
-
                 },
                 mk_id: {
                     required: true,
                     number: true,
-
                 },
-                level_id: {
+                jenis_id: {
                     required: true,
                     number: true,
-
                 },
                 tanggal: {
                     required: true,
-
                 },
-                masa_berlaku: {
+                tanggal_akhir: {
                     required: true,
-
                 },
                 kuota: {
                     required: true,
@@ -177,7 +163,6 @@
                 dosen_id: {
                     required: true,
                     number: true,
-
                 },
                 biaya: {
                     required: true,
@@ -194,7 +179,7 @@
         // Ketika nilai kuota berubah
         $('#kuota').on('input', function() {
             const kuota = parseInt($(this).val()) ||
-            1; // Ambil nilai kuota (default 0 jika kosong atau invalid)
+                1; // Ambil nilai kuota (default 0 jika kosong atau invalid)
             const anggotaContainer = $('#anggota-container');
 
             // Bersihkan container sebelum ditambahkan ulang
@@ -236,8 +221,8 @@
                             icon: 'success',
                             title: 'Berhasil',
                             text: response.message
-                        }).then(()=>{
-                            window.location.href = "{{url('/sertifikasi')}}";
+                        }).then(() => {
+                            window.location.href = "{{ url('/sertifikasi') }}";
                         });
                         $('#table-sertifikasi').DataTable().ajax.reload();
                     } else {

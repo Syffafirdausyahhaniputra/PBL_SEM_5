@@ -14,19 +14,20 @@
                                         <label for="avatar" style="cursor: pointer;">
                                             <img id="profile-pic"
                                                 src="{{ $user->avatar ? asset('avatars/' . $user->avatar) : asset('img/user.png') }}"
-                                                class="rounded-circle" width="100" height="100" alt="Profile Picture">
+                                                class="rounded-circle img-fluid" width="120" height="120"
+                                                alt="Profile Picture">
                                         </label>
                                         <input type="file" id="avatar" name="avatar" class="d-none"
                                             onchange="previewAndUploadImage(event)" accept="image/*">
                                     </form>
                                 </div>
-                                <div>
-                                    <h4 class="mb-0" id="display-nama">{{ $user->nama }}</h4>
-                                    <p class="text-muted" id="display-username">{{ '@' . $user->username }}</p>
+                                <div class="col">
+                                    <h4 class="mb-1" id="display-nama">{{ $user->nama }}</h4>
+                                    <p class="text-muted mb-0" id="display-email">{{ $user->email }}</p>
                                 </div>
                             </div>
 
-                            <div>
+                            <div class="col-auto text-end">
                                 <button type="button" class="btn btn-primary" id="edit-btn"
                                     onclick="toggleEdit()">Edit</button>
                             </div>
@@ -51,17 +52,15 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="nip" class="form-label">NIP</label>
+                                    <label for="nip" class="form-label">NIP/NIDN</label>
                                     <input id="nip" name="nip" type="text" class="form-control"
                                         value="{{ $user->nip }}" readonly>
                                 </div>
-
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email</label>
-                                    <input id="email" name="email" type="email" class="form-control"
+                                    <input id="email" name="email" type="text" class="form-control"
                                         value="{{ $user->email }}" readonly>
                                 </div>
-
                                 <div class="mb-3">
                                     <label for="jabatan_id" class="form-label">Jabatan</label>
                                     <select id="jabatan_id" name="jabatan_id" class="form-control" disabled>
@@ -100,6 +99,7 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <!-- In the Bidang section -->
                                 <div class="form-group">
                                     <label>Bidang</label>
                                     <div id="bidang-container">
@@ -122,7 +122,8 @@
                                     <button type="button" id="add-bidang" class="btn btn-sm btn-primary mt-2 edit-mode-only" 
                                         onclick="addBidang()" style="display: none;">Tambah Bidang</button>
                                 </div>
-    
+
+                                <!-- In the Mata Kuliah section -->
                                 <div class="form-group">
                                     <label>Mata Kuliah</label>
                                     <div id="matkul-container">
@@ -167,69 +168,149 @@
         </div>
     </div>
 
+    @if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    @if (session('info'))
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ session('info') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <script>
-        let originalFormData = null;
         let originalImageSrc = "{{ $user->avatar ? asset('avatars/' . $user->avatar) : asset('img/user.png') }}";
-        
-
-        function toggleEdit() {
-            const editBtn = document.getElementById('edit-btn');
-            const isEdit = editBtn.innerText === 'Edit';
-
-            if (isEdit && !originalFormData) {
-                originalFormData = new FormData(document.getElementById('profile-form'));
-            }
-
-            document.querySelectorAll('input:not(#nama,#nip), select').forEach(input => {
-                input.readOnly = !isEdit;
-                input.disabled = !isEdit;
-            });
-
-            editBtn.innerText = isEdit ? 'Batal' : 'Edit';
-            document.getElementById('save-cancel-group').classList.toggle('d-none', !isEdit);
-            document.getElementById('old-password-group').classList.toggle('d-none', !isEdit);
-            document.getElementById('new-password-group').classList.toggle('d-none', !isEdit);
-
-            if (!isEdit && originalFormData) {
-                resetForm();
+        let hasNewImage = false;
+    
+        function previewAndUploadImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-pic').src = e.target.result;
+                    hasNewImage = true;
+                }
+                reader.readAsDataURL(file);
             }
         }
-
-        function resetForm() {
-            const form = document.getElementById('profile-form');
-            for (let [key, value] of originalFormData.entries()) {
-                const input = form.querySelector([name="${key}"]);
-                if (input) {
-                    input.value = value;
-                }
-            }
-            // Reset avatar
-            document.getElementById('profile-pic').src = "{{ $user->avatar ? asset('avatars/' . $user->avatar) : asset('img/user.png') }}";
+    
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            // Reset password fields
-            document.getElementById('old_password').value = '';
-            document.getElementById('password').value = '';
-
-            // Remove any validation errors
+            const formData = new FormData(this);
+            const avatarFile = document.getElementById('avatar').files[0];
+            if (avatarFile) {
+                formData.append('avatar', avatarFile);
+            }
+    
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update display data immediately
+                    updateDisplayData(data);
+                    
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then(() => {
+                        toggleEdit(); // Exit edit mode
+                    });
+                } else {
+                    handleValidationErrors(data.errors);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Terjadi kesalahan saat memperbarui profil. Silakan coba lagi.',
+                    confirmButtonText: 'Tutup'
+                });
+            });
+        });
+    
+        function updateDisplayData(data) {
+            if (data.user.avatar) {
+                document.getElementById('profile-pic').src = '/avatars/' + data.user.avatar;
+                document.getElementById('display-nama').textContent = data.user.nama;
+                document.getElementById('display-email').textContent = data.user.email;
+            }
+        }
+    
+        function handleValidationErrors(errors) {
+            // Clear previous errors
             document.querySelectorAll('.is-invalid').forEach(el => {
                 el.classList.remove('is-invalid');
             });
             document.querySelectorAll('.invalid-feedback').forEach(el => {
                 el.remove();
             });
+    
+            // Show new errors
+            Object.keys(errors || {}).forEach(key => {
+                const input = document.getElementById(key);
+                if (input) {
+                    input.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.textContent = errors[key][0];
+                    input.parentNode.appendChild(feedback);
+                }
+            });
         }
-
-        function updateDisplayData(data) {
-            document.getElementById('display-nama').textContent = data.user.nama;
-            document.getElementById('display-username').textContent = '@' + data.user.username;
-            document.getElementById('display-email').textContent = data.user.email;
-            if (data.user.dosen) {
-                document.getElementById('jabatan_id').value = data.user.dosen.jabatan_id;
-                document.getElementById('golongan_id').value = data.user.dosen.golongan_id;
-                document.getElementById('pangkat_id').value = data.user.dosen.pangkat_id;
-            }
-            if (data.user.avatar) {
-                document.getElementById('profile-pic').src = '/avatars/' + data.user.avatar;
+    
+        function toggleEdit() {
+            const editBtn = document.getElementById('edit-btn');
+            const isReadOnly = document.getElementById('username').readOnly;
+            const saveCancelGroup = document.getElementById('save-cancel-group');
+            const oldPasswordGroup = document.getElementById('old-password-group');
+            const newPasswordGroup = document.getElementById('new-password-group');
+            const avatarInput = document.getElementById('avatar');
+    
+            // Toggle input states
+            document.querySelectorAll('select, input:not([type="file"])').forEach(input => {
+                input.disabled = !isReadOnly;
+            });
+    
+            // Toggle read-only state for specific fields
+            document.getElementById('username').readOnly = !isReadOnly;
+            document.getElementById('email').readOnly = !isReadOnly;
+            avatarInput.disabled = !isReadOnly;
+    
+            // Toggle visibility of edit modes
+            document.querySelectorAll('.edit-mode-only').forEach(el => {
+                el.style.display = !isReadOnly ? '' : 'none';
+            });
+    
+            // Toggle password and save/cancel groups
+            oldPasswordGroup.classList.toggle('d-none');
+            newPasswordGroup.classList.toggle('d-none');
+            saveCancelGroup.classList.toggle('d-none');
+    
+            // Update button text
+            editBtn.innerText = !isReadOnly ? 'Edit' : 'Batal';
+    
+            // If cancelling, reset form and preview
+            if (isReadOnly) {
+                resetForm();
             }
         }
 
@@ -269,72 +350,56 @@
             button.closest('.matkul-item').remove();
         }
 
-        // Form submission handler
-        document.getElementById('profile-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update display data immediately
-                    updateDisplayData(data);
-                    
-                    // Show success message
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: data.message,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    }).then(() => {
-                        toggleEdit(); // Exit edit mode
-                        // Store new form data as original
-                        originalFormData = new FormData(this);
-                    });
-                } else {
-                    handleValidationErrors(data.errors);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        function removeMatkul(button) {
+            const isEditMode = document.getElementById('edit-btn').innerText === 'Batal';
+            
+            if (!isEditMode) return; // Prevent removing if not in edit mode
+            
+            // Prevent removing the last mata kuliah
+            const matkulItems = document.querySelectorAll('.matkul-item');
+            if (matkulItems.length > 1) {
+                button.closest('.matkul-item').remove();
+            } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: 'Terjadi kesalahan saat memperbarui profil. Silakan coba lagi.',
+                    icon: 'warning',
+                    title: 'Tidak Bisa Menghapus',
+                    text: 'Minimal harus memiliki satu mata kuliah.',
                     confirmButtonText: 'Tutup'
                 });
-            });
-        });
-
-
-        function previewAndUploadImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('profile-pic').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
             }
         }
-
+            
+        function resetForm() {
+            // Reset form fields
+            document.getElementById('profile-form').reset();
+    
+            // Reset avatar to original
+            document.getElementById('profile-pic').src = originalImageSrc;
+            hasNewImage = false;
+    
+            // Remove validation errors
+            document.querySelectorAll('.is-invalid').forEach(el => {
+                el.classList.remove('is-invalid');
+            });
+            document.querySelectorAll('.invalid-feedback').forEach(el => {
+                el.remove();
+            });
+        }
+    
+        // Clear validation errors when input changes
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+                const feedback = this.parentNode.querySelector('.invalid-feedback');
+                if (feedback) {
+                    feedback.remove();
+                }
+            });
+        });
+    
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             originalFormData = new FormData(document.getElementById('profile-form'));
-
-            // Ensure password fields are hidden initially
-            document.getElementById('old-password-group').classList.add('d-none');
-            document.getElementById('new-password-group').classList.add('d-none');
         });
     </script>
 @endsection

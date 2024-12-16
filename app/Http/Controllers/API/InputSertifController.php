@@ -11,16 +11,16 @@ use App\Models\BidangModel;
 use App\Models\JenisModel;
 use App\Models\MatkulModel;
 use App\Models\VendorModel;
+use Illuminate\Support\Facades\DB;
 
 class InputSertifController extends Controller
 {
     /**
      * Menampilkan daftar data sertifikasi.
      */
-    public function list(Request $request)
+    public function index(Request $request)
     {
         try {
-            // Mengambil data sertifikasi dengan relasi ke model terkait
             $sertifikasi = SertifikasiModel::with(['bidang', 'jenis', 'vendor', 'matkul'])->get();
 
             return response()->json([
@@ -50,7 +50,7 @@ class InputSertifController extends Controller
             'mk_id' => 'required|integer|exists:matkul_models,id',
             'vendor_id' => 'required|integer|exists:vendor_models,id',
             'tanggal' => 'required|date',
-            'tanggal_akhir' => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal',
             'biaya' => 'required|numeric|min:0',
             'masa_berlaku' => 'nullable|date',
             'periode' => 'required|string|max:50',
@@ -64,8 +64,9 @@ class InputSertifController extends Controller
             ], 422);
         }
 
+        DB::beginTransaction();
+
         try {
-            // Simpan data ke database
             $sertifikasi = SertifikasiModel::create([
                 'nama_sertif' => $request->nama_sertif,
                 'bidang_id' => $request->bidang_id,
@@ -79,15 +80,54 @@ class InputSertifController extends Controller
                 'periode' => $request->periode,
             ]);
 
+            DataSertifikasiModel::create([
+                'sertifikasi_id' => $sertifikasi->sertifikasi_id,
+                'dosen_id' => $request->dosen_id,
+            ]);
+
+            DB::commit();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data sertifikasi berhasil disimpan',
                 'data' => $sertifikasi,
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
+
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan saat menyimpan data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Mengambil data dropdown untuk form.
+     */
+    public function dropdown()
+    {
+        try {
+            $jeniss = JenisModel::all();
+            $vendors = VendorModel::all();
+            $bidangs = BidangModel::all();
+            $matkuls = MatkulModel::all();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data dropdown berhasil diambil',
+                'data' => [
+                    'jenis' => $jeniss,
+                    'vendors' => $vendors,
+                    'bidangs' => $bidangs,
+                    'matkuls' => $matkuls,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data dropdown',
                 'error' => $e->getMessage(),
             ], 500);
         }

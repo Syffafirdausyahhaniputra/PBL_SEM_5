@@ -1,6 +1,6 @@
 <div id="modal-master" class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-<form action="{{ url('/pelatihan/create_ajax2') }}" method="POST" id="form-tambah-pelatihan">
+<form action="{{ url('/pelatihan/create_ajax2') }}" method="POST" id="form-tambah-pelatihan" enctype="multipart/form-data">
     @csrf
     <div class="modal-header">
         <h5 class="modal-title">Tambah Pelatihan</h5>
@@ -8,18 +8,6 @@
             aria-hidden="true">&times;</span></button>
     </div>
     <div class="modal-body">
-        {{-- <!-- Dosen -->
-        <div class="form-group">
-            <label>Dosen</label>
-            <select name="dosen_id" class="form-control" id="dosen_id" required>
-                <option value="">- Pilih Dosen -</option>
-                @foreach($dosens as $dosen)
-                    <option value="{{ $dosen->dosen_id }}">{{ $dosen->nama }}</option>
-                @endforeach
-            </select>
-            <small id="error-dosen_id" class="error-text form-text text-danger"></small>
-        </div> --}}
-
         <!-- Nama Pelatihan -->
         <div class="form-group">
             <label for="nama_pelatihan">Nama Pelatihan</label>
@@ -102,30 +90,35 @@
             <label for="periode">Periode</label>
             <input type="text" name="periode" id="periode" class="form-control" required>
             <small id="error-periode" class="error-text form-text text-danger"></small>
-                <!-- Formulir Upload File -->
-                <div class="form-group">
-                    <label for="file">Upload Dokumen:</label>
-                    <input type="file" class="form-control" id="file" name="file" required>
-                    <!-- Validasi error -->
-                    @error('file')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
-            </div>
+        </div>
+
+        <!-- Formulir Upload File -->
+        <div class="form-group">
+            <label for="file">Upload Dokumen <small>(maksimal 2MB)</small>:</label>
+            <input type="file" class="form-control" id="file" name="file" accept=".pdf,.doc,.docx" required>
+            <small id="error-file" class="error-text form-text text-danger"></small>
+        </div>
     </div>
+    <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
     </div>
-</div>
 </form>
+</div>
 <script>
 $(document).ready(function () {
     $('#form-tambah-pelatihan').on('submit', function (event) {
         event.preventDefault();
 
         let formData = new FormData(this);
+
+        // Validasi ukuran file maksimal 2MB
+        const fileInput = document.getElementById('file');
+        const file = fileInput.files[0];
+        if (file && file.size > 2 * 1024 * 1024) {
+            $('#error-file').text('Ukuran file tidak boleh lebih dari 2MB.');
+            return;
+        }
 
         $.ajax({
             url: this.action,
@@ -179,5 +172,4 @@ $(document).ready(function () {
         });
     });
 });
-
 </script>

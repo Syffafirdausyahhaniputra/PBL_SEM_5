@@ -1,28 +1,28 @@
 <?php
 
-use App\Http\Controllers\Api\LoginController;
-use App\Http\Controllers\Api\PelatihanApiController;
-use App\Http\Controllers\Api\Dashboard2Controller;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\SertifikasiApiController;
+use App\Http\Controllers\API\LoginController;
+use App\Http\Controllers\API\PelatihanApiController;
+use App\Http\Controllers\API\Dashboard2Controller;
+use App\Http\Controllers\API\DashboardController;
+use App\Http\Controllers\API\SertifikasiApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PelatihanController;
-use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\Api\SertifikasiController;
-use App\Http\Controllers\Api\InputSertifController;
-use App\Http\Controllers\Api\DosenController;
-use App\Http\Controllers\Api\NotifikasiPimpinanController;
-use App\Http\Controllers\Api\ProfileDosenController;
-use App\Http\Controllers\Api\PlthnController;
-use App\Http\Controllers\Api\BidangApiController;
-use App\Http\Controllers\Api\GolonganApiController;
-use App\Http\Controllers\Api\JabatanApiController;
-use App\Http\Controllers\Api\JenisApiController;
-use App\Http\Controllers\Api\MataKuliahApiController;
-use App\Http\Controllers\Api\NotifikasiDosenController;
-use App\Http\Controllers\Api\PangkatApiController;
-use App\Http\Controllers\Api\VendorApiController;
+use App\Http\Controllers\API\PelatihanController;
+use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\SertifikasiController;
+use App\Http\Controllers\API\InputSertifController;
+use App\Http\Controllers\API\DosenController;
+use App\Http\Controllers\API\NotifikasiPimpinanController;
+use App\Http\Controllers\API\ProfileDosenController;
+use App\Http\Controllers\API\PlthnController;
+use App\Http\Controllers\API\BidangApiController;
+use App\Http\Controllers\API\GolonganApiController;
+use App\Http\Controllers\API\JabatanApiController;
+use App\Http\Controllers\API\JenisApiController;
+use App\Http\Controllers\API\MataKuliahApiController;
+use App\Http\Controllers\API\NotifikasiDosenController;
+use App\Http\Controllers\API\PangkatApiController;
+use App\Http\Controllers\API\VendorApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -172,9 +172,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('sertifikasi/{id}', [InputSertifController::class, 'destroy']);
 });
 
-Route::get('/kompetensi', [App\Http\Controllers\Api\KompetensiController::class, 'index']);
-Route::post('/kompetensi/list', [App\Http\Controllers\Api\KompetensiController::class, 'list']);
-Route::get('/kompetensi/{prodi_kode}/show_ajax', [App\Http\Controllers\Api\KompetensiController::class, 'show_ajax']);
+Route::get('/kompetensi', [App\Http\Controllers\API\KompetensiController::class, 'index']);
+Route::post('/kompetensi/list', [App\Http\Controllers\API\KompetensiController::class, 'list']);
+Route::get('/kompetensi/{prodi_kode}/show_ajax', [App\Http\Controllers\API\KompetensiController::class, 'show_ajax']);
 
 // Route::group(['prefix' => 'plthn'], function () {
 //     Route::get('/', [PlthnController::class, 'index']); // Menampilkan daftar pelatihan
@@ -187,8 +187,8 @@ Route::get('/kompetensi/{prodi_kode}/show_ajax', [App\Http\Controllers\Api\Kompe
 // Route::get('/riwayat', [RiwayatController::class, 'getRiwayatApi']);
 // Route::resource('pelatihan', PelatihanController::class);
 
-Route::post('/profil', [App\Http\Controllers\Api\ProfileController::class, 'index']);
-Route::get('/profil/{id}', [App\Http\Controllers\Api\ProfileController::class, 'show']);
+Route::post('/profil', [App\Http\Controllers\API\ProfileController::class, 'index']);
+Route::get('/profil/{id}', [App\Http\Controllers\API\ProfileController::class, 'show']);
 
 // Route::get('/pelatihan/dropdown', [PlthnController::class, 'dropdown']);
 // Route::post('/pelatihan/store', [PlthnController::class, 'store'])->name('pelatihan.store');

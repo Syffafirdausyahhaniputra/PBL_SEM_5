@@ -1,3 +1,4 @@
+show_ajax
 <div id="modal-master" class="modal-dialog modal-lg" jenis="document">
     <div class="modal-content">
         <div class="modal-header">
@@ -8,6 +9,34 @@
                 <!-- Kontainer data -->
                 <div id="detailValidasi">
                     <!-- Data akan dimuat melalui AJAX -->
+                    <table class="table table-bordered">
+                            <tr>
+                                <th>Type</th>
+                                <td>{{$type == 'sertifikasi' ? 'Sertifikasi' : 'Pelatihan'}}</td>
+                            </tr>
+                            <tr>
+                                <th>Nama</th>
+                                <td>{{$nama}}</td>
+                            </tr>
+                            <tr>
+                                <th>Keterangan</th>
+                                <td>{{$keterangan}}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{{$status}}</td>
+                            </tr>
+                            <tr>
+                                <th>Peserta</th>
+                                <td>
+                                    <ul>
+                                        @foreach($peserta as $peser)
+                                        <li>{{$peser['nama']}}</li>
+                                        @endforeach
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
                 </div>
             </div>
             <div class="modal-footer">
@@ -60,7 +89,7 @@
                     $('#detailValidasi').html(html);
                     // Set data-url untuk tombol Validasi
                     $('#validasiButton').data('url', url);
-                    $('#Modal-master').modal('show'); // Tampilkan modal
+                    $('#validasiModal').modal('show'); // Tampilkan modal
                 } else {
                     alert(response.message);
                 }

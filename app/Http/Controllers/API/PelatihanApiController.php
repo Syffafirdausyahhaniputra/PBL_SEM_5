@@ -57,6 +57,9 @@ class PelatihanApiController extends Controller
             'bidang' => $pelatihan->bidang->bidang_nama,
             'matkul' => $pelatihan->matkul->mk_nama,
             'vendor' => $pelatihan->vendor->vendor_nama,
+            'biaya' => $pelatihan->biaya,
+            'kuota' => $pelatihan->kuota,
+            'tanggal_akhir' => $pelatihan->tanggal_akhir,
         ];
 
         return response()->json($data);

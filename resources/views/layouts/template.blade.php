@@ -81,7 +81,7 @@
         @if (session('role_id') == 1)
             @include('layouts.header')
         @elseif (session('role_id') == 2)
-            @include('layouts.header')
+            @include('layouts.headerDosen')
         @elseif (session('role_id') == 3)
             @include('layouts.headerDosen')
         @endif

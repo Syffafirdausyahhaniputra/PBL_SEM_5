@@ -2,10 +2,17 @@
 
 @section('content')
     <div class="card card-outline card-primary">
-        <div class="card-header">
-            <div class="card-tools">
-                <button onclick="modalAction('{{ url('/sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Data Sertifikasi</i></button>
-                <button onclick="modalAction('{{ url('/sertifikasi/tunjuk') }}')" class="btn btn-sm btn-success mt-1"><i class="fa fa-plus"> Tambah Penunjukkan Sertifikasi</i></button>
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+            <h3 class="card-title">Data Sertifikasi</h3>
+            <div class="card-tools d-flex gap-3 flex-wrap" style="margin-left: auto;">
+                <button onclick="modalAction('{{ url('/sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1">
+                    <i class="fa fa-plus"></i> Tambah Data Sertifikasi
+                </button>
+                <div style="width: 10px;"></div>
+                <button onclick="modalAction('{{ url('/sertifikasi/tunjuk') }}')" class="btn btn-sm btn-success mt-1">
+                    <i class="fa fa-plus"></i> Tambah Penunjukkan Sertifikasi
+                </button>
+            </div>
         </div>
         <div class="card-body">
             <!-- Pesan sukses/gagal -->
@@ -16,18 +23,20 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             <!-- Tabel Sertifikasi -->
-            <table class="table table-bordered table-striped table-hover" id="table-sertifikasi">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Sertifikasi</th>
-                        <th>Tanggal</th>
-                        <th>Bidang</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover w-100" id="table-sertifikasi">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Sertifikasi</th>
+                            <th>Tanggal</th>
+                            <th>Bidang</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
@@ -42,7 +51,7 @@
             $('#myModal').modal('show');
         });
     }
-    
+
     $(document).ready(function() {
         $('#table-sertifikasi').DataTable({
             processing: true,
@@ -55,7 +64,9 @@
                 { data: 'nama_bidang', name: 'nama_bidang' },
                 { data: 'status', name: 'status' },
                 { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
-            ]
+            ],
+            responsive: true,
+            autoWidth: false
         });
     });
 </script>

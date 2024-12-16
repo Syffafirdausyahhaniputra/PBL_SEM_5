@@ -64,8 +64,7 @@ class ProfileDosenController extends Controller
 
             $request->validate([
                 'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id',
-                'nama' => 'required|string|max:100',
-                'nip' => 'required|string|max:50',
+                'email' => 'required|string|max:100',
                 'jabatan_id' => 'required|exists:m_jabatan,jabatan_id',
                 'golongan_id' => 'required|exists:m_golongan,golongan_id',
                 'pangkat_id' => 'required|exists:m_pangkat,pangkat_id',
@@ -87,9 +86,25 @@ class ProfileDosenController extends Controller
                 'pangkat_id' => $request->pangkat_id,
             ]);
 
+            // Cek perubahan data
+            $isChanged = false;
+
+            if ($user->username != $request->username || 
+                $user->email != $request->email || 
+                $request->hasFile('avatar') ||
+                $request->filled('old_password')) {
+                $isChanged = true;
+            }
+
+            if (!$isChanged) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada perubahan pada profil Anda.'
+                ]);
+            }
+
             $user->username = $request->username;
-            $user->nama = $request->nama;
-            $user->nip = $request->nip;
+            $user->email = $request->email;
 
             if ($request->filled('old_password')) {
                 if (!Hash::check($request->old_password, $user->password)) {
@@ -98,13 +113,28 @@ class ProfileDosenController extends Controller
                 $user->password = Hash::make($request->password);
             }
 
+            // Handle avatar upload
             if ($request->hasFile('avatar')) {
-                if ($user->avatar && file_exists(public_path('avatars/' . $user->avatar))) {
-                    unlink(public_path('avatars/' . $user->avatar));
+                // Validasi file upload
+                $request->validate([
+                    'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                ]);
+
+                // Hapus avatar lama jika ada
+                if ($user->avatar) {
+                    $oldAvatarPath = public_path('avatars/' . $user->avatar);
+                    if (file_exists($oldAvatarPath)) {
+                        unlink($oldAvatarPath);
+                    }
                 }
-                $avatarName = time() . '.' . $request->file('avatar')->extension();
-                $request->file('avatar')->move(public_path('avatars'), $avatarName);
-                $user->avatar = $avatarName;
+
+                // Simpan avatar baru di folder 'avatars' pada direktori public
+                $file = $request->file('avatar');
+                $fileName = time() . '' . preg_replace('/\\s+/', '', $file->getClientOriginalName());
+                $file->move(public_path('avatars'), $fileName);
+
+                // Perbarui avatar di database
+                $user->avatar = $fileName;
             }
 
             $user->save();

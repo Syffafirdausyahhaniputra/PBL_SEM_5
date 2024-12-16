@@ -55,6 +55,13 @@
                                     <input id="nip" name="nip" type="text" class="form-control"
                                         value="{{ $user->nip }}" readonly>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input id="email" name="email" type="email" class="form-control"
+                                        value="{{ $user->email }}" readonly>
+                                </div>
+
                                 <div class="mb-3">
                                     <label for="jabatan_id" class="form-label">Jabatan</label>
                                     <select id="jabatan_id" name="jabatan_id" class="form-control" disabled>
@@ -162,31 +169,27 @@
 
     <script>
         let originalFormData = null;
+        let originalImageSrc = "{{ $user->avatar ? asset('avatars/' . $user->avatar) : asset('img/user.png') }}";
+        
 
         function toggleEdit() {
             const editBtn = document.getElementById('edit-btn');
             const isEdit = editBtn.innerText === 'Edit';
 
-            // Store original form data when entering edit mode
             if (isEdit && !originalFormData) {
                 originalFormData = new FormData(document.getElementById('profile-form'));
             }
 
-            document.querySelectorAll('.edit-mode-only').forEach(el => {
-                el.style.display = isEdit ? '' : 'none';
-            });
-
-            document.querySelectorAll('select, input:not([type="file"])').forEach(input => {
+            document.querySelectorAll('input:not(#nama,#nip), select').forEach(input => {
+                input.readOnly = !isEdit;
                 input.disabled = !isEdit;
             });
 
             editBtn.innerText = isEdit ? 'Batal' : 'Edit';
             document.getElementById('save-cancel-group').classList.toggle('d-none', !isEdit);
-            // Show or hide password fields
             document.getElementById('old-password-group').classList.toggle('d-none', !isEdit);
             document.getElementById('new-password-group').classList.toggle('d-none', !isEdit);
 
-            // Reset form when canceling
             if (!isEdit && originalFormData) {
                 resetForm();
             }
@@ -194,16 +197,12 @@
 
         function resetForm() {
             const form = document.getElementById('profile-form');
-            const formData = originalFormData;
-            
-            // Reset basic inputs
-            for (let pair of formData.entries()) {
-                const input = form.querySelector([name="${pair[0]}"]);
+            for (let [key, value] of originalFormData.entries()) {
+                const input = form.querySelector([name="${key}"]);
                 if (input) {
-                    input.value = pair[1];
+                    input.value = value;
                 }
             }
-
             // Reset avatar
             document.getElementById('profile-pic').src = "{{ $user->avatar ? asset('avatars/' . $user->avatar) : asset('img/user.png') }}";
             
@@ -223,6 +222,7 @@
         function updateDisplayData(data) {
             document.getElementById('display-nama').textContent = data.user.nama;
             document.getElementById('display-username').textContent = '@' + data.user.username;
+            document.getElementById('display-email').textContent = data.user.email;
             if (data.user.dosen) {
                 document.getElementById('jabatan_id').value = data.user.dosen.jabatan_id;
                 document.getElementById('golongan_id').value = data.user.dosen.golongan_id;
@@ -316,27 +316,6 @@
             });
         });
 
-        function handleValidationErrors(errors) {
-            // Clear previous errors
-            document.querySelectorAll('.is-invalid').forEach(el => {
-                el.classList.remove('is-invalid');
-            });
-            document.querySelectorAll('.invalid-feedback').forEach(el => {
-                el.remove();
-            });
-
-            // Show new errors
-            Object.keys(errors || {}).forEach(key => {
-                const input = document.getElementById(key);
-                if (input) {
-                    input.classList.add('is-invalid');
-                    const feedback = document.createElement('div');
-                    feedback.className = 'invalid-feedback';
-                    feedback.textContent = errors[key][0];
-                    input.parentNode.appendChild(feedback);
-                }
-            });
-        }
 
         function previewAndUploadImage(event) {
             const file = event.target.files[0];

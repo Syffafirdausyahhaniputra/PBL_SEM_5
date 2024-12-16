@@ -48,7 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index']);
     Route::get('/welcome2', [Welcome2Controller::class, 'index2'])->name('welcome2.index2');
 
-    Route::group(['prefix' => 'user', 'middleware' => 'authorize:ADMN'], function () {
+    Route::group(['prefix' => 'user'], function () {
         Route::get('/', [UserController::class, 'index']);         // menampilkan halaman awal user
         Route::post('/list', [UserController::class, 'list']);     // menampilkan data user dalam bentuk json untuk datables
         Route::get('/create_ajax', [UserController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/import_ajax', [UserController::class, 'import_ajax']);
     });
 
-    Route::group(['prefix' => 'bidang', 'middleware' => 'authorize:ADMN,LEAD'], function () {
+    Route::group(['prefix' => 'bidang'], function () {
         Route::get('/bidang/{id}', [BidangController::class, 'showDosenByBidang'])->name('bidang.showDosenByBidang');
         Route::get('/list2', [BidangController::class, 'index1']);
         Route::get('/', [BidangController::class, 'index']);         // menampilkan halaman awal bidang
@@ -83,7 +83,7 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    Route::group(['prefix' => 'role', 'middleware' => 'authorize:ADMN'], function () {
+    Route::group(['prefix' => 'role'], function () {
         Route::get('/', [RoleController::class, 'index']);         // menampilkan halaman awal role
         Route::post('/list', [RoleController::class, 'list']);     // menampilkan data role dalam bentuk json untuk datatables
         Route::get('/create_ajax', [RoleController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
@@ -95,7 +95,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [RoleController::class, 'delete_ajax']); // Untuk menghapus data role Ajax
     });
 
-    Route::group(['prefix' => 'vendor', 'middleware' => 'authorize:ADMN'], function () {
+    Route::group(['prefix' => 'vendor'], function () {
         Route::get('/', [VendorController::class, 'index']);         // menampilkan halaman awal vendor
         Route::post('/list', [VendorController::class, 'list']);     // menampilkan data vendor dalam bentuk json untuk datatables
         Route::get('/create_ajax', [VendorController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
@@ -109,7 +109,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/import_ajax', [VendorController::class, 'import_ajax']);
     });
 
-    Route::group(['prefix' => 'matkul', 'middleware' => 'authorize:ADMN'], function () {
+    Route::group(['prefix' => 'matkul'], function () {
         Route::get('/', [MatkulController::class, 'index']);         // menampilkan halaman awal matkul
         Route::post('/list', [MatkulController::class, 'list']);     // menampilkan data matkul dalam bentuk json untuk datatables
         Route::get('/create_ajax', [MatkulController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
@@ -123,7 +123,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/import_ajax', [MatkulController::class, 'import_ajax']);
     });
 
-    Route::group(['prefix' => 'prodi', 'middleware' => 'authorize:ADMN'], function () {
+    Route::group(['prefix' => 'prodi'], function () {
         Route::get('/', [ProdiController::class, 'index']);         // menampilkan halaman awal matkul
         Route::post('/list', [ProdiController::class, 'list']);     // menampilkan data matkul dalam bentuk json untuk datatables
         Route::get('/create_ajax', [ProdiController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
@@ -135,7 +135,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [ProdiController::class, 'delete_ajax']); // Untuk menghapus data matkul Ajax
     });
 
-    Route::group(['prefix' => 'kompetensi_prodi', 'middleware' => 'authorize:ADMN'], function () {
+    Route::group(['prefix' => 'kompetensi_prodi'], function () {
         Route::get('/', [KompetensiProdiController::class, 'index']);         // menampilkan halaman awal matkul
         Route::post('/list', [KompetensiProdiController::class, 'list']);     // menampilkan data matkul dalam bentuk json untuk datatables
         Route::get('/create_ajax', [KompetensiProdiController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
@@ -147,13 +147,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{prodi_id}/delete_ajax', [KompetensiProdiController::class, 'delete_ajax']); // Untuk menghapus data matkul Ajax
     });
 
-    Route::group(['prefix' => 'kompetensi', 'middleware' => 'authorize:LEAD'], function () {
+    Route::group(['prefix' => 'kompetensi'], function () {
         Route::get('/', [KompetensiProdiController::class, 'index2']);         // menampilkan halaman awal matkul
         Route::post('/list', [KompetensiProdiController::class, 'list2']);     // menampilkan data matkul dalam bentuk json untuk datatables
         Route::get('/{prodi_kode}/show_ajax2', [KompetensiProdiController::class, 'show_ajax2']);
     });
 
-    Route::group(['prefix' => 'jenis', 'middleware' => 'authorize:ADMN'], function () {
+    Route::group(['prefix' => 'jenis'], function () {
         Route::get('/', [JenissertifController::class, 'index']);         // menampilkan halaman awal jenis
         Route::post('/list', [JenissertifController::class, 'list']);     // menampilkan data jenis dalam bentuk json untuk datatables
         Route::get('/create_ajax', [JenissertifController::class, 'create_ajax']); // Menampilkan halaman form tambah user Ajax
@@ -165,7 +165,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}/delete_ajax', [JenissertifController::class, 'delete_ajax']); // Untuk menghapus data jenis Ajax
     });
 
-    Route::group(['prefix' => 'level', 'middleware' => 'authorize:ADMN'], function () {
+    Route::group(['prefix' => 'level'], function () {
         Route::get('/', [LevelpelatihanController::class, 'index']);         // menampilkan halaman awal level
         Route::post('/list', [LevelpelatihanController::class, 'list']);     // menampilkan data level dalam bentuk json untuk datatables
         Route::get('/create_ajax', [LevelpelatihanController::class, 'create_ajax']); // Menampilkan halaman form tambah level Ajax
@@ -192,21 +192,21 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [RiwayatController::class, 'destroy']);
     });
 
-    Route::group(['prefix' => 'notifikasidosen', 'middleware' => 'authorize:DOSN'], function () {
+    Route::group(['prefix' => 'notifikasidosen'], function () {
         Route::get('/', [NotifikasiController::class, 'index2']);
         Route::post('/list', [NotifikasiController::class, 'list2']);
         Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjaxDosen']);
         Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjaxDosen']);
     });
 
-    Route::group(['prefix' => 'notifikasi', 'middleware' => 'authorize:ADMN,LEAD'], function () {
+    Route::group(['prefix' => 'notifikasi'], function () {
         Route::get('/', [NotifikasiController::class, 'index']);
         Route::post('/list', [NotifikasiController::class, 'list']);
         Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjax']);
         Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjax']);
     });
 
-    Route::group(['prefix' => 'validasi', 'middleware' => 'authorize:LEAD'], function () {
+    Route::group(['prefix' => 'validasi'], function () {
         Route::get('/', [ValidasiController::class, 'index']);
         Route::post('/list', [ValidasiController::class, 'list']);
         Route::get('/{type}/{id}/show_ajax', [ValidasiController::class, 'show_ajax']);

@@ -460,8 +460,8 @@ class PelatihanController extends Controller
                 }
 
                 $pelatihanData = $request->except('file');
-                $pelatihanData['keterangan'] = 'Menunggu Validasi';
-                $pelatihanData['status'] = 'Proses';
+                $pelatihanData['keterangan'] = 'Mandiri';
+                $pelatihanData['status'] = 'Selesai';
                 $pelatihanData['kuota'] = '1';
 
                 // Buat record sertifikasi

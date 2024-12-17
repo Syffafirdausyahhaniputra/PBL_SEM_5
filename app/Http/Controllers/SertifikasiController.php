@@ -309,7 +309,6 @@ class SertifikasiController extends Controller
         $bidangs = BidangModel::all();
         $matkuls = MatkulModel::all(); // Ambil data mata kuliah
         $vendors = VendorModel::all(); // Ambil data vendor
-        $levels = LevelsertifikasiModel::all();
         $jeniss = JenisModel::all();
 
         return view('sertifikasi.create_ajax2', [

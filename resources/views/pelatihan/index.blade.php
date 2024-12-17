@@ -56,6 +56,7 @@
             $('#table-pelatihan').DataTable({
                 processing: true,
                 serverSide: true,
+                searching: false, // Menonaktifkan fitur search
                 ajax: "{{ route('pelatihan.list') }}", // URL ke method `list()` di controller
                 columns: [{
                         data: 'DT_RowIndex',

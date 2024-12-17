@@ -45,7 +45,7 @@ Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('pe
 
 Route::get('/sertifikasi', [SertifikasiController::class, 'index']);
 Route::get('/sertifikasi/dropdown', [SertifikasiController::class, 'dropdown']);
-Route::post('/sertifikasi/store', [SertifikasiController::class, 'store'])->name('pelatihan.store');
+Route::post('/sertifikasi/store', [SertifikasiController::class, 'store'])->name('sertifikasi.store');
 Route::get('create', [SertifikasiController::class, 'create'])->name('sertifikasi.create');
 Route::post('store', [SertifikasiController::class, 'store'])->name('sertifikasi.store');
 Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit');

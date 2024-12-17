@@ -53,11 +53,11 @@ class LevelpelatihanController extends Controller
     }
 
     public function store_ajax(Request $request)
-    {
+    {      
         if ($request->ajax() || $request->wantsJson()) {
             // Aturan validasi
             $rules = [
-                'level_kode' => 'required|string|min:2|unique:m_level,level_kode',
+                'level_kode' => 'required|string|min:2|unique:m_level_pelatihan,level_kode',
                 'level_nama' => 'required|string|max:100',
             ];
 
@@ -101,7 +101,7 @@ class LevelpelatihanController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'level_kode' => 'required|string|max:20|unique:m_level,level_kode,' . $id . ',level_id',
+                'level_kode' => 'required|string|max:20|unique:m_level_pelatihan,level_kode,' . $id . ',level_id',
                 'level_nama' => 'required|string|max:100',
             ];
 

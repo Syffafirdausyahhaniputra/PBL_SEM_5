@@ -210,6 +210,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ValidasiController::class, 'index']);
         Route::post('/list', [ValidasiController::class, 'list']);
         Route::get('/{type}/{id}/show_ajax', [ValidasiController::class, 'show_ajax']);
+        Route::get('/{type}/{id}/show_ajax2', [ValidasiController::class, 'show_ajax2']);
+        Route::post('/{type}/{id}/update_status', [ValidasiController::class, 'update_status']);
     });
 
     Route::group(['prefix' => 'profile'], function () {

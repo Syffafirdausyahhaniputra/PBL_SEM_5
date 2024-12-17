@@ -35,50 +35,72 @@ class ValidasiController extends Controller
     {
         $statusFilter = $request->input('status');
 
-        $dataSertifikasi = SertifikasiModel::with('data_sertifikasi')
-            ->select('sertif_id as id', 'nama_sertif', 'keterangan', 'status')
-            ->whereHas('data_sertifikasi', function ($query) use ($statusFilter) {
+        $dataSertifikasi = DataSertifikasiModel::with('sertif')
+            ->select('data_sertif_id as id', 'sertif_id', 'dosen_id', 'updated_at')
+            ->whereHas('sertif', function ($query) use ($statusFilter) {
                 if ($statusFilter) {
                     $query->where('status', $statusFilter);
                 }
             })
             ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'nama' => $item->nama_sertif,
-                    'keterangan' => $item->keterangan,
-                    'status' => $item->status,
-                    'type' => 'sertifikasi'
-                ];
-            })
-            ->toArray();
+            ->groupBy('sertif_id') // Group data berdasarkan sertif_id
+            ->map(function ($groupedItems) {
+                $firstItem = $groupedItems->first(); // Ambil item pertama dalam grup
 
-        $dataPelatihan = PelatihanModel::with('data_pelatihan')
-            ->select('pelatihan_id as id', 'nama_pelatihan', 'keterangan', 'status')
-            ->whereHas('data_pelatihan', function ($query) use ($statusFilter) {
+                return [
+                    'id' => $firstItem->sertif_id, // Gunakan sertif_id sebagai id
+                    'nama' => $firstItem->sertif->nama_sertif,
+                    'keterangan' => $firstItem->sertif->keterangan,
+                    'status' => $firstItem->sertif->status,
+                    'type' => 'sertifikasi', // Tambahkan type sertifikasi
+                    'updated_at' => $groupedItems->max('updated_at'), // Ambil updated_at terbaru dalam grup
+                ];
+            });
+
+        $dataPelatihan = DataPelatihanModel::with('pelatihan')
+            ->select('data_pelatihan_id as id', 'pelatihan_id', 'dosen_id', 'updated_at')
+            ->whereHas('pelatihan', function ($query) use ($statusFilter) {
                 if ($statusFilter) {
                     $query->where('status', $statusFilter);
                 }
             })
             ->get()
-            ->map(function ($item) {
+            ->groupBy('pelatihan_id') // Group data berdasarkan pelatihan_id
+            ->map(function ($groupedItems) {
+                $firstItem = $groupedItems->first(); // Ambil item pertama dalam grup
+
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->nama_pelatihan,
-                    'keterangan' => $item->keterangan,
-                    'status' => $item->status,
-                    'type' => 'pelatihan'
+                    'id' => $firstItem->pelatihan_id, // Gunakan pelatihan_id sebagai id
+                    'nama' => $firstItem->pelatihan->nama_pelatihan,
+                    'keterangan' => $firstItem->pelatihan->keterangan,
+                    'status' => $firstItem->pelatihan->status,
+                    'type' => 'pelatihan', // Tambahkan type pelatihan
+                    'updated_at' => $groupedItems->max('updated_at'), // Ambil updated_at terbaru dalam grup
                 ];
-            })
-            ->toArray();
+            });
 
-        $data = array_merge($dataSertifikasi, $dataPelatihan);
+        // Gabungkan data sertifikasi dan pelatihan
+        $data = $dataSertifikasi->values()->merge($dataPelatihan->values());
 
-        return DataTables::of(collect($data))
+        // Urutkan berdasarkan updated_at
+        $sortedData = $data->sortByDesc('updated_at')->values();
+
+        Log::info('Data setelah sorting:', $sortedData->toArray());
+
+        return DataTables::of(collect($sortedData))
             ->addIndexColumn()
             ->addColumn('aksi', function ($data) {
-                $btn = '<button onclick="modalAction(\'' . url('/validasi/' . $data['type'] . '/' . $data['id'] . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Validasi</button>';
+                if ($data['status'] === 'Proses' && $data['keterangan'] === 'Menunggu Validasi') {
+                    // Tombol Validasi
+                    $btn = '<button onclick="modalAction(\'' . url('/validasi/' . $data['type'] . '/' . $data['id'] . '/show_ajax2') . '\')" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i> Validasi
+                            </button>';
+                } else {
+                    // Tombol Detail
+                    $btn = '<button onclick="modalAction(\'' . url('/validasi/' . $data['type'] . '/' . $data['id'] . '/show_ajax') . '\')" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-info-circle"></i> Detail
+                            </button>';
+                }
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -135,43 +157,193 @@ class ValidasiController extends Controller
     {
         if ($type === 'sertifikasi') {
             // Ambil data sertifikasi dan relasi dengan dosen melalui tabel t_data_sertifikasi
-            $data = SertifikasiModel::with(['data_sertifikasi.dosen.user'])
+            $sertifikasi = DataSertifikasiModel::with(['sertif', 'sertif.bidang', 'sertif.matkul', 'sertif.vendor', 'sertif.jenis'])
                 ->where('sertif_id', $id)
-                ->first();
+                ->get();
 
-            if ($data) {
-                return view('validasi.pimpinan.show_ajax', [
-                    'type' => 'sertifikasi',
-                    'nama' => $data->nama_sertif,
-                    'keterangan' => $data->keterangan,
-                    'status' => $data->status,
-                    'peserta' => $data->data_sertifikasi->map(function ($dosenData) {
-                        return ['nama' => $dosenData->dosen->user->nama];
-                    })->toArray(),
-                ]);
+            if ($sertifikasi->isEmpty()) {
+                abort(404, 'Data sertifikasi tidak ditemukan.');
             }
+
+            // Ambil data pertama untuk informasi umum sertifikasi
+            $firstItem = $sertifikasi->first();
+
+            // Ambil daftar dosen yang terkait dengan sertif_id
+            $dosenList = $sertifikasi->map(function ($item) {
+                return [
+                    'id' => $item->dosen_id,
+                    'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
+                ];
+            })->toArray();
+
+            if (!is_array($dosenList)) {
+                Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
+                $dosenList = []; // Atur default menjadi array kosong
+            };
+
+            return view('validasi.pimpinan.show_ajax', [
+                'nama' => $firstItem->sertif->nama_sertif,
+                'bidang' => $firstItem->sertif->bidang->bidang_nama,
+                'matkul' => $firstItem->sertif->matkul->mk_nama,
+                'vendor' => $firstItem->sertif->vendor->vendor_nama,
+                'jenis' => $firstItem->sertif->jenis->jenis_nama,
+                'tanggal_acara' => $firstItem->sertif->tanggal,
+                'berlaku_hingga' => $firstItem->sertif->masa_berlaku,
+                'periode' => $firstItem->sertif->periode,
+                'keterangan' => $firstItem->sertif->keterangan,
+                'dosen_list' => $dosenList,
+            ]);
         } else if ($type === 'pelatihan') {
             // Ambil data pelatihan dan relasi dengan dosen melalui tabel t_data_pelatihan
-            $data = PelatihanModel::with(['data_pelatihan.dosen.user'])
+            $pelatihan = DataPelatihanModel::with(['pelatihan', 'pelatihan.bidang', 'pelatihan.matkul', 'pelatihan.vendor', 'pelatihan.level'])
                 ->where('pelatihan_id', $id)
-                ->first();
+                ->get();
 
-            if ($data) {
-                return view('validasi.pimpinan.show_ajax', [
-                    'type' => 'pelatihan',
-                    'nama' => $data->nama_pelatihan,
-                    'keterangan' => $data->keterangan,
-                    'status' => $data->status,
-                    'peserta' => $data->data_pelatihan->map(function ($dosenData) {
-                        return ['nama' => $dosenData->dosen->user->nama];
-                    })->toArray(),
-                ]);
+            if ($pelatihan->isEmpty()) {
+                abort(404, 'Data pelatihan tidak ditemukan.');
             }
+
+            // Ambil data pertama untuk informasi umum pelatihan
+            $firstItem = $pelatihan->first();
+
+            $dosenList = $pelatihan->map(function ($item) {
+                return [
+                    'id' => $item->dosen_id,
+                    'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
+                ];
+            })->toArray();
+
+            if (!is_array($dosenList)) {
+                Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
+                $dosenList = []; // Atur default menjadi array kosong
+            };
+
+
+            return view('validasi.pimpinan.show_ajax', [
+                'nama' => $firstItem->pelatihan->nama_pelatihan,
+                'bidang' => $firstItem->pelatihan->bidang->bidang_nama,
+                'matkul' => $firstItem->pelatihan->matkul->mk_nama,
+                'vendor' => $firstItem->pelatihan->vendor->vendor_nama,
+                'level' => $firstItem->pelatihan->level->level_nama,
+                'tanggal_acara' => $firstItem->pelatihan->tanggal,
+                'kuota' => $firstItem->pelatihan->kuota,
+                'lokasi' => $firstItem->pelatihan->lokasi,
+                'periode' => $firstItem->pelatihan->periode,
+                'keterangan' => $firstItem->pelatihan->keterangan,
+                'dosen_list' => $dosenList,
+            ]);
         }
 
         // Jika tidak ada data yang ditemukan atau tipe tidak valid
         return view('validasi.pimpinan.show_ajax', [
             'error' => 'Data tidak ditemukan atau tipe tidak valid.',
         ]);
+    }
+
+    public function show_ajax2(string $type, string $id)
+    {
+        if ($type === 'sertifikasi') {
+            // Ambil data sertifikasi dan relasi dengan dosen melalui tabel t_data_sertifikasi
+            $sertifikasi = DataSertifikasiModel::with(['sertif', 'sertif.bidang', 'sertif.matkul', 'sertif.vendor', 'sertif.jenis'])
+                ->where('sertif_id', $id)
+                ->get();
+
+            if ($sertifikasi->isEmpty()) {
+                abort(404, 'Data sertifikasi tidak ditemukan.');
+            }
+
+            // Ambil data pertama untuk informasi umum sertifikasi
+            $firstItem = $sertifikasi->first();
+
+            // Ambil daftar dosen yang terkait dengan sertif_id
+            $dosenList = $sertifikasi->map(function ($item) {
+                return [
+                    'id' => $item->dosen_id,
+                    'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
+                ];
+            })->toArray();
+
+            if (!is_array($dosenList)) {
+                Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
+                $dosenList = []; // Atur default menjadi array kosong
+            };
+
+            return view('validasi.pimpinan.show_ajax2', [
+                'nama' => $firstItem->sertif->nama_sertif,
+                'bidang' => $firstItem->sertif->bidang->bidang_nama,
+                'matkul' => $firstItem->sertif->matkul->mk_nama,
+                'vendor' => $firstItem->sertif->vendor->vendor_nama,
+                'jenis' => $firstItem->sertif->jenis->jenis_nama,
+                'tanggal_acara' => $firstItem->sertif->tanggal,
+                'berlaku_hingga' => $firstItem->sertif->masa_berlaku,
+                'periode' => $firstItem->sertif->periode,
+                'keterangan' => $firstItem->sertif->keterangan,
+                'dosen_list' => $dosenList,
+            ]);
+        } else if ($type === 'pelatihan') {
+            // Ambil data pelatihan dan relasi dengan dosen melalui tabel t_data_pelatihan
+            $pelatihan = DataPelatihanModel::with(['pelatihan', 'pelatihan.bidang', 'pelatihan.matkul', 'pelatihan.vendor', 'pelatihan.level'])
+                ->where('pelatihan_id', $id)
+                ->get();
+
+            if ($pelatihan->isEmpty()) {
+                abort(404, 'Data pelatihan tidak ditemukan.');
+            }
+
+            // Ambil data pertama untuk informasi umum pelatihan
+            $firstItem = $pelatihan->first();
+
+            $dosenList = $pelatihan->map(function ($item) {
+                return [
+                    'id' => $item->dosen_id,
+                    'nama_dosen' => $item->dosen->user->nama ?? 'Tidak Diketahui', // Pastikan ada relasi dosen jika diperlukan
+                ];
+            })->toArray();
+
+            if (!is_array($dosenList)) {
+                Log::error('Dosen list is not an array', ['dosen_list' => $dosenList]);
+                $dosenList = []; // Atur default menjadi array kosong
+            };
+
+
+            return view('validasi.pimpinan.show_ajax2', [
+                'nama' => $firstItem->pelatihan->nama_pelatihan,
+                'bidang' => $firstItem->pelatihan->bidang->bidang_nama,
+                'matkul' => $firstItem->pelatihan->matkul->mk_nama,
+                'vendor' => $firstItem->pelatihan->vendor->vendor_nama,
+                'level' => $firstItem->pelatihan->level->level_nama,
+                'tanggal_acara' => $firstItem->pelatihan->tanggal,
+                'kuota' => $firstItem->pelatihan->kuota,
+                'lokasi' => $firstItem->pelatihan->lokasi,
+                'periode' => $firstItem->pelatihan->periode,
+                'keterangan' => $firstItem->pelatihan->keterangan,
+                'dosen_list' => $dosenList,
+            ]);
+        }
+
+        // Jika tidak ada data yang ditemukan atau tipe tidak valid
+        return view('validasi.pimpinan.show_ajax', [
+            'error' => 'Data tidak ditemukan atau tipe tidak valid.',
+        ]);
+    }
+
+    public function update_status(Request $request, string $type, string $id)
+    {
+        Log::info('Request Method:', ['method' => $request->method()]);
+        Log::info('Request Data:', ['data' => $request->all()]);
+        $status = $request->input('status');
+        $keterangan = $status === 'approve' ? 'Validasi Disetujui' : 'Validasi Ditolak';
+
+        if ($type === 'sertifikasi') {
+            // Update data pada tabel SertifikasiModel
+            SertifikasiModel::where('sertif_id', $id)->update(['keterangan' => $keterangan]);
+        } elseif ($type === 'pelatihan') {
+            // Update data pada tabel PelatihanModel
+            PelatihanModel::where('pelatihan_id', $id)->update(['keterangan' => $keterangan]);
+        } else {
+            return response()->json(['error' => 'Tipe tidak valid'], 400);
+        }
+
+        return response()->json(['success' => 'Keterangan berhasil diperbarui.', 'keterangan' => $keterangan]);
     }
 }

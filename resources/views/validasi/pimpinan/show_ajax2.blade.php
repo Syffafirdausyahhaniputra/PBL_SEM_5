@@ -97,8 +97,49 @@
                 </table>
             </div>
             <div class="modal-footer">
+                <button id="btn-approve" class="btn btn-success">Disetujui</button>
+                <button id="btn-reject" class="btn btn-danger">Ditolak</button>
                 <button type="button" data-dismiss="modal" class="btn btn-primary">Tutup</button>
             </div>
         </div>
     </div>
+    
+    <script>
+        $(document).ready(function() {
+            $('#btn-approve, #btn-reject').on('click', function() {
+                var status = $(this).attr('id') === 'btn-approve' ? 'approve' : 'reject';
+                var type = "{{ request()->route('type') }}";
+                var id = "{{ request()->route('id') }}";
+
+                $.ajax({
+                    url: `/validasi/${type}/${id}/update_status`,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        status: status
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            title: 'Sukses!',
+                            text: response.success,
+                            icon: 'success',
+                            timer: 3000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            // Reload halaman setelah sukses
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Gagal mengupdate keterangan. Coba lagi.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 @endempty

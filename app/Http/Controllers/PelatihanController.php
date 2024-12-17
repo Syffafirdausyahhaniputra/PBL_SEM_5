@@ -953,10 +953,15 @@ class PelatihanController extends Controller
     {
         $pelatihan = DB::table('t_pelatihan')->where('pelatihan_id', $pelatihan_id)->first();
 
-        if (!$pelatihan || $pelatihan->keterangan !== 'sudah divalidasi') {
+        if (!$pelatihan || $pelatihan->keterangan !== 'Validasi Disetujui') {
             return response()->json([
                 'status' => false,
                 'message' => 'Dokumen belum bisa diunduh. Tunggu validasi.',
+            ]);
+        } elseif ($pelatihan || $pelatihan->keterangan == 'Validasi Ditolak') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen tidak bisa diunduh. Validasi ditolak.',
             ]);
         }
 

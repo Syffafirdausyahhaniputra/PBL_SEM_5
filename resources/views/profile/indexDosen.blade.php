@@ -66,33 +66,33 @@
                                     <select id="jabatan_id" name="jabatan_id" class="form-control" disabled>
                                         <option value="">- Pilih Jabatan -</option>
                                         @foreach ($jabatan as $j)
-                                            <option value="{{ $j->jabatan_id }}" 
+                                            <option value="{{ $j->jabatan_id }}"
                                                 {{ $user->dosen->jabatan_id == $j->jabatan_id ? 'selected' : '' }}>
                                                 {{ $j->jabatan_nama }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                
+
                                 <div class="mb-3">
                                     <label for="golongan_id" class="form-label">Golongan</label>
                                     <select id="golongan_id" name="golongan_id" class="form-control" disabled>
                                         <option value="">- Pilih Golongan -</option>
                                         @foreach ($golongan as $g)
-                                            <option value="{{ $g->golongan_id }}" 
+                                            <option value="{{ $g->golongan_id }}"
                                                 {{ $user->dosen->golongan_id == $g->golongan_id ? 'selected' : '' }}>
                                                 {{ $g->golongan_nama }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                
+
                                 <div class="mb-3">
                                     <label for="pangkat_id" class="form-label">Pangkat</label>
                                     <select id="pangkat_id" name="pangkat_id" class="form-control" disabled>
                                         <option value="">- Pilih Pangkat -</option>
                                         @foreach ($pangkat as $p)
-                                            <option value="{{ $p->pangkat_id }}" 
+                                            <option value="{{ $p->pangkat_id }}"
                                                 {{ $user->dosen->pangkat_id == $p->pangkat_id ? 'selected' : '' }}>
                                                 {{ $p->pangkat_nama }}
                                             </option>
@@ -108,19 +108,21 @@
                                                 <select name="bidang_id[]" class="form-control bidang-select me-2" disabled>
                                                     <option value="">- Pilih Bidang -</option>
                                                     @foreach ($bidang as $b)
-                                                        <option value="{{ $b->bidang_id }}" 
-                                                            @if($item->bidang_id == $b->bidang_id) selected @endif>
+                                                        <option value="{{ $b->bidang_id }}"
+                                                            @if ($item->bidang_id == $b->bidang_id) selected @endif>
                                                             {{ $b->bidang_nama }}
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                                <button type="button" class="btn btn-sm btn-danger remove-bidang edit-mode-only" 
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger remove-bidang edit-mode-only"
                                                     onclick="removeBidang(this)" style="display: none;">Hapus</button>
                                             </div>
                                         @endforeach
                                     </div>
-                                    <button type="button" id="add-bidang" class="btn btn-sm btn-primary mt-2 edit-mode-only" 
-                                        onclick="addBidang()" style="display: none;">Tambah Bidang</button>
+                                    <button type="button" id="add-bidang"
+                                        class="btn btn-sm btn-primary mt-2 edit-mode-only" onclick="addBidang()"
+                                        style="display: none;">Tambah Bidang</button>
                                 </div>
 
                                 <!-- In the Mata Kuliah section -->
@@ -133,18 +135,20 @@
                                                     <option value="">- Pilih Mata Kuliah -</option>
                                                     @foreach ($matkul as $m)
                                                         <option value="{{ $m->mk_id }}"
-                                                            @if($item->mk_id == $m->mk_id) selected @endif>
+                                                            @if ($item->mk_id == $m->mk_id) selected @endif>
                                                             {{ $m->mk_nama }}
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                                <button type="button" class="btn btn-sm btn-danger remove-matkul edit-mode-only"
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger remove-matkul edit-mode-only"
                                                     onclick="removeMatkul(this)" style="display: none;">Hapus</button>
                                             </div>
                                         @endforeach
                                     </div>
-                                    <button type="button" id="add-matkul" class="btn btn-sm btn-primary mt-2 edit-mode-only"
-                                        onclick="addMatkul()" style="display: none;">Tambah Mata Kuliah</button>
+                                    <button type="button" id="add-matkul"
+                                        class="btn btn-sm btn-primary mt-2 edit-mode-only" onclick="addMatkul()"
+                                        style="display: none;">Tambah Mata Kuliah</button>
                                 </div>
 
                                 <div class="mb-3 d-none" id="old-password-group">
@@ -169,10 +173,10 @@
     </div>
 
     @if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     @endif
 
     @if (session('info'))
@@ -185,7 +189,7 @@
     <script>
         let originalImageSrc = "{{ $user->avatar ? asset('avatars/' . $user->avatar) : asset('img/user.png') }}";
         let hasNewImage = false;
-    
+
         function previewAndUploadImage(event) {
             const file = event.target.files[0];
             if (file) {
@@ -197,56 +201,56 @@
                 reader.readAsDataURL(file);
             }
         }
-    
+
         document.getElementById('profile-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             const avatarFile = document.getElementById('avatar').files[0];
             if (avatarFile) {
                 formData.append('avatar', avatarFile);
             }
-    
+
             fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update display data immediately
-                    updateDisplayData(data);
-                    
-                    // Show success message
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update display data immediately
+                        updateDisplayData(data);
+
+                        // Show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(() => {
+                            toggleEdit(); // Exit edit mode
+                        });
+                    } else {
+                        handleValidationErrors(data.errors);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: data.message,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    }).then(() => {
-                        toggleEdit(); // Exit edit mode
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: 'Terjadi kesalahan saat memperbarui profil. Silakan coba lagi.',
+                        confirmButtonText: 'Tutup'
                     });
-                } else {
-                    handleValidationErrors(data.errors);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: 'Terjadi kesalahan saat memperbarui profil. Silakan coba lagi.',
-                    confirmButtonText: 'Tutup'
                 });
-            });
         });
-    
+
         function updateDisplayData(data) {
             if (data.user.avatar) {
                 document.getElementById('profile-pic').src = '/avatars/' + data.user.avatar;
@@ -254,7 +258,7 @@
                 document.getElementById('display-email').textContent = data.user.email;
             }
         }
-    
+
         function handleValidationErrors(errors) {
             // Clear previous errors
             document.querySelectorAll('.is-invalid').forEach(el => {
@@ -263,7 +267,7 @@
             document.querySelectorAll('.invalid-feedback').forEach(el => {
                 el.remove();
             });
-    
+
             // Show new errors
             Object.keys(errors || {}).forEach(key => {
                 const input = document.getElementById(key);
@@ -276,7 +280,7 @@
                 }
             });
         }
-    
+
         function toggleEdit() {
             const editBtn = document.getElementById('edit-btn');
             const isReadOnly = document.getElementById('username').readOnly;
@@ -284,31 +288,31 @@
             const oldPasswordGroup = document.getElementById('old-password-group');
             const newPasswordGroup = document.getElementById('new-password-group');
             const avatarInput = document.getElementById('avatar');
-    
-            // Toggle input states
+
+            // Toggle disabled state for inputs
             document.querySelectorAll('select, input:not([type="file"])').forEach(input => {
                 input.disabled = !isReadOnly;
             });
-    
-            // Toggle read-only state for specific fields
+
+            // Toggle readonly state
             document.getElementById('username').readOnly = !isReadOnly;
             document.getElementById('email').readOnly = !isReadOnly;
             avatarInput.disabled = !isReadOnly;
-    
-            // Toggle visibility of edit modes
+
+            // Toggle edit-only elements visibility
             document.querySelectorAll('.edit-mode-only').forEach(el => {
-                el.style.display = !isReadOnly ? '' : 'none';
+                el.style.display = isReadOnly ? 'inline-block' : 'none';
             });
-    
+
             // Toggle password and save/cancel groups
             oldPasswordGroup.classList.toggle('d-none');
             newPasswordGroup.classList.toggle('d-none');
             saveCancelGroup.classList.toggle('d-none');
-    
+
             // Update button text
-            editBtn.innerText = !isReadOnly ? 'Edit' : 'Batal';
-    
-            // If cancelling, reset form and preview
+            editBtn.innerText = isReadOnly ? 'Batal' : 'Edit';
+
+            // If cancelling edit, reset form and preview
             if (isReadOnly) {
                 resetForm();
             }
@@ -352,9 +356,9 @@
 
         function removeMatkul(button) {
             const isEditMode = document.getElementById('edit-btn').innerText === 'Batal';
-            
+
             if (!isEditMode) return; // Prevent removing if not in edit mode
-            
+
             // Prevent removing the last mata kuliah
             const matkulItems = document.querySelectorAll('.matkul-item');
             if (matkulItems.length > 1) {
@@ -368,15 +372,15 @@
                 });
             }
         }
-            
+
         function resetForm() {
             // Reset form fields
             document.getElementById('profile-form').reset();
-    
+
             // Reset avatar to original
             document.getElementById('profile-pic').src = originalImageSrc;
             hasNewImage = false;
-    
+
             // Remove validation errors
             document.querySelectorAll('.is-invalid').forEach(el => {
                 el.classList.remove('is-invalid');
@@ -385,7 +389,7 @@
                 el.remove();
             });
         }
-    
+
         // Clear validation errors when input changes
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('input', function() {
@@ -396,7 +400,7 @@
                 }
             });
         });
-    
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             originalFormData = new FormData(document.getElementById('profile-form'));

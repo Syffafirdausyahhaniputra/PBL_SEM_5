@@ -104,7 +104,7 @@ class VendorController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'vendor_nama' => 'required|string|max:5|unique:m_vendor,vendor_nama,' . $id . ',vendor_id',
+                'vendor_nama' => 'required|string|min:5|unique:m_vendor,vendor_nama,' . $id . ',vendor_id',
                 'vendor_alamat' => 'required|string|max:100',
                 'vendor_kota' => 'required|string|max:100',
                 'vendor_no_telf' => 'required|string|max:100',

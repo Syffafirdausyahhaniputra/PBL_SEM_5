@@ -20,8 +20,8 @@
                 </div> 
                 <div class="form-group"> 
                     <label>Kota Vendor</label> 
-                    <input value="" type="text" name="vendor_alamat" id="vendor_alamat" class="form-control" required> 
-                    <small id="error-vendor_alamat" class="error-text form-text text-danger"></small> 
+                    <input value="" type="text" name="vendor_kota" id="vendor_kota" class="form-control" required> 
+                    <small id="error-vendor_kota" class="error-text form-text text-danger"></small> 
                 </div> 
                 <div class="form-group"> 
                     <label>No Telfon Vendor</label> 

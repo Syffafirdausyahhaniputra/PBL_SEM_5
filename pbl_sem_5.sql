@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 16, 2024 at 04:34 PM
+-- Generation Time: Dec 17, 2024 at 06:03 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -677,7 +677,7 @@ CREATE TABLE `m_user` (
 INSERT INTO `m_user` (`user_id`, `role_id`, `username`, `nama`, `nip`, `avatar`, `password`, `email`, `created_at`, `updated_at`) VALUES
 (1, 1, 'admin1', 'administrator', '1234567891', '1734355381logo_poltek.png', '$2y$12$xpMk6Iroffl7klOxNPflEuX1rlQOAVISLVk5iq7EFkwhh/hNS1s0q', 'administrator@gmail.com', '2024-11-07 23:22:21', '2024-12-16 06:23:01'),
 (2, 2, 'lead01', 'Syffa F', '1234567899', '1733796354a1.jpg', '$2y$12$jbSg3KiNxOyL1/ceO9VUvu1iwsE3lQKxkKXRc./q0ysxxNqHIXETu', 'syffafirdausyah@gmail.com', '2024-11-08 00:50:53', '2024-12-12 04:56:38'),
-(3, 3, 'dosen01', 'Muhammad Taufiq Abdus Salam', '0303030303', '1734333847logo_poltek.png', '$2y$12$PZD3kr8MnveiujhhR9JnIuiqaKQJic5qpfa6DoVHiYdNv7G0BmYH.', 'dosen1@gmail.com', '2024-11-10 06:53:35', '2024-12-16 00:24:07'),
+(3, 3, 'dosen01', 'Muhammad Taufiq Abdus Salam', '0303030303', '1734333847logo_poltek.png', '$2y$12$PZD3kr8MnveiujhhR9JnIuiqaKQJic5qpfa6DoVHiYdNv7G0BmYH.', 'dosen01@gmail.com', '2024-11-10 06:53:35', '2024-12-16 20:14:26'),
 (4, 3, 'dosen02', 'Solikhin', '0404040404', NULL, '$2y$12$z1JULD9nwrnC7RK5Vn4IK.cQQ.QAEeOd2xETpsclmCJLjSY3UbHDu', 'dosen02@gmail.com', '2024-11-10 06:55:29', '2024-11-16 20:24:52'),
 (5, 3, 'dosen03', 'Suhatta', '2626262626', NULL, '$2y$12$qsP/FgclNDa2MGXoVVTDCeJUFywsmM/H9k/wU.8ozI5RqBf29f15.', 'dosen03@gmail.com', '2024-11-16 20:24:33', '2024-11-16 20:24:33'),
 (6, 3, 'dosen04', 'M. Isroqi Gelby F.', '1818181818', NULL, '$2y$12$1IIikdW7lOu5X1W.2C5jUuC0rrD.vdyjM1mfSOHwBtGPUWrR9U286', 'dosen04@gmail.com', '2024-11-16 20:37:01', '2024-12-16 12:58:27'),
@@ -781,7 +781,7 @@ CREATE TABLE `m_vendor` (
 --
 
 INSERT INTO `m_vendor` (`vendor_id`, `vendor_nama`, `vendor_alamat`, `vendor_kota`, `vendor_no_telf`, `vendor_alamat_web`, `created_at`, `updated_at`) VALUES
-(1, 'Badan Nasional Sertifikasi Profesi', 'Kav. 52 Jl Letnan Jenderal MT Haryono 12770 Jakarta Selatan Jakarta Raya ', 'Jakarta', '+62217992685', 'https://bnsp.go.id/', '2024-11-10 13:46:27', '2024-11-10 13:46:27');
+(1, 'Badan Nasional Sertifikasi Profesi', 'Kav. 52 Jl Letnan Jenderal MT Haryono 12770 Jakarta Selatan Jakarta Raya', 'DKI Jakarta', '+62217992685', 'https://bnsp.go.id/', '2024-11-10 13:46:27', '2024-12-16 22:06:53');
 
 -- --------------------------------------------------------
 
@@ -930,10 +930,10 @@ INSERT INTO `t_pelatihan` (`pelatihan_id`, `level_id`, `bidang_id`, `mk_id`, `ve
 (2, 2, 1, 3, 1, 'Pelatihan Pengembangan Mobile', '15000000', '2024-11-30', NULL, '10', 'Jl. Bromo', '2024', 'Proses', 'Menunggu Validasi', '2024-11-26 07:26:25', '2024-11-26 07:26:25'),
 (3, 1, 3, 10, 1, 'ajsdiwd', '10000', '2024-12-12', '2024-12-25', '2', 'masdkasd', '2024', 'Proses', 'Menunggu Validasi', '2024-12-11 06:18:41', '2024-12-11 06:18:41'),
 (4, 2, 4, 5, 1, 'qwedqwdqw', '1000', '2024-12-11', '2024-12-12', '2', 'sdsd', '2024', 'Proses', 'Menunggu Validasi', '2024-12-11 06:37:58', '2024-12-11 06:37:58'),
-(5, 1, 4, 12, 1, 'qwedqwdqw', '1000', '2024-12-12', '2024-12-20', '2', 'sdsd', '2024', 'Proses', 'Menunggu validasi', '2024-12-11 06:43:42', '2024-12-11 06:43:42'),
-(6, 1, 8, 13, 1, 'hgdbd', '65378', '2024-12-13', '2024-12-20', '2', 'hbx', '2020', 'Proses', 'Menunggu validasi', '2024-12-12 06:40:06', '2024-12-12 06:40:06'),
+(5, 1, 4, 12, 1, 'qwedqwdqw', '1000', '2024-12-12', '2024-12-20', '2', 'sdsd', '2024', 'Proses', 'Menunggu Validasi', '2024-12-11 06:43:42', '2024-12-11 06:43:42'),
+(6, 1, 8, 13, 1, 'hgdbd', '65378', '2024-12-13', '2024-12-20', '2', 'hbx', '2020', 'Proses', 'Menunggu Validasi', '2024-12-12 06:40:06', '2024-12-12 06:40:06'),
 (7, 1, 1, 2, 1, 'Coba', NULL, '2024-12-11', '2024-12-11', '1', 'Polinema', '2024', 'Proses', 'Mandiri', '2024-12-12 08:30:50', '2024-12-12 08:30:50'),
-(8, 1, 4, 15, 1, 'bnd', NULL, '2024-12-13', '2024-12-26', '1', 'nd c', '2022', 'Proses', 'sudah divalidasi', '2024-12-12 08:32:36', '2024-12-12 08:32:36'),
+(8, 1, 4, 15, 1, 'bnd', NULL, '2024-12-13', '2024-12-26', '1', 'nd c', '2022', 'Proses', 'Validasi Disetujui', '2024-12-12 08:32:36', '2024-12-12 08:32:36'),
 (9, 1, 1, 2, 1, 'sdf', NULL, '2024-12-13', '2024-12-26', '1', 'zsx', '234', 'Proses', 'Menunggu Validasi', '2024-12-12 13:41:57', '2024-12-12 13:41:57'),
 (10, 1, 2, 3, 1, 'feccf', NULL, '2024-12-14', '2024-12-15', '1', 'cdc', '2332', 'Selesai', 'Mandiri', '2024-12-12 13:43:42', '2024-12-12 13:43:42'),
 (19, 2, 6, 7, 1, 'asd', '10000', '2024-12-16', NULL, '3', 'malang', '2024', 'Selesai', 'Selesai', '2024-12-14 03:22:19', '2024-12-14 03:22:19'),
@@ -942,7 +942,7 @@ INSERT INTO `t_pelatihan` (`pelatihan_id`, `level_id`, `bidang_id`, `mk_id`, `ve
 (22, 1, 5, 14, 1, 'hgh', NULL, '2024-12-20', '2024-12-30', '1', 'uhb', '2022', 'Selesai', 'Mandiri', '2024-12-14 06:44:17', '2024-12-14 06:44:17'),
 (23, 2, 13, 12, 1, 'bhg', '67', '2024-12-08', '2024-12-23', '9', 'hnj', '500', 'Proses', 'Mandiri', '2024-12-14 06:51:02', '2024-12-14 06:51:02'),
 (26, 1, 2, 13, 1, 'reerdg', NULL, '2024-12-16', '2024-12-27', '1', 'drgdr', '2133', 'Proses', 'Menunggu Validasi', '2024-12-15 02:49:23', '2024-12-15 02:49:23'),
-(27, 2, 2, 3, 1, 'Coba123', '100000', '2024-12-17', '2024-12-18', '2', 'Polinema', '2024', 'Proses', 'Menunggu validasi', '2024-12-15 10:54:50', '2024-12-15 10:54:50');
+(27, 2, 2, 3, 1, 'Coba123', '100000', '2024-12-17', '2024-12-18', '2', 'Polinema', '2024', 'Proses', 'Menunggu Validasi', '2024-12-15 10:54:50', '2024-12-15 10:54:50');
 
 -- --------------------------------------------------------
 
@@ -982,7 +982,7 @@ INSERT INTO `t_sertifikasi` (`sertif_id`, `jenis_id`, `bidang_id`, `mk_id`, `ven
 (7, 1, 3, 12, 1, 'aaaaaaaaaa', NULL, '2024-12-09', NULL, '2024-12-17', '2024', 'Selesai', 'Mandiri', '2024-12-14 06:43:01', '2024-12-14 06:43:01'),
 (8, 1, 2, 13, 1, 'jhjn', NULL, '2024-12-26', NULL, '2024-12-31', '2022', 'Selesai', 'Mandiri', '2024-12-14 06:45:02', '2024-12-14 06:45:02'),
 (9, 1, 9, 8, 1, 'abcd', NULL, '2024-12-16', NULL, '2024-12-21', '2024', 'Selesai', 'Mandiri', '2024-12-15 21:52:47', '2024-12-15 21:52:47'),
-(10, 1, 1, 2, 1, 'poiuy', '40000000', '2024-12-03', NULL, NULL, '2024', 'Proses', 'Menunggu validasi', '2024-12-16 08:01:43', '2024-12-16 08:01:43');
+(10, 1, 1, 2, 1, 'poiuy', '40000000', '2024-12-03', NULL, NULL, '2024', 'Proses', 'Validasi Disetujui', '2024-12-16 08:01:43', '2024-12-16 17:09:50');
 
 --
 -- Indexes for dumped tables
@@ -1236,7 +1236,7 @@ ALTER TABLE `m_kompetensi_prodi`
 -- AUTO_INCREMENT for table `m_level_pelatihan`
 --
 ALTER TABLE `m_level_pelatihan`
-  MODIFY `level_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `level_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `m_matkul`

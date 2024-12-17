@@ -47,7 +47,7 @@
                         </tr>
                         <tr>
                             <th class="text-right col-3">Vendor :</th>
-                            <td class="col-9">{{ $pelatihan->vendor->vendor_nama }}</td>
+                            <td class="col-9">{{ $sertifikasi->vendor->vendor_nama }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Jenis Sertifikasi :</th>

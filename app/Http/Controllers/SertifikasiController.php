@@ -230,7 +230,6 @@ class SertifikasiController extends Controller
                 'periode' => 'required|string|max:50',
                 'kuota' => 'required|integer',
                 'biaya' => 'required|numeric|min:0',
-                'masa_berlaku' => 'nullable|date',
             ];
 
             $validator = Validator::make($request->all(), $rules);

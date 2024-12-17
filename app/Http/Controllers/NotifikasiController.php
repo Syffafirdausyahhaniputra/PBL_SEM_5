@@ -287,7 +287,7 @@ class NotifikasiController extends Controller
         }
 
         // Ambil surat tugas terkait dengan sertifikasi (hanya satu surat tugas)
-        $suratTugas = $sertifikasi->suratTugas; // Ambil data surat tugas pertama
+        $suratTugas = $sertifikasi->surat_tugas; // Ambil data surat tugas pertama
 
         // Persiapkan data surat tugas
         $suratTugasData = [

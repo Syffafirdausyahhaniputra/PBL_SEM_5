@@ -109,7 +109,7 @@
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <input value="{{ $pelatihan->data_pelatihan->pluck('status') }}" type="text" name="status" id="status"
+                    <input value="{{ $pelatihan->status }}" type="text" name="status" id="status"
                         class="form-control" required>
                     <small id="error-status" class="error-text form-text text-danger"></small>
                 </div>

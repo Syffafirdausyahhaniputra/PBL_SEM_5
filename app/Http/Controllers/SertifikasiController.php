@@ -111,8 +111,6 @@ class SertifikasiController extends Controller
         }
     }
 
-
-
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -447,35 +445,6 @@ class SertifikasiController extends Controller
             ]);
         }
         return redirect('/sertifikasi/dosen');
-    }
-
-    public function edit($id)
-    {
-        $sertifikasi = SertifikasiModel::findOrFail($id);
-
-        return view('sertifikasi.edit', [
-            'activeMenu' => 'sertifikasi',
-            'sertifikasi' => $sertifikasi,
-        ]);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $validatedData = $request->validate([
-            'jenis_id' => 'required|integer',
-            'bidang_id' => 'required|integer',
-            'mk_id' => 'required|integer',
-            'vendor_id' => 'required|integer',
-            'nama_sertif' => 'required|string|max:255',
-            'tanggal' => 'required|date',
-            'masa_berlaku' => 'nullable|date',
-            'periode' => 'nullable|string|max:50',
-        ]);
-
-        $sertifikasi = SertifikasiModel::findOrFail($id);
-        $sertifikasi->update($validatedData);
-
-        return redirect()->route('sertifikasi.index')->with('success', 'Sertifikasi berhasil diperbarui!');
     }
 
     public function destroy($id)

@@ -64,7 +64,7 @@
                     </tr>
                     <tr>
                         <th class="text-right col-3">Status :</th>
-                        <td class="col-9">{{ $sertifikasi->status }}</td>
+                        <td class="col-9">{{ $dataSertifikasi->sertifikasi->status }}</td>
                     </tr>
                     <tr>
                     <th class="text-right col-3"> Draft Surat Tugas : </th>

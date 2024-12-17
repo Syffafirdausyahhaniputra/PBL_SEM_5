@@ -71,7 +71,7 @@
                     </tr>
                     <tr>
                         <th class="text-right col-3">Status :</th>
-                        <td class="col-9">{{ $dataPelatihan->status }}</td>
+                        <td class="col-9">{{ $dataPelatihan->pelatihan->status }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Draft Surat Tugas :</th>

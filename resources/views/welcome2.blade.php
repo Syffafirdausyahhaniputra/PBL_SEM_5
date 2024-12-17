@@ -26,13 +26,13 @@
     @else
         <ul class="list-group">
             @foreach ($sertifikasi as $item)
-            <a href="{{ route('sertifikasi.detail_sertif', ['id' => $item->sertif_id]) }}" class="text-decoration-none sertifikasi-item">
+            <a href="{{ route('sertifikasi.detail_sertif', ['id' => $item->sertif->sertif_id]) }}" class="text-decoration-none sertifikasi-item">
                 <li class="list-group-item"> 
-                    <strong>{{ $item->nama_sertif }}</strong>
+                    <strong>{{ $item->sertif->nama_sertif }}</strong>
                     <br>
-                    Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}
+                    Bidang: {{ $item->sertif->bidang->bidang_nama ?? 'N/A' }}
                     <br>
-                    Masa Berlaku: {{ $item->masa_berlaku }}
+                    Masa Berlaku: {{ $item->sertif->masa_berlaku }}
                 </li>
             @endforeach
         </ul>
@@ -47,13 +47,13 @@
     @else
         <ul class="list-group">
             @foreach ($pelatihan as $item)
-            <a href="{{ route('pelatihan.detail_pelatihan', ['id' => $item->pelatihan_id]) }}" class="text-decoration-none pelatihan-item">
+            <a href="{{ route('pelatihan.detail_pelatihan', ['id' => $item->pelatihan->pelatihan_id]) }}" class="text-decoration-none pelatihan-item">
                 <li class="list-group-item">
-                    <strong>{{ $item->nama_pelatihan }}</strong>
+                    <strong>{{ $item->pelatihan->nama_pelatihan }}</strong>
                     <br>
-                    Bidang: {{ $item->bidang->bidang_nama ?? 'N/A' }}
+                    Bidang: {{ $item->pelatihan->bidang->bidang_nama ?? 'N/A' }}
                     <br>
-                    Penyelenggara: {{ $item->vendor->vendor_nama }}
+                    Penyelenggara: {{ $item->pelatihan->vendor->vendor_nama }}
                 </li>
             @endforeach
         </ul>

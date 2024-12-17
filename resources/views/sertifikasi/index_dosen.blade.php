@@ -25,8 +25,8 @@
             <div class="card mb-3 shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title mb-1 font-weight-bold">{{ $item->nama_sertif }}</h5>
-                    <p class="card-text text-muted mb-1">{{ $item->bidang->bidang_nama ?? 'Tanpa Bidang' }}</p>
-                    <p class="card-text"><small class="text-secondary">Masa Berlaku: {{ $item->masa_berlaku ?? 'Tidak Terbatas' }}</small></p>
+                    <p class="card-text text-muted mb-1">Bidang: {{ $item->bidang->bidang_nama ?? 'Tanpa Bidang' }}</p>
+                    <p class="card-text text-muted mb-1">Penyelenggara: {{ $item->vendor->vendor_nama ?? 'Tidak Diketahui' }}</p>
                 </div>
             </div>
             @endforeach

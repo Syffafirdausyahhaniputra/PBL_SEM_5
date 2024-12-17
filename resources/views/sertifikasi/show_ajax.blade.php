@@ -69,7 +69,7 @@
                     <tr>
                     <th class="text-right col-3"> Draft Surat Tugas : </th>
                     <td>
-                        @if($dataSertifikasi->sertifikasi->keterangan === 'sudah divalidasi')
+                        @if($dataSertifikasi->sertifikasi->keterangan === 'Validasi Disetujui')
                             <button type="button" class="btn btn-sm btn-primary"
                                     onclick="window.location.href='{{ route('sertifikasi.export_ajax', $dataSertifikasi->sertifikasi->sertif_id) }}'">
                                 Buat Draft Surat Tugas

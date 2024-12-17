@@ -76,7 +76,7 @@
                     <tr>
                         <th class="text-right col-3">Draft Surat Tugas :</th>
                         <td>
-                            @if ($dataPelatihan->pelatihan->keterangan === 'sudah divalidasi')
+                            @if ($dataPelatihan->pelatihan->keterangan === 'Validasi Disetujui')
                                 <button type="button" class="btn btn-sm btn-primary"
                                     onclick="window.location.href='{{ route('pelatihan.export_ajax', $dataPelatihan->pelatihan->pelatihan_id) }}'">
                                     Buat Draft Surat Tugas

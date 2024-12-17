@@ -889,12 +889,7 @@ class SertifikasiController extends Controller
                 'status' => false,
                 'message' => 'Dokumen belum bisa diunduh. Tunggu validasi.',
             ]);
-        } elseif ($sertifikasi || $sertifikasi->keterangan == 'Validasi Ditolak') {
-            return response()->json([
-                'status' => false,
-                'message' => 'Dokumen tidak bisa diunduh. Validasi ditolak.',
-            ]);
-        }
+        } 
 
         $dosenList = DB::table('t_data_sertifikasi')
             ->join('m_dosen', 'm_dosen.dosen_id', '=', 't_data_sertifikasi.dosen_id')

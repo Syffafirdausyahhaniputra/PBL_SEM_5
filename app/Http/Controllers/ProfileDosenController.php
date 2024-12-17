@@ -43,18 +43,26 @@ class ProfileDosenController extends Controller
         $pangkat = PangkatModel::all();
 
         return view('profile.indexDosen', compact(
-            'user', 
-            'bidangList', 
-            'matkulList', 
-            'bidang', 
-            'matkul', 
-            'jabatan', 
-            'golongan', 
+            'user',
+            'bidangList',
+            'matkulList',
+            'bidang',
+            'matkul',
+            'jabatan',
+            'golongan',
             'pangkat'
         ), [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => 'profileDosen'
         ]);
+    }
+
+    private function hasArrayDifference($dosenId, $modelClass, $foreignKey, $newIds)
+    {
+        $existingIds = $modelClass::where('dosen_id', $dosenId)->pluck($foreignKey)->toArray();
+        sort($existingIds);
+        sort($newIds);
+        return $existingIds !== $newIds;
     }
 
     public function update(Request $request, $id)
@@ -75,7 +83,7 @@ class ProfileDosenController extends Controller
                 'bidang_id.*' => 'exists:m_bidang,bidang_id',
                 'mk_id' => 'nullable|array',
                 'mk_id.*' => 'exists:m_matkul,mk_id',
-    
+
             ]);
 
             $user = UserModel::findOrFail($id);
@@ -89,10 +97,17 @@ class ProfileDosenController extends Controller
             // Cek perubahan data
             $isChanged = false;
 
-            if ($user->username != $request->username || 
-                $user->email != $request->email || 
+            if (
+                $user->username != $request->username ||
+                $user->email != $request->email ||
                 $request->hasFile('avatar') ||
-                $request->filled('old_password')) {
+                $request->filled('old_password') ||
+                $dosen->jabatan_id != $request->jabatan_id ||
+                $dosen->golongan_id != $request->golongan_id ||
+                $dosen->pangkat_id != $request->pangkat_id ||
+                $this->hasArrayDifference($dosen->dosen_id, DosenBidangModel::class, 'bidang_id', $request->bidang_id ?? []) ||
+                $this->hasArrayDifference($dosen->dosen_id, DosenMatkulModel::class, 'mk_id', $request->mk_id ?? [])
+            ) {
                 $isChanged = true;
             }
 

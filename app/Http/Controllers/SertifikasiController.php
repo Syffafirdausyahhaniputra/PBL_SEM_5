@@ -48,8 +48,14 @@ class SertifikasiController extends Controller
             'subtitle' => ' '
         ];
 
-        // Mengambil data sertifikasi untuk dosen dengan relasi ke bidang dan jenis
-        $sertifikasi = SertifikasiModel::with(['bidang', 'jenis'])->get();
+        // Ambil dosen_id dari user yang sedang login
+        $dosenId = Auth::user()->dosen->dosen_id; // Sesuaikan nama field jika berbeda
+
+        // Ambil data sertifikasi berdasarkan dosen_id dan keterangan 'Penunjukan'
+        $sertifikasi = DataSertifikasiModel::with('sertif')
+            ->where('dosen_id', $dosenId)
+            ->select('data_sertif_id as id', 'sertif_id', 'dosen_id', 'updated_at')
+            ->get();
 
         return view('sertifikasi.index_dosen', [
             'activeMenu' => 'sertifikasi_dosen',

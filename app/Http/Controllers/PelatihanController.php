@@ -52,8 +52,14 @@ class PelatihanController extends Controller
             'subtitle' => ' '
         ];
 
-        // Mengambil data sertifikasi dengan relasi ke bidang dan jenis
-        $pelatihan = PelatihanModel::with(['bidang', 'vendor'])->get();
+        // Ambil dosen_id dari user yang sedang login
+        $dosenId = Auth::user()->dosen->dosen_id; // Sesuaikan nama field jika berbeda
+
+        // Ambil data pelatihan berdasarkan dosen_id dan keterangan 'Penunjukan'
+        $pelatihan = DataPelatihanModel::with('pelatihan')
+            ->where('dosen_id', $dosenId)
+            ->select('data_pelatihan_id as id', 'pelatihan_id', 'dosen_id', 'updated_at')
+            ->get();
 
         return view('pelatihan.index_dosen', [
             'activeMenu' => 'pelatihan_dosen',
@@ -218,7 +224,6 @@ class PelatihanController extends Controller
         }
     }
 
-
     public function show_ajax(string $id)
     {
         // Ambil data Pelatihan berdasarkan id
@@ -265,8 +270,6 @@ class PelatihanController extends Controller
                 ->with('error', 'Terjadi kesalahan! Gagal menambahkan pelatihan.');
         }
     }
-
-
 
     // Method untuk menampilkan form edit pelatihan
     public function edit($id)
@@ -357,7 +360,6 @@ class PelatihanController extends Controller
         // ->rawColumns(['surat']) // Pastikan HTML tombol dirender dengan benar
         // ->make(true);
     }
-
 
     public function create_ajax()
     {
@@ -504,7 +506,6 @@ class PelatihanController extends Controller
         // Jika bukan AJAX, redirect ke halaman utama
         return redirect('/pelatihan');
     }
-
 
     public function create_ajax2()
     {
@@ -662,9 +663,6 @@ class PelatihanController extends Controller
         return redirect('/pelatihan/dosen');
     }
 
-
-
-
     public function edit_ajax($id)
     {
         // Fetch data related to the specific jamKompen
@@ -785,7 +783,6 @@ class PelatihanController extends Controller
 
         return redirect('/');
     }
-
 
     public function showPelatihan($id)
     {

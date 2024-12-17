@@ -24,9 +24,9 @@
             @foreach ($pelatihan as $item)
             <div class="card mb-3 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title mb-1 font-weight-bold">{{ $item->nama_pelatihan }}</h5>
-                    <p class="card-text text-muted mb-1">Bidang: {{ $item->bidang->bidang_nama ?? 'Tidak Diketahui' }}</p>
-                    <p class="card-text text-muted mb-1">Penyelenggara: {{ $item->vendor->vendor_nama ?? 'Tidak Diketahui' }}</p>
+                    <h5 class="card-title mb-1 font-weight-bold">{{ $item->pelatihan->nama_pelatihan }}</h5>
+                    <p class="card-text text-muted mb-1">Bidang: {{ $item->pelatihan->bidang->bidang_nama ?? 'Tidak Diketahui' }}</p>
+                    <p class="card-text text-muted mb-1">Penyelenggara: {{ $item->pelatihan->vendor->vendor_nama ?? 'Tidak Diketahui' }}</p>
                 </div>
             </div>
             @endforeach

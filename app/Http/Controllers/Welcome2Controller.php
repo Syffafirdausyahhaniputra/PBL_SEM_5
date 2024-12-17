@@ -26,18 +26,12 @@ class Welcome2Controller extends Controller
         // Ambil data sertifikasi berdasarkan dosen_id dan keterangan 'Penunjukan'
         $dataSertifikasi = DataSertifikasiModel::with('sertif')
             ->where('dosen_id', $dosenId)
-            ->whereHas('sertif', function ($query) {
-                $query->where('keterangan', 'Penunjukan');
-            })
             ->select('data_sertif_id as id', 'sertif_id', 'dosen_id', 'updated_at')
             ->get();
 
         // Ambil data pelatihan berdasarkan dosen_id dan keterangan 'Penunjukan'
         $dataPelatihan = DataPelatihanModel::with('pelatihan')
             ->where('dosen_id', $dosenId)
-            ->whereHas('pelatihan', function ($query) {
-                $query->where('keterangan', 'Penunjukan');
-            })
             ->select('data_pelatihan_id as id', 'pelatihan_id', 'dosen_id', 'updated_at')
             ->get();
 

@@ -171,7 +171,7 @@ class NotifikasiPimpinanController extends Controller
                 ->update([
                     'keterangan' => $status === 'Diterima' ? 'Validasi Diterima' : 'Validasi Ditolak',
                 ]);
-        } elseif ($type === 'Sertifikasi') {
+        } elseif ($type === 'sertifikasi') {
             // Update semua data berdasarkan sertif_id
             $updated = SertifikasiModel::where('sertif_id', $id)
                 ->update([

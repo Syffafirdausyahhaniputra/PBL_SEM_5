@@ -15,31 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class InputSertifController extends Controller
 {
-    /**
-     * Menampilkan daftar data sertifikasi.
-     */
-    public function index(Request $request)
-    {
-        try {
-            $sertifikasi = SertifikasiModel::with(['bidang', 'jenis', 'vendor', 'matkul'])->get();
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Data sertifikasi berhasil diambil',
-                'data' => $sertifikasi,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Terjadi kesalahan saat mengambil data',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Menyimpan data sertifikasi yang diterima dari Flutter.
-     */
     public function store(Request $request)
     {
         // Validasi data input

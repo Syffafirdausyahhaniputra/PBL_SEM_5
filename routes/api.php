@@ -44,8 +44,8 @@ Route::put('update/{id}', [PelatihanController::class, 'update'])->name('pelatih
 Route::delete('destroy/{id}', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy');
 
 Route::get('/sertifikasi', [SertifikasiController::class, 'index']);
-Route::get('/pelatihan/dropdown', [PelatihanController::class, 'dropdown']);
-Route::post('/pelatihan/store', [PelatihanController::class, 'store'])->name('pelatihan.store');
+Route::get('/sertifikasi/dropdown', [SertifikasiController::class, 'dropdown']);
+Route::post('/sertifikasi/store', [SertifikasiController::class, 'store'])->name('pelatihan.store');
 Route::get('create', [SertifikasiController::class, 'create'])->name('sertifikasi.create');
 Route::post('store', [SertifikasiController::class, 'store'])->name('sertifikasi.store');
 Route::get('edit/{id}', [SertifikasiController::class, 'edit'])->name('sertifikasi.edit');
@@ -166,13 +166,13 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update']); // Mengupdate profil dosen  
 });
 
-Route::group(['prefix' => 'inputsertifikasi'], function () {
-    Route::get('/', [InputSertifController::class, 'index']);
-    Route::get('/sertifikasi/dropdown', [InputSertifController::class, 'getDropdownOptions']);
-    Route::post('/sertifikasi/create', [InputSertifController::class, 'store']);
-    Route::get('/show/{id}', [InputSertifController::class, 'show']);
-    Route::put('/update/{id}', [InputSertifController::class, 'update']);
-});
+// Route::group(['prefix' => 'inputsertifikasi'], function () {
+//     Route::get('/', [InputSertifController::class, 'index']);
+//     Route::get('/sertifikasi/dropdown', [InputSertifController::class, 'getDropdownOptions']);
+//     Route::post('/sertifikasi/create', [InputSertifController::class, 'store']);
+//     Route::get('/show/{id}', [InputSertifController::class, 'show']);
+//     Route::put('/update/{id}', [InputSertifController::class, 'update']);
+// });
 
 Route::get('/kompetensi', [App\Http\Controllers\API\KompetensiController::class, 'index']);
 Route::post('/kompetensi/list', [App\Http\Controllers\API\KompetensiController::class, 'list']);

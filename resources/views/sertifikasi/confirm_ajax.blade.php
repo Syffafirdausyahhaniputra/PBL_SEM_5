@@ -11,7 +11,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang Anda cari tidak ditemukan.
                 </div>
-                <a href="{{ url('/pelatihan') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/sertifikasi') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
@@ -39,11 +39,11 @@
                         </tr>
                         <tr>
                             <th class="text-right col-3">Bidang :</th>
-                            <td class="col-9">{{ $pelatihan->bidang->bidang_nama }}</td>
+                            <td class="col-9">{{ $sertifikasi->bidang->bidang_nama }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Mata Kuliah :</th>
-                            <td class="col-9">{{ $pelatihan->matkul->mk_nama }}</td>
+                            <td class="col-9">{{ $sertifikasi->matkul->mk_nama }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Vendor :</th>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DataSertifikasiModel;
 use App\Models\DataPelatihanModel;
+use App\Models\PelatihanModel;
+use App\Models\SertifikasiModel;
 use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
@@ -307,6 +309,8 @@ class NotifikasiController extends Controller
             'periode' => $sertifikasi->sertif->periode,
             'keterangan' => $sertifikasi->sertif->keterangan,
             'surat_tugas' => $suratTugasData, // Hanya satu surat tugas
+            'data_sertif_id' => $sertifikasi->data_sertif_id,
+            'type' => 'sertifikasi',
         ]);
     }
 
@@ -327,7 +331,7 @@ class NotifikasiController extends Controller
         $suratTugasData = [
             'id' => $suratTugas->surat_tugas_id ?? null,
             'nama_surat_tugas' => $suratTugas->nama_surat ?? 'Tidak Diketahui',
-            'file_url' => $suratTugas ? asset('dokumen/surat_tugas/' . $suratTugas->nama_surat ) : null, // URL file surat tugas
+            'file_url' => $suratTugas ? asset('dokumen/surat_tugas/' . $suratTugas->nama_surat) : null, // URL file surat tugas
         ];
 
         return view('notifikasi.dosen.show_ajax', [
@@ -341,7 +345,69 @@ class NotifikasiController extends Controller
             'periode' => $pelatihan->pelatihan->periode,
             'keterangan' => $pelatihan->pelatihan->keterangan,
             'surat_tugas' => $suratTugasData, // Hanya satu surat tugas
+            'data_pelatihan_id' => $pelatihan->data_pelatihan_id,
+            'type' => 'pelatihan',
         ]);
+    }
+
+    public function uploadSertifikat(Request $request)
+    {
+        $request->validate([
+            'file_sertifikat' => 'required|mimes:pdf,jpg,jpeg,png|max:2048',
+            'id' => 'required',
+            'type' => 'required|in:sertifikasi,pelatihan',
+        ]);
+
+        $file = $request->file('file_sertifikat');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+
+        if ($request->type === 'sertifikasi') {
+            $filePath = public_path('file_bukti_ser');
+
+            // Ambil data sertifikasi terkait
+            $dataSertifikasi = DataSertifikasiModel::where('data_sertif_id', $request->id)->first();
+            if (!$dataSertifikasi) {
+                return response()->json(['message' => 'Data Sertifikasi tidak ditemukan'], 404);
+            }
+
+            // Update pada SertifikasiModel
+            $sertifikasi = SertifikasiModel::find($dataSertifikasi->sertif_id);
+            if (!$sertifikasi) {
+                return response()->json(['message' => 'Sertifikasi tidak ditemukan'], 404);
+            }
+
+            $dataSertifikasi->sertifikat = $fileName;
+            $dataSertifikasi->save();
+
+            $sertifikasi->status = 'Selesai';
+            $sertifikasi->keterangan = 'Sertifikasi Selesai';
+            $sertifikasi->save();
+        } else {
+            $filePath = public_path('file_bukti_pel');
+
+            // Ambil data pelatihan terkait
+            $dataPelatihan = DataPelatihanModel::where('data_pelatihan_id', $request->id)->first();
+            if (!$dataPelatihan) {
+                return response()->json(['message' => 'Data Pelatihan tidak ditemukan'], 404);
+            }
+
+            // Update pada PelatihanModel
+            $pelatihan = PelatihanModel::find($dataPelatihan->pelatihan_id);
+            if (!$pelatihan) {
+                return response()->json(['message' => 'Pelatihan tidak ditemukan'], 404);
+            }
+
+            $dataPelatihan->sertifikat = $fileName;
+            $dataPelatihan->save();
+
+            $pelatihan->status = 'Selesai';
+            $pelatihan->keterangan = 'Pelatihan Selesai';
+            $pelatihan->save();
+        }
+
+        $file->move($filePath, $fileName);
+
+        return response()->json(['message' => 'Sertifikat berhasil diunggah dan status diperbarui'], 200);
     }
 
     public function getNotifikasiApi2()

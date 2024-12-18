@@ -197,6 +197,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/list', [NotifikasiController::class, 'list2']);
         Route::get('/sertifikasi/{id}/show_ajax', [NotifikasiController::class, 'showSertifikasiAjaxDosen']);
         Route::get('/pelatihan/{id}/show_ajax', [NotifikasiController::class, 'showPelatihanAjaxDosen']);
+        Route::post('/upload-sertifikat', [NotifikasiController::class, 'uploadSertifikat']);
     });
 
     Route::group(['prefix' => 'notifikasi'], function () {

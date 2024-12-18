@@ -92,6 +92,18 @@
                             <td class="col-9">Tidak ada surat tugas terkait.</td>
                         </tr>
                     @endif
+                    <tr>
+                        <th class="text-right col-3">Upload Sertifikat:</th>
+                        <td class="col-9">
+                            <form id="form-upload-sertifikat" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ isset($type) && $type === 'sertifikasi' ? $data_sertif_id : $data_pelatihan_id }}">
+                                <input type="hidden" name="type" value="{{ isset($type) ? 'sertifikasi' : 'pelatihan' }}">
+                                <input type="file" name="file_sertifikat" class="form-control mb-2" required>
+                                <button type="submit" class="btn btn-success">Simpan</button>
+                            </form>
+                        </td>
+                    </tr>
                 </table>
             </div>
             <div class="modal-footer">
@@ -100,3 +112,26 @@
         </div>
     </div>
 @endempty
+
+<script>
+    $('#form-upload-sertifikat').on('submit', function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        $.ajax({
+            url: '{{ url('/notifikasidosen/upload-sertifikat') }}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                alert(response.message);
+                location.reload();
+            },
+            error: function(xhr) {
+                alert('Gagal mengunggah sertifikat: ' + xhr.responseJSON.message);
+            }
+        });
+    });
+</script>

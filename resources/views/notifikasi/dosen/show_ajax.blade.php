@@ -98,7 +98,7 @@
                             <form id="form-upload-sertifikat" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="id" value="{{ isset($type) && $type === 'sertifikasi' ? $data_sertif_id : $data_pelatihan_id }}">
-                                <input type="hidden" name="type" value="{{ isset($type) ? 'sertifikasi' : 'pelatihan' }}">
+                                <input type="hidden" name="type" value="{{ isset($type) === 'sertifikasi' ? 'sertifikasi' : 'pelatihan' }}">
                                 <input type="file" name="file_sertifikat" class="form-control mb-2" required>
                                 <button type="submit" class="btn btn-success">Simpan</button>
                             </form>

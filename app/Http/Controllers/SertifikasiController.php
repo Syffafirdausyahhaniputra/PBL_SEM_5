@@ -171,7 +171,7 @@ class SertifikasiController extends Controller
     {
         $breadcrumb = (object) [
             'title' => 'Sertifikasi Dosen',
-            'subtitle' => 'Tambah Penunjukkan'
+            'subtitle' => 'Tambah Penunjukan'
         ];
 
         $bidangs = BidangModel::all();
@@ -1010,7 +1010,7 @@ class SertifikasiController extends Controller
                     Log::info('Data Sertifikasi updated with surat_tugas_id.');
 
                     SertifikasiModel::where('sertif_id', $request->sertif_id)
-                        ->update(['keterangan' => 'Penunjukkan']);
+                        ->update(['keterangan' => 'Penunjukan']);
                     return response()->json([
                         'status' => true,
                         'message' => 'Surat Tugas berhasil diupload dan disimpan.',

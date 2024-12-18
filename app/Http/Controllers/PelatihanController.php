@@ -1181,7 +1181,7 @@ class PelatihanController extends Controller
                     Log::info('Data Pelatihan updated with surat_tugas_id.');
 
                     PelatihanModel::where('pelatihan_id', $request->pelatihan_id)
-                        ->update(['keterangan' => 'Penunjukkan']);
+                        ->update(['keterangan' => 'Penunjukan']);
                     return response()->json([
                         'status' => true,
                         'message' => 'Surat Tugas berhasil diupload dan disimpan.',

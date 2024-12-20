@@ -44,10 +44,10 @@ class ValidasiController extends Controller
                 }
             })
             ->get()
-            ->groupBy('sertif_id')
+            ->groupBy('sertif_id') // Group sebagai Collection, bukan array
             ->map(function ($groupedItems) {
                 $firstItem = $groupedItems->first(); // Ambil item pertama
-                if (is_object($firstItem) && $firstItem->sertif) {
+                if (is_object($firstItem) && isset($firstItem->sertif)) {
                     return [
                         'id' => $firstItem->sertif_id,
                         'nama' => $firstItem->sertif->nama_sertif,
@@ -57,8 +57,8 @@ class ValidasiController extends Controller
                         'updated_at' => $groupedItems->max('updated_at'),
                     ];
                 }
-                return null; // Return null jika datanya tidak valid
-            })->filter(); // Hapus item null dari koleksi
+                return null; // Kembalikan null jika data tidak valid
+            })->filter(); // Hapus null values
 
         // Ambil data pelatihan
         $dataPelatihan = DataPelatihanModel::with('pelatihan')
@@ -69,10 +69,10 @@ class ValidasiController extends Controller
                 }
             })
             ->get()
-            ->groupBy('pelatihan_id')
+            ->groupBy('pelatihan_id') // Group sebagai Collection, bukan array
             ->map(function ($groupedItems) {
                 $firstItem = $groupedItems->first(); // Ambil item pertama
-                if (is_object($firstItem) && $firstItem->pelatihan) {
+                if (is_object($firstItem) && isset($firstItem->pelatihan)) {
                     return [
                         'id' => $firstItem->pelatihan_id,
                         'nama' => $firstItem->pelatihan->nama_pelatihan,
@@ -82,8 +82,8 @@ class ValidasiController extends Controller
                         'updated_at' => $groupedItems->max('updated_at'),
                     ];
                 }
-                return null; // Return null jika datanya tidak valid
-            })->filter(); // Hapus item null dari koleksi
+                return null; // Kembalikan null jika data tidak valid
+            })->filter(); // Hapus null values
 
         // Gabungkan data sertifikasi dan pelatihan
         $data = $dataSertifikasi->values()->merge($dataPelatihan->values());
@@ -93,7 +93,7 @@ class ValidasiController extends Controller
 
         Log::info('Data setelah sorting:', $sortedData->toArray());
 
-        return DataTables::of(collect($sortedData))
+        return DataTables::of($sortedData)
             ->addIndexColumn()
             ->addColumn('aksi', function ($data) {
                 if ($data['status'] === 'Proses' && $data['keterangan'] === 'Menunggu Validasi') {

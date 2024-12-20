@@ -33,13 +33,13 @@ class ValidasiController extends Controller
     // Ambil data validasi dalam bentuk json untuk datatables 
     public function list(Request $request)
     {
-        $statusFilter = $request->input('status');
+        $keteranganFilter = $request->input('keterangan');
 
         $dataSertifikasi = DataSertifikasiModel::with('sertif')
             ->select('data_sertif_id as id', 'sertif_id', 'dosen_id', 'updated_at')
-            ->whereHas('sertif', function ($query) use ($statusFilter) {
-                if ($statusFilter) {
-                    $query->where('status', $statusFilter);
+            ->whereHas('sertif', function ($query) use ($keteranganFilter) {
+                if ($keteranganFilter) {
+                    $query->where('keterangan', $keteranganFilter);
                 }
             })
             ->get()
@@ -59,9 +59,9 @@ class ValidasiController extends Controller
 
         $dataPelatihan = DataPelatihanModel::with('pelatihan')
             ->select('data_pelatihan_id as id', 'pelatihan_id', 'dosen_id', 'updated_at')
-            ->whereHas('pelatihan', function ($query) use ($statusFilter) {
-                if ($statusFilter) {
-                    $query->where('status', $statusFilter);
+            ->whereHas('pelatihan', function ($query) use ($keteranganFilter) {
+                if ($keteranganFilter) {
+                    $query->where('keterangan', $keteranganFilter);
                 }
             })
             ->get()

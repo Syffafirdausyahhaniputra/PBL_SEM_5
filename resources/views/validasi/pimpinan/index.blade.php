@@ -14,13 +14,17 @@
             <div class="row">
                 <div class="col-md-2">
                     <div class="form-group row">
-                        <label for="filter-status" class="col-4 control-label col-form-label">Filter:</label>
+                        <label for="filter-keterangan" class="col-4 control-label col-form-label">Filter:</label>
                         <div class="col-7">
-                            <select id="filter-status" class="form-control">
+                            <select id="filter-keterangan" class="form-control">
                                 <option value="">Semua</option>
-                                <option value="proses">Proses</option>
-                                <option value="disetujui">Disetujui</option>
-                                <option value="ditolak">Ditolak</option>
+                                <option value="Penunjukan">Penunjukan</option>
+                                <option value="Menunggu Validasi">Menunggu Validasi</option>
+                                <option value="Validasi Disetujui">Validasi Disetujui</option>
+                                <option value="Validasi Ditolak">Validasi Ditolak</option>
+                                <option value="Mandiri">Mandiri</option>
+                                <option value="Sertifikasi Selesai">Sertifikasi Selesai</option>
+                                <option value="Pelatihan Selesai">Pelatihan Selesai</option>
                             </select>
                         </div>
                     </div>
@@ -69,7 +73,7 @@
                     dataType: "json",
                     type: "POST",
                     data: function(d) {
-                        d.status = $('#filter-status').val(); // Add filter parameter
+                        d.keterangan = $('#filter-keterangan').val(); // Add filter parameter
                     }
                 },
                 columns: [
@@ -113,7 +117,7 @@
             });
 
             // Event listener for filter dropdown
-            $('#filter-status').change(function() {
+            $('#filter-keterangan').change(function() {
                 datajenis.ajax.reload(); // Reload DataTable with new filter value
             });
         });

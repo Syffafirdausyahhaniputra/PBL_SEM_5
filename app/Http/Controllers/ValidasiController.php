@@ -44,9 +44,9 @@ class ValidasiController extends Controller
                 }
             })
             ->get()
-            ->groupBy('sertif_id') // Group sebagai Collection, bukan array
+            ->groupBy('sertif_id')
             ->map(function ($groupedItems) {
-                $firstItem = $groupedItems->first(); // Ambil item pertama
+                $firstItem = $groupedItems->first();
                 if (is_object($firstItem) && isset($firstItem->sertif)) {
                     return [
                         'id' => $firstItem->sertif_id,
@@ -57,8 +57,8 @@ class ValidasiController extends Controller
                         'updated_at' => $groupedItems->max('updated_at'),
                     ];
                 }
-                return null; // Kembalikan null jika data tidak valid
-            })->filter(); // Hapus null values
+                return null;
+            })->filter()->values(); // Pastikan output berupa Collection
 
         // Ambil data pelatihan
         $dataPelatihan = DataPelatihanModel::with('pelatihan')
@@ -69,9 +69,9 @@ class ValidasiController extends Controller
                 }
             })
             ->get()
-            ->groupBy('pelatihan_id') // Group sebagai Collection, bukan array
+            ->groupBy('pelatihan_id')
             ->map(function ($groupedItems) {
-                $firstItem = $groupedItems->first(); // Ambil item pertama
+                $firstItem = $groupedItems->first();
                 if (is_object($firstItem) && isset($firstItem->pelatihan)) {
                     return [
                         'id' => $firstItem->pelatihan_id,
@@ -82,11 +82,11 @@ class ValidasiController extends Controller
                         'updated_at' => $groupedItems->max('updated_at'),
                     ];
                 }
-                return null; // Kembalikan null jika data tidak valid
-            })->filter(); // Hapus null values
+                return null;
+            })->filter()->values(); // Pastikan output berupa Collection
 
         // Gabungkan data sertifikasi dan pelatihan
-        $data = $dataSertifikasi->values()->merge($dataPelatihan->values());
+        $data = collect($dataSertifikasi)->merge(collect($dataPelatihan)); // Convert ke Collection sebelum merge
 
         // Urutkan berdasarkan updated_at
         $sortedData = $data->sortByDesc('updated_at')->values();
@@ -97,15 +97,13 @@ class ValidasiController extends Controller
             ->addIndexColumn()
             ->addColumn('aksi', function ($data) {
                 if ($data['status'] === 'Proses' && $data['keterangan'] === 'Menunggu Validasi') {
-                    // Tombol Validasi
                     $btn = '<button onclick="modalAction(\'' . url('/validasi/' . $data['type'] . '/' . $data['id'] . '/show_ajax2') . '\')" class="btn btn-info btn-sm">
-                            <i class="fas fa-eye"></i> Validasi
-                        </button>';
+                        <i class="fas fa-eye"></i> Validasi
+                    </button>';
                 } else {
-                    // Tombol Detail
                     $btn = '<button onclick="modalAction(\'' . url('/validasi/' . $data['type'] . '/' . $data['id'] . '/show_ajax') . '\')" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-info-circle"></i> Detail
-                        </button>';
+                        <i class="fas fa-info-circle"></i> Detail
+                    </button>';
                 }
                 return $btn;
             })

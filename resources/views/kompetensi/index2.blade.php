@@ -48,6 +48,7 @@
             datakompetensi_prodi = $('#table_kompetensi_prodi').DataTable({
                 // serverSide: true, jika ingin menggunakan server side proses 
                 serverSide: true,
+                searching: false,
                 ajax: {
                     "url": "{{ url('kompetensi/list') }}",
                     "dataType": "json",

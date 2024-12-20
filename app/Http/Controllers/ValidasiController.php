@@ -35,6 +35,7 @@ class ValidasiController extends Controller
     {
         $keteranganFilter = $request->input('keterangan');
 
+        // Ambil data sertifikasi
         $dataSertifikasi = DataSertifikasiModel::with('sertif')
             ->select('data_sertif_id as id', 'sertif_id', 'dosen_id', 'updated_at')
             ->whereHas('sertif', function ($query) use ($keteranganFilter) {
@@ -43,20 +44,23 @@ class ValidasiController extends Controller
                 }
             })
             ->get()
-            ->groupBy('sertif_id') // Group data berdasarkan sertif_id
+            ->groupBy('sertif_id')
             ->map(function ($groupedItems) {
-                $firstItem = $groupedItems->first(); // Ambil item pertama dalam grup
+                $firstItem = $groupedItems->first(); // Ambil item pertama
+                if (is_object($firstItem) && $firstItem->sertif) {
+                    return [
+                        'id' => $firstItem->sertif_id,
+                        'nama' => $firstItem->sertif->nama_sertif,
+                        'keterangan' => $firstItem->sertif->keterangan,
+                        'status' => $firstItem->sertif->status,
+                        'type' => 'sertifikasi',
+                        'updated_at' => $groupedItems->max('updated_at'),
+                    ];
+                }
+                return null; // Return null jika datanya tidak valid
+            })->filter(); // Hapus item null dari koleksi
 
-                return [
-                    'id' => $firstItem->sertif_id, // Gunakan sertif_id sebagai id
-                    'nama' => $firstItem->sertif->nama_sertif,
-                    'keterangan' => $firstItem->sertif->keterangan,
-                    'status' => $firstItem->sertif->status,
-                    'type' => 'sertifikasi', // Tambahkan type sertifikasi
-                    'updated_at' => $groupedItems->max('updated_at'), // Ambil updated_at terbaru dalam grup
-                ];
-            });
-
+        // Ambil data pelatihan
         $dataPelatihan = DataPelatihanModel::with('pelatihan')
             ->select('data_pelatihan_id as id', 'pelatihan_id', 'dosen_id', 'updated_at')
             ->whereHas('pelatihan', function ($query) use ($keteranganFilter) {
@@ -65,19 +69,21 @@ class ValidasiController extends Controller
                 }
             })
             ->get()
-            ->groupBy('pelatihan_id') // Group data berdasarkan pelatihan_id
+            ->groupBy('pelatihan_id')
             ->map(function ($groupedItems) {
-                $firstItem = $groupedItems->first(); // Ambil item pertama dalam grup
-
-                return [
-                    'id' => $firstItem->pelatihan_id, // Gunakan pelatihan_id sebagai id
-                    'nama' => $firstItem->pelatihan->nama_pelatihan,
-                    'keterangan' => $firstItem->pelatihan->keterangan,
-                    'status' => $firstItem->pelatihan->status,
-                    'type' => 'pelatihan', // Tambahkan type pelatihan
-                    'updated_at' => $groupedItems->max('updated_at'), // Ambil updated_at terbaru dalam grup
-                ];
-            });
+                $firstItem = $groupedItems->first(); // Ambil item pertama
+                if (is_object($firstItem) && $firstItem->pelatihan) {
+                    return [
+                        'id' => $firstItem->pelatihan_id,
+                        'nama' => $firstItem->pelatihan->nama_pelatihan,
+                        'keterangan' => $firstItem->pelatihan->keterangan,
+                        'status' => $firstItem->pelatihan->status,
+                        'type' => 'pelatihan',
+                        'updated_at' => $groupedItems->max('updated_at'),
+                    ];
+                }
+                return null; // Return null jika datanya tidak valid
+            })->filter(); // Hapus item null dari koleksi
 
         // Gabungkan data sertifikasi dan pelatihan
         $data = $dataSertifikasi->values()->merge($dataPelatihan->values());
@@ -93,13 +99,13 @@ class ValidasiController extends Controller
                 if ($data['status'] === 'Proses' && $data['keterangan'] === 'Menunggu Validasi') {
                     // Tombol Validasi
                     $btn = '<button onclick="modalAction(\'' . url('/validasi/' . $data['type'] . '/' . $data['id'] . '/show_ajax2') . '\')" class="btn btn-info btn-sm">
-                                <i class="fas fa-eye"></i> Validasi
-                            </button>';
+                            <i class="fas fa-eye"></i> Validasi
+                        </button>';
                 } else {
                     // Tombol Detail
                     $btn = '<button onclick="modalAction(\'' . url('/validasi/' . $data['type'] . '/' . $data['id'] . '/show_ajax') . '\')" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-info-circle"></i> Detail
-                            </button>';
+                            <i class="fas fa-info-circle"></i> Detail
+                        </button>';
                 }
                 return $btn;
             })

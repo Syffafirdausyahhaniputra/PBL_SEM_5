@@ -882,65 +882,74 @@ class SertifikasiController extends Controller
     }
     public function export_ajax(Request $request, $sertif_id)
     {
-        $sertifikasi = DB::table('t_sertifikasi')->where('sertif_id', $sertif_id)->first();
+        $sertifikasi = SertifikasiModel::with('data_sertifikasi.dosen.user', 'data_sertifikasi.dosen.pangkat', 'data_sertifikasi.dosen.jabatan')
+            ->where('sertif_id', $sertif_id)
+            ->first();
 
         if (!$sertifikasi || $sertifikasi->keterangan !== 'Validasi Disetujui') {
             return response()->json([
                 'status' => false,
                 'message' => 'Dokumen belum bisa diunduh. Tunggu validasi.',
             ]);
-        } 
+        }
 
-        $dosenList = DB::table('t_data_sertifikasi')
-            ->join('m_dosen', 'm_dosen.dosen_id', '=', 't_data_sertifikasi.dosen_id')
-            ->join('m_user', 'm_user.user_id', '=', 'm_dosen.user_id')
-            ->where('t_data_sertifikasi.sertif_id', $sertif_id)
-            ->select('m_user.nama as dosen_nama')
-            ->get();
+        $dosenList = $sertifikasi->data_sertifikasi->map(function ($data_sertifikasi) {
+            $dosen = $data_sertifikasi->dosen;
+            return [
+                'dosen_nama' => $dosen->user->nama,
+                'nip' => $dosen->user->nip,
+                'jabatan_nama' => $dosen->jabatan->jabatan_nama ?? '-',
+                'pangkat_nama' => $dosen->pangkat->pangkat_nama ?? '-',
+            ];
+        });
 
         $phpWord = new PhpWord();
         $section = $phpWord->addSection();
-        $section->addText("Surat Tugas", ['bold' => true, 'size' => 16]);
-        $section->addText("Kepada");
-        $section->addText("Yth. Pembantu Direktur I Politeknik Negeri Malang");
+
+        // Header Surat
+        $section->addText("KEMENTERIAN PENDIDIKAN, KEBUDAYAAN,\nRISET, DAN TEKNOLOGI", ['bold' => true, 'size' => 12], ['alignment' => Jc::CENTER]);
+        $section->addText("POLITEKNIK NEGERI MALANG", ['bold' => true, 'size' => 14], ['alignment' => Jc::CENTER]);
+        $section->addText("Jl. Soekarno Hatta No. 9, Jatimulyo, Lowokwaru, Malang 65141", null, ['alignment' => Jc::CENTER]);
+        $section->addText("Telp. (0341) 404424 - 404425, Fax (0341) 404420", null, ['alignment' => Jc::CENTER]);
+        $section->addTextBreak(1);
+
+        $section->addText("SURAT TUGAS", ['bold' => true, 'size' => 14], ['alignment' => Jc::CENTER]);
+        $section->addText("Nomor: ......./PL2.1/KP/2022", null, ['alignment' => Jc::CENTER]);
+        $section->addTextBreak(2);
+
+        $section->addText("Pembantu Direktur I memberikan tugas kepada:");
         $section->addTextBreak();
 
-        $section->addText("Dengan Hormat,");
-        $section->addTextBreak();
-
-        $section->addText("Sehubungan dengan pelaksanaan kegiatan \"" . $sertifikasi->nama_sertif . "\" D4 Sistem Informasi Bisnis yang diselenggarakan oleh Jurusan Teknologi Informasi pada bulan " . date('F Y', strtotime($sertifikasi->tanggal)) . ", mohon untuk dapat dibuatkan surat tugas kepada nama-nama di bawah ini:", ['size' => 12]);
-        $section->addTextBreak();
-
-        // Tabel Anggota
-        $styleTable = [
-            'borderSize' => 4,
-            'borderColor' => '000000',
-            'cellMargin' => 80
-        ];
-        $phpWord->addTableStyle('Daftar Dosen', $styleTable);
-        $table = $section->addTable('Daftar Dosen');
+        // Tabel Dosen
+        $styleTable = ['borderSize' => 6, 'borderColor' => '000000', 'cellMargin' => 80];
+        $phpWord->addTableStyle('DaftarDosen', $styleTable);
+        $table = $section->addTable('DaftarDosen');
 
         $table->addRow();
-        $table->addCell(500)->addText('No', ['bold' => true, 'size' => 10]);
-        $cell = $table->addCell(5000);
-        $textRun = $cell->addTextRun();
-        $textRun->addText('Nama', ['bold' => true]);
-        $textRun->addTextBreak();
-        $textRun->addText('NIP');
+        $table->addCell(500)->addText("No", ['bold' => true]);
+        $table->addCell(3000)->addText("Nama", ['bold' => true]);
+        $table->addCell(3000)->addText("NIP", ['bold' => true]);
+        $table->addCell(2000)->addText("Pangkat", ['bold' => true]);
+        $table->addCell(3000)->addText("Jabatan", ['bold' => true]);
 
         foreach ($dosenList as $index => $dosen) {
             $table->addRow();
             $table->addCell(500)->addText($index + 1);
-            $table->addCell(5000)->addText($dosen->dosen_nama);
+            $table->addCell(3000)->addText($dosen['dosen_nama']);
+            $table->addCell(3000)->addText($dosen['nip']);
+            $table->addCell(2000)->addText($dosen['pangkat_nama']);
+            $table->addCell(3000)->addText($dosen['jabatan_nama']);
         }
         $section->addTextBreak();
 
-        $section->addText("Demikian surat permohonan ini dibuat. Atas perhatian dan kerjasamanya, kami sampaikan terima kasih.", ['size' => 12]);
-
-        // Menambahkan tanda tangan dengan perataan kanan
+        // Penutup
+        $section->addText("Untuk menjadi peserta dalam kegiatan \"" . $sertifikasi->nama_sertif . "\" yang akan dilaksanakan pada " . date('d F Y', strtotime($sertifikasi->tanggal)) . ".");
+        $section->addText("Biaya perjalanan dinas akan dibebankan pada anggaran Jurusan Teknologi Informasi Politeknik Negeri Malang. Setelah selesai, mohon melaporkan hasilnya.");
         $section->addTextBreak(2);
+
+        // Tanda Tangan
         $section->addText("Malang, " . date('d F Y'), null, ['alignment' => Jc::END]);
-        $section->addText("Ketua Jurusan Teknologi Informasi,", null, ['alignment' => Jc::END]);
+        $section->addText("a.n. Direktur, Pembantu Direktur I", null, ['alignment' => Jc::END]);
         $section->addTextBreak(3);
         $section->addText("Dr. Eng Rosa Andrie Asmara, S.T., M.T.", ['bold' => true], ['alignment' => Jc::END]);
         $section->addText("NIP. 196602141990032002", null, ['alignment' => Jc::END]);

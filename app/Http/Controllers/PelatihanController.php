@@ -112,8 +112,8 @@ class PelatihanController extends Controller
 
         // Ambil data dosen beserta nama user
         $dataP = DosenModel::with('user')
-            ->leftJoin('t_data_sertifikasi', 'm_dosen.dosen_id', '=', 't_data_sertifikasi.dosen_id')
-            ->leftJoin('t_sertifikasi', 't_data_sertifikasi.sertif_id', '=', 't_sertifikasi.sertif_id')
+            ->leftJoin('t_data_pelatihan', 'm_dosen.dosen_id', '=', 't_data_pelatihan.dosen_id')
+            ->leftJoin('t_sertifikasi', 't_data_pelatihan.pelatihan_id', '=', 't_sertifikasi.pelatihan_id')
             ->select('m_dosen.*')  // Select m_dosen columns
             ->distinct()  // Ensures no duplicates for dosen_id
             ->selectRaw("CASE WHEN t_sertifikasi.status = 'Proses' THEN 1 ELSE 0 END as is_in_process")
@@ -948,71 +948,79 @@ class PelatihanController extends Controller
 
     public function export_ajax(Request $request, $pelatihan_id)
     {
-        $pelatihan = DB::table('t_pelatihan')->where('pelatihan_id', $pelatihan_id)->first();
+        $pelatihan = PelatihanModel::with('data_pelatihan.dosen.user', 'data_pelatihan.dosen.pangkat', 'data_pelatihan.dosen.jabatan')
+            ->where('pelatihan_id', $pelatihan_id)
+            ->first();
 
         if (!$pelatihan || $pelatihan->keterangan !== 'Validasi Disetujui') {
             return response()->json([
                 'status' => false,
                 'message' => 'Dokumen belum bisa diunduh. Tunggu validasi.',
             ]);
-        } 
+        }
 
-        $dosenList = DB::table('t_data_pelatihan')
-            ->join('m_dosen', 'm_dosen.dosen_id', '=', 't_data_pelatihan.dosen_id')
-            ->join('m_user', 'm_user.user_id', '=', 'm_dosen.user_id')
-            ->where('t_data_pelatihan.pelatihan_id', $pelatihan_id)
-            ->select('m_user.nama as dosen_nama')
-            ->get();
+        $dosenList = $pelatihan->data_pelatihan->map(function ($data_pelatihan) {
+            $dosen = $data_pelatihan->dosen;
+            return [
+                'dosen_nama' => $dosen->user->nama,
+                'nip' => $dosen->user->nip,
+                'jabatan_nama' => $dosen->jabatan->jabatan_nama ?? '-',
+                'pangkat_nama' => $dosen->pangkat->pangkat_nama ?? '-',
+            ];
+        });
 
         $phpWord = new PhpWord();
         $section = $phpWord->addSection();
-        $section->addText("Surat Tugas", ['bold' => true, 'size' => 16]);
-        $section->addText("Kepada");
-        $section->addText("Yth. Pembantu Direktur I Politeknik Negeri Malang");
+
+        // Header Surat
+        $section->addText("KEMENTERIAN PENDIDIKAN, KEBUDAYAAN,\nRISET, DAN TEKNOLOGI", ['bold' => true, 'size' => 12], ['alignment' => Jc::CENTER]);
+        $section->addText("POLITEKNIK NEGERI MALANG", ['bold' => true, 'size' => 14], ['alignment' => Jc::CENTER]);
+        $section->addText("Jl. Soekarno Hatta No. 9, Jatimulyo, Lowokwaru, Malang 65141", null, ['alignment' => Jc::CENTER]);
+        $section->addText("Telp. (0341) 404424 - 404425, Fax (0341) 404420", null, ['alignment' => Jc::CENTER]);
+        $section->addTextBreak(1);
+
+        $section->addText("SURAT TUGAS", ['bold' => true, 'size' => 14], ['alignment' => Jc::CENTER]);
+        $section->addText("Nomor: ......./PL2.1/KP/2022", null, ['alignment' => Jc::CENTER]);
+        $section->addTextBreak(2);
+
+        $section->addText("Pembantu Direktur I memberikan tugas kepada:");
         $section->addTextBreak();
 
-        $section->addText("Dengan Hormat,");
-        $section->addTextBreak();
-
-        $section->addText("Sehubungan dengan pelaksanaan kegiatan \"" . $pelatihan->nama_pelatihan . "\" D4 Sistem Informasi Bisnis yang diselenggarakan oleh Jurusan Teknologi Informasi pada bulan " . date('F Y', strtotime($pelatihan->tanggal)) . ", mohon untuk dapat dibuatkan surat tugas kepada nama-nama di bawah ini:", ['size' => 12]);
-        $section->addTextBreak();
-
-        // Tabel Anggota
-        $styleTable = [
-            'borderSize' => 4,
-            'borderColor' => '000000',
-            'cellMargin' => 80
-        ];
-        $phpWord->addTableStyle('Daftar Dosen', $styleTable);
-        $table = $section->addTable('Daftar Dosen');
+        // Tabel Dosen
+        $styleTable = ['borderSize' => 6, 'borderColor' => '000000', 'cellMargin' => 80];
+        $phpWord->addTableStyle('DaftarDosen', $styleTable);
+        $table = $section->addTable('DaftarDosen');
 
         $table->addRow();
-        $table->addCell(500)->addText('No', ['bold' => true, 'size' => 10]);
-        $cell = $table->addCell(5000);
-        $textRun = $cell->addTextRun();
-        $textRun->addText('Nama', ['bold' => true]);
-        $textRun->addTextBreak();
-        $textRun->addText('NIP');
+        $table->addCell(500)->addText("No", ['bold' => true]);
+        $table->addCell(3000)->addText("Nama", ['bold' => true]);
+        $table->addCell(3000)->addText("NIP", ['bold' => true]);
+        $table->addCell(2000)->addText("Pangkat", ['bold' => true]);
+        $table->addCell(3000)->addText("Jabatan", ['bold' => true]);
 
         foreach ($dosenList as $index => $dosen) {
             $table->addRow();
             $table->addCell(500)->addText($index + 1);
-            $table->addCell(5000)->addText($dosen->dosen_nama);
+            $table->addCell(3000)->addText($dosen['dosen_nama']);
+            $table->addCell(3000)->addText($dosen['nip']);
+            $table->addCell(2000)->addText($dosen['pangkat_nama']);
+            $table->addCell(3000)->addText($dosen['jabatan_nama']);
         }
         $section->addTextBreak();
 
-        $section->addText("Demikian surat permohonan ini dibuat. Atas perhatian dan kerjasamanya, kami sampaikan terima kasih.", ['size' => 12]);
+        // Penutup
+        $section->addText("Untuk menjadi peserta dalam kegiatan \"" . $pelatihan->nama_pelatihan . "\" yang akan dilaksanakan pada " . date('d F Y', strtotime($pelatihan->tanggal)) . ".");
+        $section->addText("Biaya perjalanan dinas akan dibebankan pada anggaran Jurusan Teknologi Informasi Politeknik Negeri Malang. Setelah selesai, mohon melaporkan hasilnya.");
+        $section->addTextBreak(2);
 
-        $signatureTable = $section->addTable();
-        $signatureTable->addRow();
-        $signatureCell = $signatureTable->addCell(10000, ['border' => 0]);
-        $signatureCell->addText("28 Oktober 2024", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
-        $signatureCell->addText("Ketua Jurusan Teknologi Informasi,", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
-        $signatureCell->addTextBreak(2);
-        $signatureCell->addText("Dr. Eng Rosa Andrie Asmara, S.T., M.T.", ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
-        $signatureCell->addText("NIP. 196602141990032002", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
+        // Tanda Tangan
+        $section->addText("Malang, " . date('d F Y'), null, ['alignment' => Jc::END]);
+        $section->addText("a.n. Direktur, Pembantu Direktur I", null, ['alignment' => Jc::END]);
+        $section->addTextBreak(3);
+        $section->addText("Dr. Eng Rosa Andrie Asmara, S.T., M.T.", ['bold' => true], ['alignment' => Jc::END]);
+        $section->addText("NIP. 196602141990032002", null, ['alignment' => Jc::END]);
 
-        $fileName = 'surat_tugas_' . time() . '.docx';
+        $fileName = 'surat_tugas_' . $pelatihan->nama_pelatihan . '.docx';
         $filePath = storage_path("app/public/$fileName");
         $phpWord->save($filePath, 'Word2007');
 

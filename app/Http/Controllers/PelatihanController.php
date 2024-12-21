@@ -113,7 +113,7 @@ class PelatihanController extends Controller
         // Ambil data dosen beserta nama user
         $dataP = DosenModel::with('user')
             ->leftJoin('t_data_pelatihan', 'm_dosen.dosen_id', '=', 't_data_pelatihan.dosen_id')
-            ->leftJoin('t_sertifikasi', 't_data_pelatihan.pelatihan_id', '=', 't_sertifikasi.pelatihan_id')
+            ->leftJoin('t_pelatihan', 't_data_pelatihan.pelatihan_id', '=', 't_pelatihan.pelatihan_id')
             ->select('m_dosen.*')  // Select m_dosen columns
             ->distinct()  // Ensures no duplicates for dosen_id
             ->selectRaw("CASE WHEN t_sertifikasi.status = 'Proses' THEN 1 ELSE 0 END as is_in_process")

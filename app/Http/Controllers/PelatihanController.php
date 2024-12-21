@@ -116,7 +116,7 @@ class PelatihanController extends Controller
             ->leftJoin('t_pelatihan', 't_data_pelatihan.pelatihan_id', '=', 't_pelatihan.pelatihan_id')
             ->select('m_dosen.*')  // Select m_dosen columns
             ->distinct()  // Ensures no duplicates for dosen_id
-            ->selectRaw("CASE WHEN t_sertifikasi.status = 'Proses' THEN 1 ELSE 0 END as is_in_process")
+            ->selectRaw("CASE WHEN t_pelatihan.status = 'Proses' THEN 1 ELSE 0 END as is_in_process")
             ->selectRaw("EXISTS (
             SELECT 1 
             FROM m_dosen_bidang 

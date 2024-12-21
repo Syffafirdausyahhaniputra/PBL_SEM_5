@@ -309,7 +309,7 @@ class NotifikasiController extends Controller
             'periode' => $sertifikasi->sertif->periode,
             'keterangan' => $sertifikasi->sertif->keterangan,
             'surat_tugas' => $suratTugasData, // Hanya satu surat tugas
-            'id' => $sertifikasi->data_sertif_id,
+            'data_sertif_id' => $sertifikasi->data_sertif_id,
             'type' => 'sertifikasi',
         ]);
     }
@@ -345,7 +345,7 @@ class NotifikasiController extends Controller
             'periode' => $pelatihan->pelatihan->periode,
             'keterangan' => $pelatihan->pelatihan->keterangan,
             'surat_tugas' => $suratTugasData, // Hanya satu surat tugas
-            'id' => $pelatihan->data_pelatihan_id,
+            'data_pelatihan_id' => $pelatihan->data_pelatihan_id,
             'type' => 'pelatihan',
         ]);
     }

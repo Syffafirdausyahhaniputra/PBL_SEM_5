@@ -53,7 +53,7 @@ class KompetensiController extends Controller
             //     return view('kompetensi.edit_ajax');
             // })
             ->addColumn('bidang', function ($kompetensi_prodi) {
-                $btn  = '<button onclick="modalAction(\'' . url('/kompetensi/' . $kompetensi_prodi->prodi->prodi_kode .
+                $btn  = '<button onclick="modalAction(\'' . url('/kompetensi/' . $kompetensi_prodi->prodi_id .
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">
                     <i class="fas fa-eye"></i> Detail
                 </button> ';

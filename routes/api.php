@@ -176,7 +176,7 @@ Route::middleware('auth:api')->group(function () {
 
 Route::get('/kompetensi', [App\Http\Controllers\API\KompetensiController::class, 'index']);
 Route::post('/kompetensi/list', [App\Http\Controllers\API\KompetensiController::class, 'list']);
-Route::get('/kompetensi/{prodi_kode}/show_ajax', [App\Http\Controllers\API\KompetensiController::class, 'show_ajax']);
+Route::get('/kompetensi/{prodi_id}/show_ajax', [App\Http\Controllers\API\KompetensiController::class, 'show_ajax']);
 
 // Route::group(['prefix' => 'plthn'], function () {
 //     Route::get('/', [PlthnController::class, 'index']); // Menampilkan daftar pelatihan

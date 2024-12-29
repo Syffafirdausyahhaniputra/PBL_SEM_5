@@ -64,15 +64,19 @@ class NotifikasiDosenController extends Controller
                 ];
             });
 
-        $data = $dataSertifikasi->values()->merge($dataPelatihan->values());
+        // Konversi menjadi koleksi untuk mendukung fungsi merge()
+        $dataSertifikasi = collect($dataSertifikasi);
+        $dataPelatihan = collect($dataPelatihan);
 
-        // Urutkan berdasarkan updated_at
-        $sortedData = $data->sortByDesc('updated_at')->values();
+        // Gabungkan dan urutkan data
+        $data = $dataSertifikasi->merge($dataPelatihan)
+            ->sortByDesc('updated_at')
+            ->values();
 
         // Return data sebagai JSON
         return response()->json([
             'success' => true,
-            'data' => $sortedData,
+            'data' => $data,
         ], 200);
     }
 
